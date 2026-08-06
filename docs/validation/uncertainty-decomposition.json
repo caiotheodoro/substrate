@@ -1,0 +1,12 @@
+{
+  "n_samples": 30,
+  "epistemic_fraction": 0.3333,
+  "aleatoric_fraction": 0.3333,
+  "n_aleatoric": 10,
+  "n_epistemic": 10,
+  "resolution": {
+    "0.0": 0.074,
+    "0.5": 0.0357,
+    "1.0": 0.0357
+  }
+}
