@@ -1,0 +1,17 @@
+{
+  "id": "shock-2020-pandemic",
+  "scenario_id": "covid-2020",
+  "name": "2020 Pandemic Demand Shift",
+  "window": "2020-03/2020-06",
+  "holdout": false,
+  "series": [
+    "UNRATE",
+    "RSAFS_INDEX",
+    "CPIAUCSL_YOY",
+    "INDPRO_INDEX"
+  ],
+  "support": [
+    "2019-01",
+    "2020-12"
+  ]
+}

@@ -1,0 +1,22 @@
+[project]
+name = "substrate-sim-bench"
+version = "0.0.0"
+description = "SimBench core — coverage/Brier/CRPS/tail-loss scoring, registry, matrix runner (:8303)."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2",
+    "pydantic>=2",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "scoringrules>=0.9; sys_platform != 'win32'",
+    "substrate-sim-shared",
+    "substrate-sim-engine",
+    "substrate-sim-datasets",
+]
+
+[project.scripts]
+simbench = "sim_bench.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

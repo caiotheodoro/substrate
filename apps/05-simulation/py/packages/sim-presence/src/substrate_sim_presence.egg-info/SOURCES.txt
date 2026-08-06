@@ -1,0 +1,13 @@
+pyproject.toml
+src/sim_presence/__init__.py
+src/sim_presence/affect_models.py
+src/sim_presence/memory_store.py
+src/sim_presence/presence_core.py
+src/sim_presence/presence_llm.py
+src/sim_presence/social_log.py
+src/substrate_sim_presence.egg-info/PKG-INFO
+src/substrate_sim_presence.egg-info/SOURCES.txt
+src/substrate_sim_presence.egg-info/dependency_links.txt
+src/substrate_sim_presence.egg-info/requires.txt
+src/substrate_sim_presence.egg-info/top_level.txt
+tests/test_presence_core.py

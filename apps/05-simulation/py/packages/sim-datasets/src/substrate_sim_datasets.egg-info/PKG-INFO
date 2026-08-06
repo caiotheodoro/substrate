@@ -1,0 +1,10 @@
+Metadata-Version: 2.4
+Name: substrate-sim-datasets
+Version: 0.0.0
+Summary: Historical shock datasets (2020-2025) with realized paths and placeholder ALFRED vintage metadata, macro catalog, FRED/ALFRED ingest.
+Requires-Python: >=3.11
+Requires-Dist: numpy>=1.26
+Requires-Dist: pandas>=2
+Requires-Dist: duckdb>=1.0
+Requires-Dist: pyarrow>=15
+Requires-Dist: httpx>=0.27

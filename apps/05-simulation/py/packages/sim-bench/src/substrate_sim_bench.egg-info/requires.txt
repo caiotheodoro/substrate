@@ -1,0 +1,11 @@
+numpy>=1.26
+pandas>=2
+pydantic>=2
+fastapi>=0.115
+uvicorn>=0.30
+substrate-sim-shared
+substrate-sim-engine
+substrate-sim-datasets
+
+[:sys_platform != "win32"]
+scoringrules>=0.9

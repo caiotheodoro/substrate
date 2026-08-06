@@ -1,0 +1,2 @@
+[console_scripts]
+simbench = sim_bench.cli:main

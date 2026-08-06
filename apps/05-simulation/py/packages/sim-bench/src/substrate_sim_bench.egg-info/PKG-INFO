@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: substrate-sim-bench
+Version: 0.0.0
+Summary: SimBench core — coverage/Brier/CRPS/tail-loss scoring, registry, matrix runner (:8303).
+Requires-Python: >=3.11
+Requires-Dist: numpy>=1.26
+Requires-Dist: pandas>=2
+Requires-Dist: pydantic>=2
+Requires-Dist: fastapi>=0.115
+Requires-Dist: uvicorn>=0.30
+Requires-Dist: scoringrules>=0.9; sys_platform != "win32"
+Requires-Dist: substrate-sim-shared
+Requires-Dist: substrate-sim-engine
+Requires-Dist: substrate-sim-datasets

@@ -1,0 +1,11 @@
+Metadata-Version: 2.4
+Name: substrate-sim-injection
+Version: 0.0.0
+Summary: Injection library: Shock spec (A-S-23), shock scenarios wired to G-02 package data (A-S-24), replayable injection runtime (A-S-25).
+Requires-Python: >=3.11
+Requires-Dist: jsonschema>=4.21
+Requires-Dist: numpy>=1.26
+Requires-Dist: pandas>=2
+Requires-Dist: substrate-sim-shared
+Requires-Dist: substrate-sim-engine
+Requires-Dist: substrate-sim-datasets

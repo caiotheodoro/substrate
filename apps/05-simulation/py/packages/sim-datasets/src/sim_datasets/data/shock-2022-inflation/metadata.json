@@ -1,0 +1,17 @@
+{
+  "id": "shock-2022-inflation",
+  "scenario_id": "inflation-2022",
+  "name": "2022 Inflation Spike",
+  "window": "2022",
+  "holdout": false,
+  "series": [
+    "CPIAUCSL_YOY",
+    "PCEPILFE_YOY",
+    "FEDFUNDS",
+    "PPIACO_YOY"
+  ],
+  "support": [
+    "2021-01",
+    "2022-12"
+  ]
+}

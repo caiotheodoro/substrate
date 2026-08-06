@@ -1,0 +1,23 @@
+services:
+  sim-api:
+    build:
+      context: py
+    command: uvicorn sim_cross.api:app --host 0.0.0.0 --port 8300
+    ports:
+      - "8300:8300"
+
+  seed-synth:
+    build:
+      context: py
+    command: uvicorn sim_seed.app:app --host 0.0.0.0 --port 8302
+    environment:
+      LLM_BASE_URL: ${LLM_BASE_URL:-http://host.docker.internal:11434/v1}
+    ports:
+      - "8302:8302"
+
+  simbench-runner:
+    build:
+      context: py
+    command: uvicorn sim_bench.app:app --host 0.0.0.0 --port 8303
+    ports:
+      - "8303:8303"

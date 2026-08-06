@@ -1,0 +1,20 @@
+[
+  {"kind": "reply", "agent": "A", "gap_rounds": 1},
+  {"kind": "reply", "agent": "A", "gap_rounds": 2},
+  {"kind": "reply", "agent": "B", "gap_rounds": 1},
+  {"kind": "post", "agent": "C", "gap_rounds": 2},
+  {"kind": "reply", "agent": "A", "gap_rounds": 3},
+  {"kind": "reply", "agent": "B", "gap_rounds": 1},
+  {"kind": "post", "agent": "A", "gap_rounds": 2},
+  {"kind": "reply", "agent": "C", "gap_rounds": 1},
+  {"kind": "reply", "agent": "A", "gap_rounds": 2},
+  {"kind": "post", "agent": "B", "gap_rounds": 3},
+  {"kind": "reply", "agent": "A", "gap_rounds": 1},
+  {"kind": "reply", "agent": "B", "gap_rounds": 2},
+  {"kind": "post", "agent": "C", "gap_rounds": 1},
+  {"kind": "reply", "agent": "A", "gap_rounds": 2},
+  {"kind": "silence", "agent": "B", "gap_rounds": 4},
+  {"kind": "reply", "agent": "A", "gap_rounds": 1},
+  {"kind": "post", "agent": "C", "gap_rounds": 2},
+  {"kind": "reply", "agent": "B", "gap_rounds": 1}
+]

@@ -1,0 +1,16 @@
+[project]
+name = "substrate-sim-injection"
+version = "0.0.0"
+description = "Injection library: Shock spec (A-S-23), shock scenarios wired to G-02 package data (A-S-24), replayable injection runtime (A-S-25)."
+requires-python = ">=3.11"
+dependencies = [
+    "jsonschema>=4.21",
+    "numpy>=1.26",
+    "pandas>=2",
+    "substrate-sim-shared",
+    "substrate-sim-engine",
+    "substrate-sim-datasets",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

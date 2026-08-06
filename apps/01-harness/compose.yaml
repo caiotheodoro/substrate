@@ -1,0 +1,32 @@
+name: harness
+
+services:
+  harness-postgres:
+    image: postgres:16-alpine
+    container_name: harness-postgres
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: substrate
+      POSTGRES_PASSWORD: substrate
+      POSTGRES_DB: harness
+    volumes:
+      - harness_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U substrate -d harness"]
+      interval: 3s
+      timeout: 3s
+      retries: 10
+
+  harness-ollama:
+    image: ollama/ollama:latest
+    container_name: harness-ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - harness_ollama:/root/.ollama
+    profiles: ["default"]
+
+volumes:
+  harness_pgdata:
+  harness_ollama:

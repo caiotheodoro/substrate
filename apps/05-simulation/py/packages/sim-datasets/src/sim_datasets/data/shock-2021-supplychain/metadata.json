@@ -1,0 +1,17 @@
+{
+  "id": "shock-2021-supplychain",
+  "scenario_id": "supplychain-2021",
+  "name": "2021 Supply Chain Crisis",
+  "window": "2021",
+  "holdout": false,
+  "series": [
+    "PPIACO_YOY",
+    "ISMMAN_SUPPLIER_DELIVERIES",
+    "FREIGHT_INDEX",
+    "RSAFS_INDEX"
+  ],
+  "support": [
+    "2020-01",
+    "2021-12"
+  ]
+}

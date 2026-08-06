@@ -1,0 +1,14 @@
+[project]
+name = "substrate-sim-engine"
+version = "0.0.0"
+description = "Simulation engine: async swarm-core, sim-world, agent-proto, ensemble-store (seeded+RNG registry), simulator-adapter-sdk."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2",
+    "duckdb>=1.0",
+    "pyarrow>=15",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

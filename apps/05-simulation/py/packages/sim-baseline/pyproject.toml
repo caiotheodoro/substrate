@@ -1,0 +1,17 @@
+[project]
+name = "substrate-sim-baseline"
+version = "0.0.0"
+description = "Statistical baseline arms (AutoARIMA, LightGBM quantile + split-conformal intervals) with a lookahead-free vintage-aware backtest hub."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2",
+    "statsforecast>=1.7",
+    "lightgbm>=4.0", "scikit-learn>=1.4",
+]
+
+[project.optional-dependencies]
+mapie = ["MAPIE>=0.8"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

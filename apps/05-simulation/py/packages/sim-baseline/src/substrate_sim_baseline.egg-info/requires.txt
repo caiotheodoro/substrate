@@ -1,0 +1,8 @@
+numpy>=1.26
+pandas>=2
+statsforecast>=1.7
+lightgbm>=4.0
+scikit-learn>=1.4
+
+[mapie]
+MAPIE>=0.8

@@ -1,0 +1,18 @@
+{
+  "version": "1.0.0",
+  "series": [
+    {"id": "UNRATE", "name": "Civilian Unemployment Rate", "units": "percent", "frequency": "monthly", "source": "FRED", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2020-pandemic"]},
+    {"id": "RSAFS_INDEX", "name": "Retail and Food Services Sales (index 2019-01=100)", "units": "index", "frequency": "monthly", "source": "FRED (RSAFS)", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2020-pandemic", "shock-2021-supplychain"]},
+    {"id": "CPIAUCSL_YOY", "name": "CPI-U All Items, YoY", "units": "percent", "frequency": "monthly", "source": "FRED (CPIAUCSL)", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2020-pandemic", "shock-2022-inflation"]},
+    {"id": "INDPRO_INDEX", "name": "Industrial Production (index 2019-01=100)", "units": "index", "frequency": "monthly", "source": "FRED (INDPRO)", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2020-pandemic"]},
+    {"id": "PPIACO_YOY", "name": "PPI All Commodities, YoY", "units": "percent", "frequency": "monthly", "source": "FRED (PPIACO)", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2021-supplychain", "shock-2022-inflation"]},
+    {"id": "ISMMAN_SUPPLIER_DELIVERIES", "name": "ISM Manufacturing Supplier Deliveries Index", "units": "index (50=normal)", "frequency": "monthly", "source": "ISM (via FRED ISMMAN)", "revision_policy": "rarely revised; current-rate OK for support", "shocks": ["shock-2021-supplychain"]},
+    {"id": "FREIGHT_INDEX", "name": "Container Freight Spot Rate (index 2020-01=100)", "units": "index", "frequency": "monthly", "source": "SCFI/derived", "revision_policy": "spot, no revisions", "shocks": ["shock-2021-supplychain"]},
+    {"id": "PCEPILFE_YOY", "name": "Core PCE Price Index, YoY", "units": "percent", "frequency": "monthly", "source": "FRED (PCEPILFE)", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2022-inflation"]},
+    {"id": "FEDFUNDS", "name": "Effective Federal Funds Rate", "units": "percent", "frequency": "monthly", "source": "FRED (FEDFUNDS)", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2022-inflation"]},
+    {"id": "FRGSREC", "name": "Atlanta Fed GDPNow-implied real GDP growth (annualized)", "units": "percent", "frequency": "monthly", "source": "Atlanta Fed / FRED", "revision_policy": "nowcast, replaced by realized GDP", "shocks": ["shock-2025-tariff"], "is_holdout": true},
+    {"id": "CUSVMV", "name": "US Customs Duties Collected", "units": "billion-usd/month", "frequency": "monthly", "source": "FRED (CUSVMV)", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2025-tariff"], "is_holdout": true},
+    {"id": "IMPGSA", "name": "US Imports of Goods (NSA)", "units": "billion-usd/month", "frequency": "monthly", "source": "FRED (IMPGSA)", "revision_policy": "point-in-time (ALFRED vintages for retro)", "shocks": ["shock-2025-tariff"], "is_holdout": true},
+    {"id": "DCOILWTICO", "name": "WTI Crude Oil Spot Price", "units": "usd-per-bbl", "frequency": "monthly", "source": "FRED (DCOILWTICO)", "revision_policy": "spot, no revisions", "shocks": ["shock-2025-tariff"], "is_holdout": true}
+  ]
+}

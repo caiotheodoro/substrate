@@ -1,0 +1,6 @@
+jsonschema>=4.21
+numpy>=1.26
+pandas>=2
+substrate-sim-shared
+substrate-sim-engine
+substrate-sim-datasets

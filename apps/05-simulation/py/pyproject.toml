@@ -1,0 +1,45 @@
+[project]
+name = "substrate-simulation"
+version = "0.0.0"
+description = "Calibrated behavioral simulation — SimBench, hybrid baselines, presence engine (05)."
+requires-python = ">=3.11"
+dependencies = [
+    "substrate-sim-shared",
+    "substrate-sim-datasets",
+    "substrate-sim-baseline",
+    "substrate-sim-engine",
+    "substrate-sim-seed",
+    "substrate-sim-injection",
+    "substrate-sim-presence",
+    "substrate-sim-probes",
+    "substrate-sim-bench",
+    "substrate-sim-cross",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3",
+    "pytest-asyncio>=0.24",
+    "httpx>=0.27",
+]
+
+[tool.uv.sources]
+substrate-sim-shared = { workspace = true }
+substrate-sim-datasets = { workspace = true }
+substrate-sim-baseline = { workspace = true }
+substrate-sim-engine = { workspace = true }
+substrate-sim-seed = { workspace = true }
+substrate-sim-injection = { workspace = true }
+substrate-sim-presence = { workspace = true }
+substrate-sim-probes = { workspace = true }
+substrate-sim-bench = { workspace = true }
+substrate-sim-cross = { workspace = true }
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "function"
+addopts = "-q"

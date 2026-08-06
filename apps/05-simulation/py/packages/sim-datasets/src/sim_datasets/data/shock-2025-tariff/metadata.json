@@ -1,0 +1,17 @@
+{
+  "id": "shock-2025-tariff",
+  "scenario_id": "tariffs-2025",
+  "name": "2025 Tariff Waves (HOLDOUT)",
+  "window": "2025",
+  "holdout": true,
+  "series": [
+    "FRGSREC",
+    "CUSVMV",
+    "IMPGSA",
+    "DCOILWTICO"
+  ],
+  "support": [
+    "2024-01",
+    "2025-12"
+  ]
+}

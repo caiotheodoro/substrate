@@ -1,0 +1,14 @@
+[project]
+name = "substrate-sim-presence"
+version = "0.0.0"
+description = "Presence engine: urgency-driven (no round-robin) social agents with affect models, memory store, tiny+frontier LLM policy, C1 social log."
+requires-python = ">=3.11"
+dependencies = [
+    "numpy>=1.26",
+    "pandas>=2",
+    "duckdb>=1.0",
+    "substrate-sim-shared",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

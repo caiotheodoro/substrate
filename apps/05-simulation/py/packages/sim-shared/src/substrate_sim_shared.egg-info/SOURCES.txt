@@ -1,0 +1,13 @@
+pyproject.toml
+src/sim_shared/__init__.py
+src/sim_shared/canonical.py
+src/sim_shared/clock.py
+src/sim_shared/cost.py
+src/sim_shared/llm.py
+src/sim_shared/rng.py
+src/substrate_sim_shared.egg-info/PKG-INFO
+src/substrate_sim_shared.egg-info/SOURCES.txt
+src/substrate_sim_shared.egg-info/dependency_links.txt
+src/substrate_sim_shared.egg-info/requires.txt
+src/substrate_sim_shared.egg-info/top_level.txt
+tests/test_shared.py

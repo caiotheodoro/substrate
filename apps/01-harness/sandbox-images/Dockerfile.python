@@ -1,0 +1,6 @@
+FROM python:3.12-alpine
+WORKDIR /work
+RUN apk add --no-cache coreutils
+COPY exec-wrapper.sh /usr/local/bin/exec-wrapper
+RUN chmod +x /usr/local/bin/exec-wrapper
+CMD ["/bin/sh", "-c", "trap 'exit 0' TERM; while true; do sleep 5; done"]

@@ -20,7 +20,7 @@ import {
 
 describe('C1 event log', () => {
   it('accepts the three families and rejects unknown families', () => {
-    expect(EventSchema.parse({ family: 'capture', toolCallId: 't1', result: {}, ts: 'x' }).family).toBe('capture');
+    expect(EventSchema.parse({ family: 'capture', toolCallId: 't1', result: {}, ts: 'x', attempt: 0 }).family).toBe('capture');
     expect(() => EventSchema.parse({ family: 'other' })).toThrow();
   });
 
@@ -30,6 +30,7 @@ describe('C1 event log', () => {
       toolCallId: 't1',
       result: {},
       ts: 'x',
+      attempt: 0,
       runId: 'r1',
       seq: 0,
       idempotencyKey: 'r1:t1:0',

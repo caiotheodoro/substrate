@@ -1,0 +1,15 @@
+[project]
+name = "substrate-sim-seed"
+version = "0.0.0"
+description = "Seed-material synthesizer (A-S-20, :8302) + versioned world-doc schema and coherence lint (A-S-21)."
+requires-python = ">=3.11"
+dependencies = [
+    "jsonschema>=4.21",
+    "fastapi>=0.115",
+    "uvicorn>=0.30",
+    "httpx>=0.27",
+    "substrate-sim-shared",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

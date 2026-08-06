@@ -18,6 +18,8 @@ export const EventSchema = z.discriminatedUnion('family', [
     toolCallId: z.string(),
     result: z.unknown(),
     ts: z.string(),
+    /** 0-based retry counter; the idempotency-relevant part of the key. */
+    attempt: z.number().int().nonnegative(),
   }),
   z.object({
     family: z.literal('narrative'),

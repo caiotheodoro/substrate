@@ -1,0 +1,8 @@
+Metadata-Version: 2.4
+Name: substrate-sim-probes
+Version: 0.0.0
+Summary: Believability probes (A-S-31 behavioral x5, A-S-33 calibration corpus, A-S-34 probe report).
+Requires-Python: >=3.11
+Requires-Dist: numpy>=1.26
+Requires-Dist: pandas>=2
+Requires-Dist: substrate-sim-shared
