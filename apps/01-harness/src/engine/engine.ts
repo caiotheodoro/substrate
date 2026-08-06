@@ -1,4 +1,4 @@
-import type { Event, StoredEvent } from '@substrate/substrate';
+import type { Event, StoredEvent, StepRecord } from '@substrate/substrate';
 import { canonicalJson } from '@substrate/substrate';
 import type { Stores, RunRecord, Escalation } from '../types';
 import type { LLMProvider, ChatMessage } from '../llm/llm';
@@ -49,6 +49,8 @@ export interface RunEngineOptions {
   replayResults?: (toolCallId: string) => Promise<unknown>;
   onEvent?: (e: StoredEvent) => void;
   sandboxLabel?: string;
+  budgetGate?: import('../ledger/budget-client').BudgetGateClient;
+  budget?: { tokensPerStep: number; budgetPerDecision: number };
 }
 
 export interface RunOutcome {
@@ -266,11 +268,56 @@ export class RunEngine {
       return events;
     }
 
+    const budgetGate = this.opts.budgetGate;
+    if (budgetGate) {
+      const stepIdx = await this.countPriorCaptures(toolCallId);
+      const estimatedTokens = this.opts.budget?.tokensPerStep ?? 1000;
+      const budget = this.opts.budget?.budgetPerDecision ?? 5000;
+      let outcome: 'pass' | 'blow' = 'pass';
+      let budgetError: string | null = null;
+      try {
+        outcome = await budgetGate.gate({
+          decisionId: this.runId,
+          stepIdx,
+          estimatedTokens,
+          budget,
+        });
+      } catch (err) {
+        budgetError = (err as Error).message;
+      }
+      if (outcome === 'blow') {
+        events.push(
+          streamEvent('budget.blow', {
+            turn,
+            toolCallId,
+            name,
+            stepIdx,
+            estimatedTokens,
+            budget,
+          }),
+        );
+        const escalation = await this.raiseEscalation(turn, decision.decisionId, toolCallId, name, args, 0.0, {
+          reason: 'budget-blow',
+          estimatedTokens,
+          budget,
+        });
+        events.push(streamEvent('escalation.created', { turn, escalationId: escalation.id, decisionId: decision.decisionId, toolCallId, name, reason: 'budget-blow' }));
+        const verdict = await this.awaitEscalation(escalation.id);
+        events.push(streamEvent('escalation.resolved', { turn, escalationId: escalation.id, verdict }));
+        if (verdict === 'rejected' || verdict === 'vetoed') {
+          events.push(streamEvent('tool.rejected', { turn, toolCallId, name, reason: `budget-${verdict}` }));
+          return events;
+        }
+      }
+      void budgetError;
+    }
+
     const result = this.opts.replayMode
       ? await this.replayResult(toolCallId)
       : await this.opts.tools.call(name, args);
 
     const attempt = await this.countPriorCaptures(toolCallId);
+    await this.recordCostStep(toolCallId, name, attempt, result);
     events.push({
       family: 'capture',
       toolCallId,
@@ -309,6 +356,36 @@ export class RunEngine {
   private async countPriorCaptures(toolCallId: string): Promise<number> {
     const events = await this.opts.stores.events.list(this.runId);
     return events.filter((e) => e.family === 'capture' && e.toolCallId === toolCallId).length;
+  }
+
+  private async recordCostStep(
+    toolCallId: string,
+    name: string,
+    attempt: number,
+    result: unknown,
+  ): Promise<void> {
+    const budgetGate = this.opts.budgetGate;
+    if (!budgetGate) return;
+    const inputTokens = this.opts.budget?.tokensPerStep ?? 1000;
+    try {
+      await budgetGate.recordStep({
+        decisionId: this.runId,
+        stepIdx: 0,
+        model: name,
+        provider: 'local',
+        quantization: null,
+        inputTokens,
+        cachedInputTokens: 0,
+        outputTokens: 0,
+        cacheEvent: 'miss',
+        latencyMs: 0,
+        promptFingerprint: `${this.runId}:${toolCallId}`,
+        qualitySignal: 0.5,
+        ts: this.clock.now(),
+      } as StepRecord);
+    } catch {
+      // Ledger write failures must never crash a run (joint 3 non-crash rule).
+    }
   }
 
   private async raiseEscalation(

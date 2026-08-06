@@ -7,12 +7,15 @@ import { createMemoryStores } from '../db/memory';
 import type { Stores } from '../types';
 import { RunEngine, RunEngineOptions } from '../engine/engine';
 import { GateCore, heuristicConfidenceProvider, DEFAULT_GATE_OPTIONS } from '../gate/gate-core';
+import { resilientConfidenceProvider } from '../gate/remote-confidence';
 import { MockToolRegistry } from '../mock-tools/tools';
 import type { LLMProvider } from '../llm/llm';
 
 export interface HarnessApiOptions {
   stores?: Stores;
   engineOpts?: Partial<Omit<RunEngineOptions, 'stores'>>;
+  /** Set false to disable the C5 remote provider (02 :8020). */
+  remoteConfidence?: boolean;
 }
 
 export interface HarnessApi {
@@ -86,14 +89,18 @@ export async function newEngine(
   stores: Stores,
   engineOpts: Partial<Omit<RunEngineOptions, 'stores'>> = {},
   task = 'inspect and report',
+  remoteConfidence = true,
 ): Promise<RunEngine> {
   const gates = engineOpts.gate as unknown as { executeThreshold?: number; rejectThreshold?: number };
+  const provider = remoteConfidence
+    ? resilientConfidenceProvider()
+    : heuristicConfidenceProvider();
   const gate = new GateCore(
     {
       executeThreshold: gates?.executeThreshold ?? DEFAULT_GATE_OPTIONS.executeThreshold,
       rejectThreshold: gates?.rejectThreshold ?? DEFAULT_GATE_OPTIONS.rejectThreshold,
     },
-    heuristicConfidenceProvider(),
+    provider,
     engineOpts.clock?.nextId,
   );
   const engine = await RunEngine.start(

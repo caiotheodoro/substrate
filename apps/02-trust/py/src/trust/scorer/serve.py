@@ -99,7 +99,7 @@ def _uniform_fallback() -> TrustScorer:
                 return np.zeros((n, X.shape[1] + 1))
             return np.full(X.shape[0], 0.5)
 
-    calibrator = SklearnIsotonic().fit(np.array([0.5]), np.array([1]))
+    calibrator = SklearnIsotonic().fit(np.array([0.5]), np.array([0.5]))
     return TrustScorer(
         TrainedScorer(
             features=[],

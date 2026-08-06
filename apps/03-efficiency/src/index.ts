@@ -7,6 +7,7 @@ export * from './ledger/provider-adapter.js';
 export * from './ledger/store.js';
 export * from './ledger/api.js';
 export * from './ledger/budget-gate.js';
+export { jsonRouter, listen, sendJson, sendText, envPort } from './lib/http.js';
 export * from './cache/cache-event-ingest.js';
 export * from './cache/prompt-fingerprinter.js';
 export * from './cache/cache-analytics.js';

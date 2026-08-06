@@ -20,6 +20,9 @@ importers:
       '@modelcontextprotocol/sdk':
         specifier: ^1.30.0
         version: 1.30.0(zod@3.25.76)
+      '@substrate/efficiency':
+        specifier: workspace:*
+        version: link:../03-efficiency
       '@substrate/scenarios':
         specifier: workspace:*
         version: link:../../packages/scenarios

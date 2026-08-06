@@ -4,6 +4,8 @@
   "private": true,
   "description": "Token economics and performance engineering — which tokens carry information, and the cost of the wire.",
   "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "build": "tsc",
     "test": "vitest run --passWithNoTests",

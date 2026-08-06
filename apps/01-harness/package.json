@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.30.0",
+    "@substrate/efficiency": "workspace:*",
     "@substrate/scenarios": "workspace:*",
     "@substrate/substrate": "workspace:*",
     "cors": "^2.8.6",
