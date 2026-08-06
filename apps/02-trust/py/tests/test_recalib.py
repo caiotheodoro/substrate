@@ -119,3 +119,43 @@ class TestBandDrift:
 
         with pytest.raises(ValueError, match="not enough confirmed outcomes"):
             trigger_retrain(store, lambda f, y: None, out_dir=str(tmp_path))
+
+
+class TestJudgeRecalibrationTrigger:
+    def test_trigger_records_agreement_and_flags_below_target(self):
+        from trust.recalib.scheduler import trigger_judge_recalibration
+
+        report = trigger_judge_recalibration(
+            lambda: {"kappa": 0.82, "alpha": 0.79, "n_cases": 15, "n_disagreements": 4},
+            target=0.85,
+        )
+        assert report.kappa == 0.82
+        assert report.needs_refinement is True  # below high-80s target → loop re-runs
+        assert report.triggered_at  # the periodic hook records when
+
+    def test_trigger_above_target_is_clean(self):
+        from trust.recalib.scheduler import trigger_judge_recalibration
+
+        report = trigger_judge_recalibration(
+            lambda: {"kappa": 0.91, "alpha": 0.89, "n_cases": 20, "n_disagreements": 2},
+            target=0.85,
+        )
+        assert report.needs_refinement is False
+        assert report.as_dict()["kappa"] == 0.91
+
+    def test_trigger_serializes_for_band_drift_artifact(self):
+        from trust.recalib.scheduler import trigger_judge_recalibration
+
+        report = trigger_judge_recalibration(
+            lambda: {"kappa": 0.7, "alpha": 0.65, "n_cases": 10, "n_disagreements": 3}
+        )
+        d = report.as_dict()
+        assert set(d) == {
+            "kappa",
+            "alpha",
+            "n_cases",
+            "n_disagreements",
+            "target",
+            "needs_refinement",
+            "triggered_at",
+        }

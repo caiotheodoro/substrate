@@ -125,7 +125,6 @@ class RecalibrationScheduler:
         self._trigger = trigger
         self._interval_minutes = interval_minutes
         self._scheduler = None
-
     def start(self) -> None:
         from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -173,3 +172,58 @@ def _cli_main() -> None:
 
 if __name__ == "__main__":
     _cli_main()
+
+
+@dataclass
+class JudgeRecalibrationReport:
+    """The periodic judge-recalibration trigger (Airbnb EDD §2.2.1:
+    'recalibrate periodically as failure modes evolve').
+
+    The scheduler runs the judge against its labeled golden set and reports
+    agreement; when agreement falls below target, the report flags
+    ``needs_refinement`` so the loop (human review → rubric update) re-runs.
+    The judge calibration itself lives in 04 (``run_calibration``); 02
+    schedules and records the trigger, keeping the measurement discipline
+    in the trust unit.
+    """
+
+    kappa: float
+    alpha: float
+    n_cases: int
+    n_disagreements: int
+    target: float = 0.85
+    triggered_at: str = ""
+
+    @property
+    def needs_refinement(self) -> bool:
+        return self.kappa < self.target
+
+    def as_dict(self) -> dict[str, Any]:
+        return {
+            "kappa": round(self.kappa, 4),
+            "alpha": round(self.alpha, 4),
+            "n_cases": self.n_cases,
+            "n_disagreements": self.n_disagreements,
+            "target": self.target,
+            "needs_refinement": self.needs_refinement,
+            "triggered_at": self.triggered_at,
+        }
+
+
+def trigger_judge_recalibration(
+    judge_calibration: Callable[[], dict[str, Any]],
+    *,
+    target: float = 0.85,
+) -> JudgeRecalibrationReport:
+    """The scheduler's judge payload: run 04's calibration loop and record
+    the agreement. ``judge_calibration`` returns the 04 report as a dict
+    ({kappa, alpha, n_cases, n_disagreements}). Pure and testable."""
+    result = judge_calibration()
+    return JudgeRecalibrationReport(
+        kappa=float(result["kappa"]),
+        alpha=float(result["alpha"]),
+        n_cases=int(result["n_cases"]),
+        n_disagreements=int(result["n_disagreements"]),
+        target=target,
+        triggered_at=datetime.now(timezone.utc).isoformat(),
+    )

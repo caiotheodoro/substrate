@@ -24,6 +24,12 @@ from substrate_knowledge.m3_resolution.similarity import FelgiSunterScorer
 from substrate_knowledge.m4_graph.assembler import GraphAssembler
 from substrate_knowledge.m4_graph.graph_store import InMemoryGraph
 from substrate_knowledge.m5_freshness.ledger import FreshnessLedger
+from substrate_knowledge.m6_gate.judge_calibration import (
+    DEFAULT_AGREEMENT_TARGET,
+    GoldenCase,
+    refine_rubric_suggestions,
+    run_calibration,
+)
 from substrate_knowledge.m6_gate.verdict_classifier import DeterministicVerdictClassifier
 from substrate_knowledge.m6_gate.verdict_store import VerdictStore
 from substrate_knowledge.m7_observability.health import GraphHealthMonitor
@@ -35,6 +41,27 @@ from substrate_knowledge.core.storage import InMemoryStore
 
 app = typer.Typer(help="@substrate/knowledge operations CLI (offline-safe).")
 DEFAULT_VALIDATION_DIR = Path("docs/validation")
+
+# Labeled judge golden set WITH bad examples (Airbnb EDD): polarity cases the
+# stub is designed for, plus silence/directionality cases that drive
+# escalation to the real judge. Shared by the calibrate CLI and the tests.
+JUDGE_GOLDEN_CASES = [
+    {"claim": "Acme profits rose sharply", "evidence": "Acme reported strong growth and rising profits.", "label": "support"},
+    {"claim": "Acme profits rose sharply", "evidence": "Acme reported failed results and a sharp decline.", "label": "contradict"},
+    {"claim": "Mars is inhabited", "evidence": "The weather forecast is sunny.", "label": "silent"},
+    {"claim": "Acme sales declined last quarter", "evidence": "Acme reported strong growth and rising profits.", "label": "contradict"},
+    {"claim": "Northwind ships to Halcyon", "evidence": "Northwind Logistics provides Freight Services to Halcyon Electronics.", "label": "support"},
+    {"claim": "Vega builds chassis for Acme", "evidence": "Vega Assemblies manufactures Chassis Frames for Acme Corporation.", "label": "support"},
+    {"claim": "Acme opened a new HQ in Berlin", "evidence": "Acme announced a new headquarters campus in Berlin this spring.", "label": "support"},
+    {"claim": "Halcyon halted production", "evidence": "Halcyon Electronics suspended manufacturing lines indefinitely.", "label": "support"},
+    {"claim": "Halcyon halted production", "evidence": "Halcyon Electronics is expanding production capacity.", "label": "contradict"},
+    {"claim": "Bearings are supplied by Bergmann", "evidence": "Bergmann Components supplies Bearings to Acme Corporation.", "label": "support"},
+    {"claim": "Freight is provided by Northwind", "evidence": "Northwind Logistics provides Freight Services to Halcyon Electronics.", "label": "support"},
+    {"claim": "Vega builds chassis for Acme", "evidence": "Vega Assemblies manufactures brake pads for Mars rovers.", "label": "silent"},
+    {"claim": "Acme opened a new HQ in Berlin", "evidence": "Acme announced layoffs at its Berlin office.", "label": "silent"},
+    {"claim": "Bearings are supplied by Bergmann", "evidence": "Acme Corporation supplies Bearings to Bergmann Components.", "label": "contradict"},
+    {"claim": "Freight is provided by Northwind", "evidence": "Halcyon Electronics provides Freight Services to Northwind Logistics.", "label": "contradict"},
+]
 
 
 @app.command("characterize")
@@ -124,6 +151,36 @@ def gate(
         typer.echo(json.dumps(verdict.to_c3(), indent=2))
     else:
         typer.echo(f"kind: {verdict.kind.value}  prob: {verdict.prob:.3f}  evidence: {verdict.citedEvidence}")
+
+
+@app.command("calibrate")
+def calibrate(
+    json_out: bool = typer.Option(False, "--json"),
+    outdir: Path = typer.Option(DEFAULT_VALIDATION_DIR, "--outdir"),
+    target: float = typer.Option(DEFAULT_AGREEMENT_TARGET, "--target"),
+) -> None:
+    """Calibrate the verdict judge against the labeled golden set (Airbnb
+    EDD §2.2.1): golden WITH bad examples → kappa/alpha vs human labels →
+    disagreement analysis → rubric hints. `--target` sets the agreement bar
+    (default 0.85); the report lands in docs/validation/judge-calibration.json."""
+    golden = [
+        GoldenCase(claim=case["claim"], evidence=[case["evidence"]], human_label=case["label"])
+        for case in JUDGE_GOLDEN_CASES
+    ]
+    report = run_calibration(golden, target=target)
+    hints = refine_rubric_suggestions(report)
+    payload = {**report.as_dict(), "rubric_hints": hints}
+    outdir.mkdir(parents=True, exist_ok=True)
+    (outdir / "judge-calibration.json").write_text(json.dumps(payload, indent=2))
+    if json_out:
+        typer.echo(json.dumps(payload, indent=2))
+    else:
+        typer.echo(
+            f"kappa: {report.kappa:.3f}  alpha: {report.alpha:.3f}  "
+            f"disagreements: {report.n_disagreements}/{report.n_cases}  passed: {report.passed}"
+        )
+        for hint in hints:
+            typer.echo(f"  - {hint}")
 
 
 @app.command("monitor")

@@ -1,0 +1,42 @@
+{
+  "n_cases": 15,
+  "kappa": 0.5385,
+  "alpha": 0.5323,
+  "n_disagreements": 4,
+  "error_breakdown": {
+    "false-positive-verdict": 2,
+    "wrong-direction": 2
+  },
+  "target": 0.85,
+  "passed": false,
+  "sample_disagreements": [
+    {
+      "claim": "Vega builds chassis for Acme",
+      "human": "silent",
+      "judge": "support",
+      "prob": 0.6833
+    },
+    {
+      "claim": "Acme opened a new HQ in Berlin",
+      "human": "silent",
+      "judge": "support",
+      "prob": 0.6833
+    },
+    {
+      "claim": "Bearings are supplied by Bergmann",
+      "human": "contradict",
+      "judge": "support",
+      "prob": 0.6833
+    },
+    {
+      "claim": "Freight is provided by Northwind",
+      "human": "contradict",
+      "judge": "support",
+      "prob": 0.6833
+    }
+  ],
+  "rubric_hints": [
+    "false-positive-verdict x2: judge over-verdicts on silence \u2014 add a 'no shared topic or no stance signal \u2192 silent' rule/few-shot example",
+    "wrong-direction x2: support/contradict flips \u2014 check polarity lexicon and role directionality (reversed roles need the real judge)"
+  ]
+}
