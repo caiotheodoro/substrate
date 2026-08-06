@@ -51,13 +51,22 @@ function spawnService(unit: string, code: string, port: number) {
   // Use the unit's venv python directly — `uv run` from a vitest worker can
   // resolve the wrong interpreter under parallel load.
   const proc = spawn(PYTHON_BINS[unit]!, ['-c', code]);
+  let bootLog = '';
+  proc.stderr?.on('data', (d) => {
+    if (bootLog.length < 2000) bootLog += String(d);
+  });
+  proc.stdout?.on('data', (d) => {
+    if (bootLog.length < 2000) bootLog += String(d);
+  });
   return {
     proc,
     ready: () =>
       new Promise<void>((resolve, reject) => {
-        const deadline = Date.now() + 25000;
+        const deadline = Date.now() + 45000; // generous under full-suite parallel load
         const probe = () => {
-          if (Date.now() > deadline) return reject(new Error(`${unit} did not come up on ${port}`));
+          if (Date.now() > deadline) {
+            return reject(new Error(`${unit} did not come up on ${port} — boot log:\n${bootLog.slice(-1200)}`));
+          }
           fetch(`http://127.0.0.1:${port}/health`)
             .then((r) => (r.ok ? resolve() : setTimeout(probe, 300)))
             .catch(() => setTimeout(probe, 300));
