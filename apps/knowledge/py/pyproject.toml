@@ -1,0 +1,19 @@
+[project]
+name = "substrate-knowledge-workspace"
+version = "0.1.0"
+description = "uv workspace root for @substrate/knowledge (apps/knowledge)"
+requires-python = ">=3.12"
+dependencies = []
+
+[tool.uv]
+package = false
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.uv.workspace]
+members = ["packages/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["packages/knowledge/tests"]
+addopts = "-q"

@@ -22,8 +22,8 @@ config:
 
 test:
 	pnpm -r test
-	$(MAKE) -C apps/02-trust/py test 2>/dev/null || (cd apps/02-trust/py && uv run pytest)
-	(cd apps/04-knowledge/py && uv sync --all-packages --all-groups && uv run pytest)
+	$(MAKE) -C apps/trust/py test 2>/dev/null || (cd apps/trust/py && uv run pytest)
+	(cd apps/knowledge/py && uv sync --all-packages --all-groups && uv run pytest)
 
 typecheck:
 	pnpm -r typecheck
@@ -35,6 +35,6 @@ validate:
 	done
 	pnpm -r typecheck
 	pnpm -r test
-	(cd apps/02-trust/py && uv run pytest)
-	(cd apps/04-knowledge/py && uv run pytest)
+	(cd apps/trust/py && uv run pytest)
+	(cd apps/knowledge/py && uv run pytest)
 	@echo "root validate: all configs + tests green"

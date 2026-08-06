@@ -27,7 +27,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        unit: [02-trust, 04-knowledge, 05-simulation]
+        unit: [trust, knowledge, simulation]
     defaults:
       run:
         working-directory: apps/${{ matrix.unit }}/py

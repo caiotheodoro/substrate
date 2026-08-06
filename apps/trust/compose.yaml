@@ -1,0 +1,147 @@
+# @substrate/trust   — local-only stack. Port map: docs/PLAN.md §2.
+# All services are the thin HTTP shells in apps/trust/py/src/trust/services/.
+name: substrate-trust
+
+x-trust-svc: &trust-svc
+  build:
+    context: ./py
+    dockerfile: Dockerfile
+  restart: unless-stopped
+  networks: [trust]
+  env_file: [.env]
+
+services:
+  trust-pg:
+    image: postgres:16-alpine
+    container_name: trust-pg
+    environment:
+      POSTGRES_USER: substrate
+      POSTGRES_PASSWORD: substrate
+      POSTGRES_DB: substrate
+    ports: ["5432:5432"]
+    volumes: [pgdata:/var/lib/postgresql/data]
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U substrate"]
+      interval: 5s
+      retries: 10
+    networks: [trust]
+
+  minio:
+    image: minio/minio:latest
+    container_name: trust-minio
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: substrate
+      MINIO_ROOT_PASSWORD: substrate-secret
+    ports: ["9000:9000", "9001:9001"]
+    volumes: [miniodata:/data]
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      retries: 10
+    networks: [trust]
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 substrate substrate-secret &&
+      for b in artifacts datasets models quarantine; do
+        mc mb -p local/$b || true;
+      done
+      "
+    networks: [trust]
+
+  trust-ollama:
+    image: ollama/ollama:latest
+    container_name: trust-ollama
+    ports: ["11434:11434"]
+    volumes: [ollamadata:/root/.ollama]
+    networks: [trust]
+
+  llama-serve:
+    image: ghcr.io/ggml-org/llama.cpp:server-cuda
+    container_name: trust-llama-serve
+    command: ["-m", "/models/hhem-2.1.gguf", "--host", "0.0.0.0", "--port", "8080"]
+    volumes: [llamamodels:/models]
+    ports: ["8080:8080"]
+    networks: [trust]
+
+  # A-T-14
+  verifier:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.verifier"]
+    ports: ["8010:8010"]
+
+  # A-T-15
+  retrieval-verdict:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.retrieval_verdict"]
+    ports: ["8011:8011"]
+
+  # A-T-16
+  schema-checker:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.schema_checker"]
+    ports: ["8012:8012"]
+
+  # A-T-19
+  scorer:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.scorer_svc"]
+    ports: ["8020:8020"]
+
+  # A-T-22
+  ingest:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.ingest_svc"]
+    ports: ["8030:8030"]
+
+  # A-T-23
+  verifiability:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.verifiability_svc"]
+    ports: ["8031:8031"]
+
+  # A-T-24
+  label-quality:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.label_quality_svc"]
+    ports: ["8032:8032"]
+
+  # A-T-25
+  contamination:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.contamination_svc"]
+    ports: ["8033:8033"]
+
+  # A-T-26
+  diversity:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.diversity_svc"]
+    ports: ["8034:8034"]
+
+  # A-T-31
+  reconciler:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.reconciler_svc"]
+    ports: ["8040:8040"]
+
+  # A-T-32
+  scheduler:
+    <<: *trust-svc
+    command: ["uv", "run", "python", "-m", "trust.services.scheduler_svc"]
+    ports: ["8041:8041"]
+
+volumes:
+  pgdata:
+  miniodata:
+  ollamadata:
+  llamamodels:
+
+networks:
+  trust:
+    driver: bridge

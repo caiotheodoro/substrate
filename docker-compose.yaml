@@ -13,13 +13,13 @@
 name: substrate
 
 include:
-  - path: apps/01-harness/compose.yaml
+  - path: apps/harness/compose.yaml
     profile: [harness]
-  - path: apps/02-trust/compose.yaml
+  - path: apps/trust/compose.yaml
     profile: [trust]
-  - path: apps/03-efficiency/compose.yaml
+  - path: apps/efficiency/compose.yaml
     profile: [efficiency]
-  - path: apps/04-knowledge/compose.yaml
+  - path: apps/knowledge/compose.yaml
     profile: [knowledge]
-  - path: apps/05-simulation/compose.yaml
+  - path: apps/simulation/compose.yaml
     profile: [simulation]

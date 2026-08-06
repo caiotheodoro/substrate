@@ -15,14 +15,42 @@ importers:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@26.1.2)
 
-  apps/01-harness:
+  apps/efficiency:
+    dependencies:
+      '@substrate/scenarios':
+        specifier: workspace:*
+        version: link:../../packages/scenarios
+      '@substrate/substrate':
+        specifier: workspace:*
+        version: link:../../packages/substrate
+      pg:
+        specifier: ^8.22.0
+        version: 8.22.0
+      zod:
+        specifier: ^3.25.76
+        version: 3.25.76
+    devDependencies:
+      '@types/node':
+        specifier: ^26.1.2
+        version: 26.1.2
+      '@types/pg':
+        specifier: ^8.20.4
+        version: 8.20.4
+      typescript:
+        specifier: ^5.6.0
+        version: 5.9.3
+      vitest:
+        specifier: ^2.1.0
+        version: 2.1.9(@types/node@26.1.2)
+
+  apps/harness:
     dependencies:
       '@modelcontextprotocol/sdk':
         specifier: ^1.30.0
         version: 1.30.0(zod@3.25.76)
       '@substrate/efficiency':
         specifier: workspace:*
-        version: link:../03-efficiency
+        version: link:../efficiency
       '@substrate/scenarios':
         specifier: workspace:*
         version: link:../../packages/scenarios
@@ -79,7 +107,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@26.1.2)
 
-  apps/02-trust:
+  apps/knowledge:
     dependencies:
       '@substrate/scenarios':
         specifier: workspace:*
@@ -95,35 +123,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@26.1.2)
 
-  apps/03-efficiency:
-    dependencies:
-      '@substrate/scenarios':
-        specifier: workspace:*
-        version: link:../../packages/scenarios
-      '@substrate/substrate':
-        specifier: workspace:*
-        version: link:../../packages/substrate
-      pg:
-        specifier: ^8.22.0
-        version: 8.22.0
-      zod:
-        specifier: ^3.25.76
-        version: 3.25.76
-    devDependencies:
-      '@types/node':
-        specifier: ^26.1.2
-        version: 26.1.2
-      '@types/pg':
-        specifier: ^8.20.4
-        version: 8.20.4
-      typescript:
-        specifier: ^5.6.0
-        version: 5.9.3
-      vitest:
-        specifier: ^2.1.0
-        version: 2.1.9(@types/node@26.1.2)
-
-  apps/04-knowledge:
+  apps/simulation:
     dependencies:
       '@substrate/scenarios':
         specifier: workspace:*
@@ -139,7 +139,7 @@ importers:
         specifier: ^2.1.0
         version: 2.1.9(@types/node@26.1.2)
 
-  apps/05-simulation:
+  apps/trust:
     dependencies:
       '@substrate/scenarios':
         specifier: workspace:*

@@ -70,11 +70,11 @@ shared: C1-C7 contracts, wire registry + deltas (03), scenarios (G-02)
 
 ```
 Me ── Phase 0 (contracts + PLAN.md + 5× BUILD.md, committed)
-  ├── Subagent H → apps/01-harness/BUILD.md      (molecules WP-* in BUILD.md)
-  ├── Subagent T → apps/02-trust/BUILD.md
-  ├── Subagent E → apps/03-efficiency/BUILD.md
-  ├── Subagent K → apps/04-knowledge/BUILD.md
-  └── Subagent S → apps/05-simulation/BUILD.md
+  ├── Subagent H → apps/harness/BUILD.md      (molecules WP-* in BUILD.md)
+  ├── Subagent T → apps/trust/BUILD.md
+  ├── Subagent E → apps/efficiency/BUILD.md
+  ├── Subagent K → apps/knowledge/BUILD.md
+  └── Subagent S → apps/simulation/BUILD.md
 ```
 
 - All 5 subagents launch in parallel after Phase 0 commit. Sub-subagents handle one `WP-*` each, in parallel within a unit, respecting atom DAGs.

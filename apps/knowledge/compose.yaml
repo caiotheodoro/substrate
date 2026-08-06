@@ -1,0 +1,164 @@
+# @substrate/knowledge   — local-only stack.
+# Ports: 8201 characterize · 8202 human-queue · 8203 subgraph · 8204 grounded-gate
+# Infra: 6333 qdrant · 6380 falkordb (host map) · 5432 pg · 6379 redis · 11434 ollama
+#
+# Profiles: `infra` (default) = datastores only; `full` = + knowledge APIs;
+# `llm` = + ollama. Local dev on macOS can use native Ollama and skip `llm`.
+name: substrate-knowledge
+
+services:
+  knowledge-pg:
+    image: postgres:17
+    container_name: knowledge-pg
+    environment:
+      POSTGRES_USER: substrate
+      POSTGRES_PASSWORD: substrate
+      POSTGRES_DB: substrate
+    ports:
+      - "5432:5432"
+    volumes:
+      - knowledge-pg-data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U substrate -d substrate"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  knowledge-redis:
+    image: redis:7
+    container_name: knowledge-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: knowledge-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - knowledge-qdrant-data:/qdrant/storage
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:6333/healthz >/dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  falkordb:
+    image: falkordb/falkordb:latest
+    container_name: knowledge-falkordb
+    ports:
+      - "6380:6379"
+    volumes:
+      - knowledge-falkordb-data:/data
+
+  knowledge-ollama:
+    image: ollama/ollama:latest
+    container_name: knowledge-ollama
+    profiles: ["llm"]
+    ports:
+      - "11434:11434"
+    volumes:
+      - knowledge-ollama-data:/root/.ollama
+    healthcheck:
+      test: ["CMD-SHELL", "ollama list >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  api-characterize:
+    profiles: ["full"]
+    build:
+      context: ./py
+    container_name: knowledge-api-characterize
+    command: uvicorn substrate_knowledge.m1_characterization.api:app --host 0.0.0.0 --port 8201
+    ports:
+      - "8201:8201"
+    environment:
+      KNOW_BACKEND: pg
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
+      KNOW_LLM_BASE_URL: http://host.docker.internal:11434/v1
+    depends_on:
+      knowledge-pg:
+        condition: service_healthy
+      knowledge-redis:
+        condition: service_healthy
+
+  api-queue:
+    profiles: ["full"]
+    build:
+      context: ./py
+    container_name: knowledge-api-queue
+    command: uvicorn substrate_knowledge.m3_resolution.queue_api:app --host 0.0.0.0 --port 8202
+    ports:
+      - "8202:8202"
+    environment:
+      KNOW_BACKEND: pg
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
+    depends_on:
+      knowledge-pg:
+        condition: service_healthy
+
+  api-subgraph:
+    profiles: ["full"]
+    build:
+      context: ./py
+    container_name: knowledge-api-subgraph
+    command: uvicorn substrate_knowledge.m4_graph.subgraph_api:app --host 0.0.0.0 --port 8203
+    ports:
+      - "8203:8203"
+    environment:
+      KNOW_BACKEND: pg
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
+      KNOW_QDRANT_URL: http://knowledge-qdrant:6333
+    depends_on:
+      knowledge-pg:
+        condition: service_healthy
+      qdrant:
+        condition: service_healthy
+
+  api-gate:
+    profiles: ["full"]
+    build:
+      context: ./py
+    container_name: knowledge-api-gate
+    command: uvicorn substrate_knowledge.m6_gate.gate_api:app --host 0.0.0.0 --port 8204
+    ports:
+      - "8204:8204"
+    environment:
+      KNOW_BACKEND: pg
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
+      KNOW_LLM_BASE_URL: http://host.docker.internal:11434/v1
+      KNOW_LLM_STUB: "0"
+    depends_on:
+      knowledge-pg:
+        condition: service_healthy
+
+  worker:
+    profiles: ["full", "worker"]
+    build:
+      context: ./py
+    container_name: knowledge-worker
+    command: knowctl monitor
+    environment:
+      KNOW_BACKEND: pg
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
+      KNOW_BUS: redis
+      REDIS_URL: redis://knowledge-redis:6379/0
+    depends_on:
+      knowledge-pg:
+        condition: service_healthy
+      knowledge-redis:
+        condition: service_healthy
+
+volumes:
+  knowledge-pg-data:
+  knowledge-qdrant-data:
+  knowledge-falkordb-data:
+  knowledge-ollama-data:

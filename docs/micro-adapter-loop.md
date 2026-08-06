@@ -2,7 +2,7 @@
 
 > Source: *From weeks to a day* (Saberidokht, Airbnb Tech Blog, Jul 2026),
 > Layer 3: bounded, scoped model mutation. This is the design; the working
-> seed lives in `apps/02-trust/py/src/trust/gated_data/micro_patch.py`.
+> seed lives in `apps/trust/py/src/trust/gated_data/micro_patch.py`.
 
 ## The idea
 
