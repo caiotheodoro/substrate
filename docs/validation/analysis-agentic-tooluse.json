@@ -1,0 +1,120 @@
+{
+  "name": "agentic-tooluse",
+  "seed": 7,
+  "n_tasks": 0,
+  "metadata": {
+    "n_generated": 375,
+    "gauntlet_pass_rate": 1.0,
+    "n_calibrated": 152,
+    "split_predictability": {
+      "passed": true,
+      "correlations": {
+        "sys-0.3": 0.9,
+        "sys-0.5": 0.9
+      },
+      "min_correlation": 0.8
+    }
+  },
+  "aggregate_scores": {
+    "random": 0.0,
+    "greedy": 0.8,
+    "perfect": 1.0
+  },
+  "unsaturation_bandwidth": {
+    "random": {
+      "mean": 1.3225,
+      "stdev": 0.0,
+      "pct_zero": 0.0,
+      "pct_capped": 1.0
+    },
+    "greedy": {
+      "mean": 1.3225,
+      "stdev": 0.0,
+      "pct_zero": 0.0,
+      "pct_capped": 1.0
+    },
+    "perfect": {
+      "mean": 1.3225,
+      "stdev": 0.0,
+      "pct_zero": 0.0,
+      "pct_capped": 1.0
+    }
+  },
+  "efficiency_vs_human": {
+    "random": {
+      "mean_actions_solved": 0.0,
+      "median_actions_solved": 0.0,
+      "n_solved_levels": 0
+    },
+    "greedy": {
+      "mean_actions_solved": 2.4,
+      "median_actions_solved": 2.0,
+      "n_solved_levels": 300
+    },
+    "perfect": {
+      "mean_actions_solved": 2.12,
+      "median_actions_solved": 2,
+      "n_solved_levels": 375
+    }
+  },
+  "difficulty_calibration_deciles": [
+    {
+      "difficulty_mid": 0.728,
+      "mean_solve_rate": 0.208
+    },
+    {
+      "difficulty_mid": 0.728,
+      "mean_solve_rate": 0.284
+    },
+    {
+      "difficulty_mid": 0.824,
+      "mean_solve_rate": 0.197
+    },
+    {
+      "difficulty_mid": 0.841,
+      "mean_solve_rate": 0.184
+    },
+    {
+      "difficulty_mid": 0.869,
+      "mean_solve_rate": 0.135
+    },
+    {
+      "difficulty_mid": 0.869,
+      "mean_solve_rate": 0.141
+    },
+    {
+      "difficulty_mid": 0.875,
+      "mean_solve_rate": 0.122
+    },
+    {
+      "difficulty_mid": 0.922,
+      "mean_solve_rate": 0.065
+    },
+    {
+      "difficulty_mid": 0.922,
+      "mean_solve_rate": 0.086
+    },
+    {
+      "difficulty_mid": 0.922,
+      "mean_solve_rate": 0.07
+    },
+    {
+      "difficulty_mid": 0.922,
+      "mean_solve_rate": 0.04
+    }
+  ],
+  "contamination": {
+    "leak_probe_fire_rate_on_leaked": 1.0,
+    "leak_probe_false_fire_on_clean": 0.0,
+    "mean_corpus_overlap": 0.6397,
+    "structural_ood_overlap": 0.2021
+  },
+  "arc_reference": {
+    "note": "ARC-AGI-3 semi-private launch scores for reference",
+    "opus_4_6": 0.005,
+    "gemini_3_1": 0.004,
+    "gpt_5_4": 0.002,
+    "human": 1.0,
+    "random_policy_floor": "1 in 10,000"
+  }
+}

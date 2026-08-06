@@ -127,16 +127,18 @@ class ReproducibilityCheck:
 
 class NoveltyCheck:
     """Compression-based distinctness: a task is too similar to the corpus
-    if it shares the full tool-sequence prefix and the same arg keys (the
-    'one program solves both at <50% length' proxy, ARC-AGI-3 §3.5)."""
+    if its value-level signature (tool sequence + arg keys AND values)
+    matches an existing task — the 'one program solves both at <50% length'
+    proxy, ARC-AGI-3 §3.5. Value-level, so tasks sharing only a tool
+    sequence remain distinct."""
 
     def __init__(self, corpus: list[ForgeTask] | None = None) -> None:
         self.corpus: list[ForgeTask] = corpus or []
 
-    def _signature(self, task: ForgeTask) -> tuple[tuple[str, ...], frozenset[str]]:
-        seq = tuple(c.name for c in task.expected)
-        keys = frozenset(k for c in task.expected for k in c.args)
-        return seq, keys
+    def _signature(self, task: ForgeTask) -> tuple[tuple[tuple[str, str, object], ...]]:
+        from trust.forge.contamination import format_signature
+
+        return format_signature(task)
 
     def check(self, task: ForgeTask) -> GauntletResult:
         sig = self._signature(task)

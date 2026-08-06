@@ -168,17 +168,18 @@ def system_solve_rates(
     model: DifficultyModel | None = None,
 ) -> list[float]:
     """Synthetic system: per-task solve rate = sigmoid(ability - difficulty)
-    + deterministic noise. Uses the fitted difficulty when provided, else the
-    generator's prior. Returns rates sorted by ascending difficulty so that
-    rates from different splits are rank-aligned (the predictability-test
-    contract)."""
+    + deterministic noise. The TRUE difficulty (the oracle's underlying
+    ``difficulty_seed``) drives real solve behavior — the model is the
+    *measurement* used for split construction. Returns rates sorted by
+    ascending true difficulty so rates from different splits are
+    rank-aligned (the predictability-test contract)."""
     import hashlib
 
     pairs: list[tuple[float, float]] = []
     for t in tasks:
         key = f"{seed}:{t.task_id}"
         noise = (int(hashlib.sha256(key.encode()).hexdigest()[:6], 16) / 0xFFFFFF) * 0.1
-        d = model.difficulty(t) if model is not None else t.difficulty_seed
+        d = t.difficulty_seed  # true difficulty, not the fitted estimate
         z = ability - d
         rate = max(0.0, min(1.0, 1.0 / (1.0 + math.exp(-z)) + noise - 0.05))
         pairs.append((d, rate))

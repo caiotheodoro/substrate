@@ -27,7 +27,9 @@ from trust.forge.stratify import (
 
 @pytest.fixture(scope="module")
 def task_population():
-    return ToolUseTaskGenerator().generate(n=60)
+    # 120+ tasks: split predictability needs enough tasks per difficulty
+    # bin for stable means (the evals-as-scaling sample-size lesson)
+    return ToolUseTaskGenerator().generate(n=120)
 
 
 class TestSimulatedOracle:
@@ -114,13 +116,16 @@ class TestStratification:
 
     def test_mis_stratified_split_fails_predictability(self, task_population):
         """A deliberately bad split (all easy public, all hard private)
-        must fail the predictability assertion."""
+        must fail the predictability assertion. The median split is too
+        mild — monotone rate curves still rank-correlate — so the bad
+        split uses a hard threshold (public < 0.45, private >= 0.45)."""
         oracle = SimulatedOracle()
         outcomes = [oracle.calibrate(t) for t in task_population]
         model = DifficultyModel().fit(task_population, outcomes)
-        ordered = sorted(task_population, key=lambda t: t.difficulty_seed)
-        mid = len(ordered) // 2
-        bad = SplitSet(public=ordered[:mid], private=ordered[mid:])
+        bad = SplitSet(
+            public=[t for t in task_population if t.difficulty_seed < 0.45],
+            private=[t for t in task_population if t.difficulty_seed >= 0.45],
+        )
         systems = {
             "sys": {
                 "public": system_solve_rates(bad.public, 0.5, seed=1, model=model),
