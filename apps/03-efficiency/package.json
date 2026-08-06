@@ -1,0 +1,20 @@
+{
+  "name": "@substrate/efficiency",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Token economics and performance engineering — which tokens carry information, and the cost of the wire.",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@substrate/substrate": "workspace:*",
+    "@substrate/scenarios": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}

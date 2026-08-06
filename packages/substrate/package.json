@@ -1,0 +1,17 @@
+{
+  "name": "@substrate/substrate",
+  "version": "0.0.0",
+  "description": "Shared contracts: event log types, eval harness core, wire schemas.",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^2.1.0"
+  }
+}
