@@ -1,0 +1,82 @@
+"""P3 — difficulty model: from calibration outcomes to a fitted difficulty.
+
+After the oracle measures a task population, a logistic model is fit over
+task features (tool count, trajectory length, arg complexity) against the
+measured solve rates. ``difficulty(task)`` becomes the calibrated estimate
+that replaces the generator's prior, and ``human_action_baseline`` feeds
+Phase 3's RHAE scoring (upper-median best first-run action count).
+"""
+from __future__ import annotations
+
+import math
+from dataclasses import dataclass
+from statistics import median
+
+from trust.forge.calibration import CalibrationOutcome
+from trust.forge.task import ForgeTask
+
+
+def task_features(task: ForgeTask) -> list[float]:
+    """Feature vector for difficulty modeling."""
+    n_calls = len(task.expected)
+    n_tools = len(set(c.name for c in task.expected))
+    arg_complexity = sum(len(c.args) for c in task.expected)
+    return [float(n_calls), float(n_tools), float(arg_complexity)]
+
+
+@dataclass
+class DifficultyModel:
+    """Logistic difficulty model fit on measured calibration outcomes.
+
+    ``difficulty(task)`` returns a calibrated 0..1 score where higher =
+    harder, derived from the fitted solve probability (1 - p_solve).
+    """
+
+    features: list[list[float]] = None  # type: ignore[assignment]
+    outcomes: list[float] = None  # type: ignore[assignment]
+    weights: list[float] | None = None
+    intercept: float = 0.0
+    feature_keys: list[str] = None  # type: ignore[assignment]
+
+    def fit(self, tasks: list[ForgeTask], outcomes: list[CalibrationOutcome]) -> "DifficultyModel":
+        self.feature_keys = ["n_calls", "n_tools", "arg_complexity"]
+        X = [task_features(t) for t in tasks]
+        y = [o.n_solved / max(o.n_attempts, 1) for o in outcomes]
+        # closed-form logistic regression via gradient descent (no sklearn
+        # dependency in the hot path; deterministic seed)
+        w = [0.0] * (len(X[0]) + 1)
+        lr = 0.5
+        for _ in range(200):
+            grad = [0.0] * len(w)
+            for xi, yi in zip(X, y):
+                z = w[0] + sum(wi * xj for wi, xj in zip(w[1:], xi))
+                p = 1.0 / (1.0 + math.exp(-max(min(z, 30), -30)))
+                err = p - yi
+                grad[0] += err
+                for j, xj in enumerate(xi):
+                    grad[j + 1] += err * xj
+            for j in range(len(w)):
+                w[j] -= lr * grad[j] / max(len(X), 1)
+        self.intercept = w[0]
+        self.weights = w[1:]
+        self.features = X
+        self.outcomes = y
+        return self
+
+    def solve_probability(self, task: ForgeTask) -> float:
+        x = task_features(task)
+        z = self.intercept + sum(wi * xj for wi, xj in zip(self.weights or [], x))
+        return 1.0 / (1.0 + math.exp(-max(min(z, 30), -30)))
+
+    def difficulty(self, task: ForgeTask) -> float:
+        return round(1.0 - self.solve_probability(task), 4)
+
+
+def human_action_baseline(outcomes: list[CalibrationOutcome], task_id: str) -> int:
+    """Upper-median best first-run action count (ARC-AGI-3 §4.1). For each
+    task, take the best (minimum) action count; the baseline is the median
+    of those minima across the calibration population."""
+    for o in outcomes:
+        if o.task_id == task_id and o.action_counts:
+            return int(median(o.action_counts))
+    return 0

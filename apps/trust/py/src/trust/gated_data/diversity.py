@@ -32,11 +32,16 @@ class StubEmbedder:
         self._rng = np.random.RandomState(seed)
 
     def embed(self, texts: list[str]) -> list[list[float]]:
+        import hashlib
+
         out: list[list[float]] = []
         for text in texts:
             vec = np.zeros(self.dim)
             for w in text.lower().split():
-                h = abs(hash(w)) % self.dim
+                # hashlib, not builtin hash() — Python's hash is salted per
+                # process (PYTHONHASHSEED), which made embeddings and the
+                # duplicate-content gate nondeterministic across runs.
+                h = int(hashlib.md5(w.encode()).hexdigest()[:8], 16) % self.dim
                 vec[h] += 1.0
             norm = np.linalg.norm(vec)
             out.append((vec / norm if norm > 0 else vec).tolist())

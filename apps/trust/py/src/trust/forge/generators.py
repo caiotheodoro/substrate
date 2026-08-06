@@ -108,7 +108,13 @@ class ToolUseTaskGenerator:
         task_id = _task_id(f"tooluse-{index}-{template}")
         prompt = template.format(calls=" -> ".join(c.name for c in calls))
         tools = tuple(self._by_name[c.name] for c in calls)
-        difficulty = min(0.9, 0.3 + 0.15 * (len(calls) - 1))
+        # difficulty prior is a function of task features (more calls +
+        # richer args = harder) so the calibration model can recover it;
+        # spans the full range (ARC: most candidates are rejected as too
+        # hard/trivial). Calibration replaces this prior.
+        feature_score = len(calls) * 0.18 + sum(len(c.args) for c in calls) * 0.12
+        jitter = ((index * 17) % 13) / 100.0  # small deterministic spread
+        difficulty = max(0.1, min(0.95, 0.1 + feature_score + jitter))
         return ForgeTask(
             task_id=task_id,
             prompt=prompt,
