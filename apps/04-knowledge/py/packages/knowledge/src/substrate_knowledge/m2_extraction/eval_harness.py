@@ -4,6 +4,12 @@ Precision / recall / F1 for entities and relations plus type-violation rate
 per labeled slice, and a continuous corpus score (gold-weighted means).
 The harness never calls an LLM: gold slices are compared against whatever
 extractor produced the result, which keeps evals deterministic.
+
+Deterministic-cache note (A2): when judge-scored evals are added on top
+(LLM-as-judge on gold slices), memoize per (slice_id, extractor_output,
+judge_config, metric) with the eval-cache pattern from 02's
+``trust/confbench/eval_cache.py`` — identical inputs must return identical
+cached scores, never majority-voted.
 """
 
 from __future__ import annotations

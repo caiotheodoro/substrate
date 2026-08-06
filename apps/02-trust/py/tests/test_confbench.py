@@ -147,3 +147,80 @@ class TestRunner:
         assert len(tasks["train"]) == 800
         assert len(tasks["base_eval"]) == 400
         assert len(tasks["shifted_eval"]) == 400
+
+
+class TestRunnerCacheAdoption:
+    """A2 — ConfBench runner with the deterministic eval cache: identical
+    reruns are served from cache (same report bytes) and the second run
+    recomputes nothing on the baseline axis."""
+
+    def _fake_factory(self, train, base):
+        import numpy as np
+
+        def scores(tasks):
+            out = []
+            for t in tasks:
+                row = t.evidence.to_row()
+                logit = 1.2 * (row["retrieval_prob"] - 0.5) + 1.5 * row["schema_satisfied"] - 1.0 * row["tool_error"]
+                out.append(1.0 / (1.0 + np.exp(-logit)))
+            return out
+
+        return scores
+
+    def _small_tasks(self):
+        from trust.confbench.tasks import generate_tasks
+
+        return {
+            "train": generate_tasks(60, seed=10),
+            "base_eval": generate_tasks(40, seed=11),
+            "shifted_eval": generate_tasks(40, seed=12),
+        }
+
+    def test_second_run_serves_baselines_from_cache_and_is_identical(self, tmp_path):
+        from trust.confbench.eval_cache import EvalCache
+        from trust.confbench.runner import run_confbench
+
+        cache_path = tmp_path / "confbench-cache.jsonl"
+        tasks = self._small_tasks()
+        cache = EvalCache(cache_path)
+
+        first = run_confbench(tasks, self._fake_factory, cache=cache)
+        stats_after_first = dict(cache.stats())
+        assert cache.size > 0
+
+        reloaded = EvalCache(cache_path)
+        second = run_confbench(tasks, self._fake_factory, cache=reloaded)
+        assert reloaded.hits >= stats_after_first["entries"], "every cached baseline score should hit on rerun"
+        assert reloaded.size == stats_after_first["entries"]
+        assert second.metadata["cache"]["hits"] >= stats_after_first["entries"]
+        a, b = first.as_dict(), second.as_dict()
+        a.pop("metadata")
+        b.pop("metadata")
+        assert a == b  # eval content byte-identical; only cache stats differ
+
+    def test_cache_metadata_recorded_in_report(self, tmp_path):
+        from trust.confbench.eval_cache import EvalCache
+        from trust.confbench.runner import run_confbench
+
+        cache = EvalCache(tmp_path / "c.jsonl")
+        result = run_confbench(self._small_tasks(), self._fake_factory, cache=cache)
+        assert result.metadata["cache"]["entries"] > 0
+
+    def test_interrupted_run_resumes(self, tmp_path):
+        """A run that dies partway through baselines resumes: only the
+        remaining samples compute (article: partial progress is durable)."""
+        from trust.confbench.eval_cache import EvalCache, cache_baseline_scores
+
+        cache = EvalCache(tmp_path / "c.jsonl")
+        task_ids = [f"t{i}" for i in range(6)]
+        compute = lambda: [float(i) for i in range(6)]
+
+        # first attempt: 'dies' after scoring the first 3 samples
+        cache_baseline_scores(cache, "bl", task_ids[:3], compute)
+        assert cache.stats()["entries"] == 3
+        # full rerun: only samples 3..5 recompute
+        scores = cache_baseline_scores(cache, "bl", task_ids, compute)
+        assert scores == [0.0, 1.0, 2.0, 3.0, 4.0, 5.0]
+        assert cache.stats()["hits"] == 3  # the first 3 served from cache
+        assert cache.stats()["entries"] == 6
+        assert cache.stats()["misses"] == 6  # 3 first run + 3 tail, nothing recomputed twice

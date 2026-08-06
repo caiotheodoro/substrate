@@ -17,6 +17,7 @@ from pathlib import Path
 from typing import Any, Callable
 
 from trust.confbench.baselines import BaselineScorer, all_baselines
+from trust.confbench.eval_cache import EvalCache, cache_baseline_scores
 from trust.confbench.holdout import HoldoutSet
 from trust.confbench.metrics import ScorerEval, evaluate_scorer, reliability_diagram
 from trust.confbench.tasks import ConfBenchTask
@@ -65,6 +66,7 @@ def run_confbench(
     baselines: list[BaselineScorer] | None = None,
     calibrate_baselines: bool = True,
     seed: int = 42,
+    cache: EvalCache | None = None,
 ) -> ConfBenchResult:
     """Run the full ConfBench cycle: train → eval on base → eval on shift.
 
@@ -72,6 +74,10 @@ def run_confbench(
     training split; each baseline's calibrator is fit on the *same* training
     split's (self-report, outcome) pairs. Both are then evaluated on the
     base and shifted splits — out-of-sample for both.
+
+    ``cache`` (A2): when provided, baseline scores are memoized per
+    (baseline, task_id) — identical reruns are served from cache and a
+    run interrupted midway resumes without recomputing finished samples.
     """
     train, base_eval, shifted_eval = tasks["train"], tasks["base_eval"], tasks["shifted_eval"]
     holdout = holdout or HoldoutSet()
@@ -95,9 +101,14 @@ def run_confbench(
     train_outcomes = [t.outcome for t in train]
     baseline_evals: dict[str, ScorerEval] = {}
     for bl in baselines:
-        train_conf = bl.scores(train)
-        base_conf = bl.scores(base_eval)
-        shifted_conf = bl.scores(shifted_eval)
+        if cache is not None:
+            train_conf = cache_baseline_scores(cache, bl.name, [t.task_id for t in train], lambda: bl.scores(train))
+            base_conf = cache_baseline_scores(cache, bl.name, [t.task_id for t in base_eval], lambda: bl.scores(base_eval))
+            shifted_conf = cache_baseline_scores(cache, bl.name, [t.task_id for t in shifted_eval], lambda: bl.scores(shifted_eval))
+        else:
+            train_conf = bl.scores(train)
+            base_conf = bl.scores(base_eval)
+            shifted_conf = bl.scores(shifted_eval)
         if calibrate_baselines:
             cal = _calibrate_on_base(train_conf, train_outcomes, seed)
             base_conf = [cal.predict([c])[0] for c in base_conf]
@@ -113,7 +124,13 @@ def run_confbench(
         baselines=baseline_evals,
         shift=shift,
         holdout=holdout,
-        metadata={"seed": seed, "n_train": len(train), "n_base": len(base_eval), "n_shifted": len(shifted_eval)},
+        metadata={
+            "seed": seed,
+            "n_train": len(train),
+            "n_base": len(base_eval),
+            "n_shifted": len(shifted_eval),
+            "cache": cache.stats() if cache is not None else None,
+        },
     )
 
 
