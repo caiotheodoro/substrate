@@ -1,0 +1,25 @@
+{
+  "source": "airbnb-eval-driven-dev (Jul 2026) \u2014 Layer 1/2 adoption (A3)",
+  "uncached": {
+    "n_samples": 200,
+    "reference_regeneration_rate": 0.72,
+    "judge_drift_rate": 0.005,
+    "n_judge_sensitive": 1,
+    "n_judge_stable": 199,
+    "diagnostics": {
+      "regenerate_reference": true,
+      "rerun_judge": true
+    }
+  },
+  "with_reference_cache": {
+    "n_samples": 200,
+    "reference_regeneration_rate": 0.0,
+    "judge_drift_rate": 0.005,
+    "n_judge_sensitive": 1,
+    "n_judge_stable": 199,
+    "diagnostics": {
+      "regenerate_reference": false,
+      "rerun_judge": true
+    }
+  }
+}
