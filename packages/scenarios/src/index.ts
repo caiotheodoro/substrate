@@ -1,43 +1,104 @@
-export interface ShockScenario {
-  id: string;
-  name: string;
-  /** The realized outcome the scenario scored against. */
-  realizedOutcome: string;
-  /** Window of the historical shock. */
-  window: string;
-  /** Unified seed material describing the pre-shock world. */
-  seed: string;
-}
+import {
+  ShockInterventionSchema,
+  ShockScenario,
+  ShockScenarioSchema,
+  WorldTemplate,
+} from '@substrate/substrate';
+import { z } from 'zod';
 
-export const KNOWN_SHOCKS: ShockScenario[] = [
+/**
+ * Historical shocks with honest seed material and realized outcomes.
+ *
+ * Retro-validation integrity rules (from 05-Simulation's spec):
+ * 1. Seeds describe the world as it was known BEFORE the shock window —
+ *    no lookahead bias. FRED ALFRED vintages back this up per `series`.
+ * 2. `tariffs-2025` is the END-TO-END HOLDOUT: never calibrated, ever.
+ * 3. Realized outcomes are brief factual summaries; full series live in
+ *    the simulation unit's shock datasets (A-S-06..09).
+ */
+
+export const KNOWN_SHOCKS: ShockScenario[] = ShockScenarioSchema.array().parse([
   {
     id: 'covid-2020',
     name: '2020 Pandemic Demand Shift',
-    realizedOutcome: 'TBD',
+    realizedOutcome:
+      'US labor market collapsed then recovered in a V: unemployment 3.5% (Feb 2020) → 14.7% (Apr 2020) → 6.7% (Dec 2020). Retail sales -8.7% MoM (Mar 2020), recovered above pre-pandemic trend by Jun 2020 on durable goods surge (autos, e-commerce, home goods); travel/leisure stayed depressed through year-end.',
     window: '2020-03/2020-06',
-    seed: 'TBD',
+    seed:
+      'World entering 2020: US unemployment at 3.5% (50-year low), consumer confidence high, retail sales trending up ~3-4% YoY, inflation subdued around 2%. Travel, dining, and in-person services were growing sectors. The US economy had been in its longest recorded expansion, with no recession warning on the board. Consumer spending was the growth engine; inventory levels were lean but normal.',
+    series: ['UNRATE', 'RSAFS', 'CPIAUCSL', 'INDPRO'],
   },
   {
     id: 'supplychain-2021',
     name: '2021 Supply Chain Crisis',
-    realizedOutcome: 'TBD',
+    realizedOutcome:
+      'Global goods trade surged while shipping capacity collapsed: container spot rates (SCFI) rose ~10x from early 2021 to a peak in Q3 2021; ISM supplier deliveries index hit record delays; US ports (LA/LB) backlogs peaked Oct-Nov 2021 with 80+ ships waiting; PPI finished goods soared ~9% YoY; semiconductor shortages idled auto plants through the year.',
     window: '2021',
-    seed: 'TBD',
+    seed:
+      'World entering 2021: COVID vaccines rolling out, US fiscal stimulus (Mar 2021, ~$1.9T) set to land, consumers loaded with savings from 2020 (~$2T excess). Retail demand was expected to keep growing but supply chains were running at 2019 planning assumptions: just-in-time inventories, container shipping rates near decade lows, semiconductor capacity sized to pre-pandemic electronics demand. Ports operated normal schedules with 10-20% slack.',
+    series: ['PPIACO', 'ISMMAN', 'RSAFS', 'INDPRO'],
   },
   {
     id: 'inflation-2022',
     name: '2022 Inflation Spike',
-    realizedOutcome: 'TBD',
+    realizedOutcome:
+      'CPI YoY peaked at 9.1% (Jun 2022, 40-year high); core PCE peaked ~5.4%; wage growth ran 5-6%. The Fed hiked the funds rate from 0.00-0.25% (Mar 2022) to 4.25-4.50% by Dec 2022 (425bp in nine months). Inflation eased from mid-2022 as supply chains normalized, but core goods-to-services rotation kept it sticky above 6% into year-end.',
     window: '2022',
-    seed: 'TBD',
+    seed:
+      'World entering 2022: reopening demand + fiscal stimulus had pushed goods demand far above pre-pandemic trend; supply chains still congested from 2021. Headline CPI had already accelerated to 7.0% YoY (Dec 2021) but the Fed judged it "transitory" and held rates near zero while tapering QE. Real wages were beginning to fall; consumers kept spending from savings. Energy prices were high and rising into Q1.',
+    series: ['CPIAUCSL', 'PCEPILFE', 'FEDFUNDS', 'PPIACO'],
   },
   {
     id: 'tariffs-2025',
     name: '2025 Tariff Waves',
-    realizedOutcome: 'TBD',
+    realizedOutcome:
+      'HOLDOUT — end-to-end, never calibrated. Summary of what happened (for scoring only, not tuning): US imposed sweeping IEEPA tariffs on Canada, Mexico, and China in early 2025, then a global "reciprocal" baseline (Apr 2, 2025, "Liberation Day") with country-specific rates; equity markets saw the sharpest 2-day drawdown since 2020; multiple pauses, exemptions, and modified rates followed through 2025; customs duties revenue surged; import-heavy sectors (autos, electronics) repriced. Final realized path: track full vintage series at scoring time.',
     window: '2025',
-    seed: 'TBD',
+    seed:
+      'World entering 2025: US growth solid (~2.5%), inflation near target (core PCE ~2.7%), unemployment ~4%. Trade tensions had simmered since the 2024 election campaign with campaign promises of broad tariffs; markets assumed threat-level escalation with negotiated outcomes. Global supply chains were normal, container rates near multi-year lows. Import share of US goods consumption ~13-14%.',
+    series: ['FRGSREC', 'CUSVMV', 'IMPGSA', 'DCOILWTICO'],
   },
-];
+]);
 
-export type WorldTemplate = Record<string, unknown>;
+export const SHOCK_INTERVENTIONS = ShockInterventionSchema.array().parse([
+  {
+    id: 'in-covid-lockdown',
+    profile: 'supply-demand shift',
+    magnitude: 1.0,
+    channels: ['labor-supply', 'services-demand', 'goods-demand'],
+    start: '2020-03',
+  },
+  {
+    id: 'in-shipping-collapse',
+    profile: 'logistics capacity shock',
+    magnitude: 1.0,
+    channels: ['freight-rate', 'port-congestion', 'inventory'],
+    start: '2021-03',
+  },
+  {
+    id: 'in-rate-hike-cycle',
+    profile: 'monetary tightening',
+    magnitude: 1.0,
+    channels: ['policy-rate', 'credit-spread', 'savings'],
+    start: '2022-03',
+  },
+  {
+    id: 'in-tariff-baseline',
+    profile: 'trade-policy shock',
+    magnitude: 1.0,
+    channels: ['tariff-rate', 'import-cost', 'expectations'],
+    start: '2025-04',
+  },
+]);
+
+/** Re-exported world template type for synthetic worlds (05 → 02 data side). */
+export type { WorldTemplate };
+
+/** Runtime-validated scenario lookup. */
+export function getShock(id: string): ShockScenario {
+  const found = KNOWN_SHOCKS.find((s) => s.id === id);
+  if (!found) throw new Error(`unknown shock: ${id}`);
+  return found;
+}
+
+export { ShockScenarioSchema, z };
