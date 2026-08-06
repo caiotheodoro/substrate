@@ -8,7 +8,7 @@ up:
 	docker compose up -d --build
 
 migrate:
-	docker compose exec -T pg psql -U substrate -d substrate -f - < migrations/001_init.sql
+	docker compose exec -T trust-pg psql -U substrate -d substrate -f - < migrations/001_init.sql
 
 confbench:
 	$(PY_RUN) python -m trust.research.r1_dominance --out ../../docs/validation

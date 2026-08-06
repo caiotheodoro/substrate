@@ -1,6 +1,6 @@
 name: efficiency
 services:
-  postgres:
+  eff-postgres:
     image: postgres:16-alpine
     environment:
       POSTGRES_USER: substrate
@@ -16,7 +16,7 @@ services:
       interval: 5s
       retries: 10
 
-  ollama:
+  eff-ollama:
     image: ollama/ollama:latest
     ports:
       - '11434:11434'
@@ -28,7 +28,7 @@ services:
       retries: 5
       start_period: 30s
 
-  litellm:
+  eff-litellm:
     image: ghcr.io/berriai/litellm:main-latest
     ports:
       - '4000:4000'
@@ -36,7 +36,7 @@ services:
       - ./ops/litellm/config.yaml:/app/config.yaml:ro
     command: ['--config', '/app/config.yaml', '--port', '4000']
     depends_on:
-      - ollama
+      - eff-ollama
     healthcheck:
       test: ['CMD-SHELL', 'wget -qO- http://localhost:4000/health/liveliness || exit 1']
       interval: 10s
@@ -53,10 +53,10 @@ services:
     environment:
       PORT: '8100'
       SUBSTRATE_LEDGER_DB: postgres
-      SUBSTRATE_LEDGER_PG: postgres://substrate:substrate@postgres:5432/substrate
+      SUBSTRATE_LEDGER_PG: postgres://substrate:substrate@eff-postgres:5432/substrate
     command: sh -c "npm i -g pnpm@10 >/dev/null 2>&1 && pnpm install >/dev/null 2>&1 && pnpm --filter @substrate/efficiency build && node apps/03-efficiency/dist/ledger/api.js"
     depends_on:
-      postgres:
+      eff-postgres:
         condition: service_healthy
 
   cache-analytics:
@@ -83,8 +83,8 @@ services:
       SUBSTRATE_LITELLM_URL: http://litellm:4000
     command: sh -c "npm i -g pnpm@10 >/dev/null 2>&1 && pnpm install >/dev/null 2>&1 && pnpm --filter @substrate/efficiency build && node apps/03-efficiency/dist/routing/routing-service.js"
     depends_on:
-      - litellm
-      - ollama
+      - eff-litellm
+      - eff-ollama
 
   budget-gate:
     image: node:22-alpine

@@ -13,7 +13,7 @@ down:
 	$(COMPOSE) down
 
 migrate:
-	$(COMPOSE) exec -T pg psql -U substrate -d substrate -f - < migrations/0001_knowledge_init.sql
+	$(COMPOSE) exec -T knowledge-pg psql -U substrate -d substrate -f - < migrations/0001_knowledge_init.sql
 
 characterize:
 	$(PY) knowctl characterize $(CORPUS)

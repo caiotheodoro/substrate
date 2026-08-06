@@ -1,0 +1,68 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ts:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm -r typecheck
+      - name: Test (substrate, scenarios, harness, efficiency, simulation)
+        run: pnpm -r test
+
+  python:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        unit: [02-trust, 04-knowledge, 05-simulation]
+    defaults:
+      run:
+        working-directory: apps/${{ matrix.unit }}/py
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - name: Install
+        run: uv sync --all-groups
+      - name: Test
+        run: uv run pytest
+
+  compose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate root compose (all profiles)
+        run: |
+          for p in harness trust efficiency knowledge simulation; do
+            docker compose --profile $p config -q
+          done
+          docker compose config -q
+
+  golden:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Golden-run replay (byte-identical, mutation breaks CI)
+        run: pnpm --filter @substrate/harness test
+        env:
+          CI: "true"

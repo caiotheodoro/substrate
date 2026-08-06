@@ -7,7 +7,7 @@
 name: substrate-knowledge
 
 services:
-  pg:
+  knowledge-pg:
     image: postgres:17
     container_name: knowledge-pg
     environment:
@@ -25,7 +25,7 @@ services:
       timeout: 3s
       retries: 10
 
-  redis:
+  knowledge-redis:
     image: redis:7
     container_name: knowledge-redis
     ports:
@@ -58,7 +58,7 @@ services:
     volumes:
       - knowledge-falkordb-data:/data
 
-  ollama:
+  knowledge-ollama:
     image: ollama/ollama:latest
     container_name: knowledge-ollama
     profiles: ["llm"]
@@ -82,12 +82,12 @@ services:
       - "8201:8201"
     environment:
       KNOW_BACKEND: pg
-      POSTGRES_DSN: postgresql://substrate:substrate@pg:5432/substrate
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
       KNOW_LLM_BASE_URL: http://host.docker.internal:11434/v1
     depends_on:
-      pg:
+      knowledge-pg:
         condition: service_healthy
-      redis:
+      knowledge-redis:
         condition: service_healthy
 
   api-queue:
@@ -100,9 +100,9 @@ services:
       - "8202:8202"
     environment:
       KNOW_BACKEND: pg
-      POSTGRES_DSN: postgresql://substrate:substrate@pg:5432/substrate
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
     depends_on:
-      pg:
+      knowledge-pg:
         condition: service_healthy
 
   api-subgraph:
@@ -115,10 +115,10 @@ services:
       - "8203:8203"
     environment:
       KNOW_BACKEND: pg
-      POSTGRES_DSN: postgresql://substrate:substrate@pg:5432/substrate
-      KNOW_QDRANT_URL: http://qdrant:6333
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
+      KNOW_QDRANT_URL: http://knowledge-qdrant:6333
     depends_on:
-      pg:
+      knowledge-pg:
         condition: service_healthy
       qdrant:
         condition: service_healthy
@@ -133,11 +133,11 @@ services:
       - "8204:8204"
     environment:
       KNOW_BACKEND: pg
-      POSTGRES_DSN: postgresql://substrate:substrate@pg:5432/substrate
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
       KNOW_LLM_BASE_URL: http://host.docker.internal:11434/v1
       KNOW_LLM_STUB: "0"
     depends_on:
-      pg:
+      knowledge-pg:
         condition: service_healthy
 
   worker:
@@ -148,13 +148,13 @@ services:
     command: knowctl monitor
     environment:
       KNOW_BACKEND: pg
-      POSTGRES_DSN: postgresql://substrate:substrate@pg:5432/substrate
+      POSTGRES_DSN: postgresql://substrate:substrate@knowledge-pg:5432/substrate
       KNOW_BUS: redis
-      REDIS_URL: redis://redis:6379/0
+      REDIS_URL: redis://knowledge-redis:6379/0
     depends_on:
-      pg:
+      knowledge-pg:
         condition: service_healthy
-      redis:
+      knowledge-redis:
         condition: service_healthy
 
 volumes:

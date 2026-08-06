@@ -1,0 +1,25 @@
+# @substrate — root local-only stack (G-03).
+#
+# Aggregates the five unit stacks. Every unit binds the shared G-atom host
+# ports (5432 pg, 6379 redis, 9000/9001 minio, 11434 ollama), so units are
+# profile-gated: run ONE profile at a time.
+#
+#   docker compose --profile harness up          # 01 harness + shared atoms
+#   docker compose --profile trust up            # 02 trust stack
+#   docker compose --profile efficiency up       # 03 efficiency stack
+#   docker compose --profile knowledge up        # 04 knowledge stack
+#   docker compose --profile simulation up       # 05 simulation stack
+#   make up profile=trust                        # same, via the root Makefile
+name: substrate
+
+include:
+  - path: apps/01-harness/compose.yaml
+    profile: [harness]
+  - path: apps/02-trust/compose.yaml
+    profile: [trust]
+  - path: apps/03-efficiency/compose.yaml
+    profile: [efficiency]
+  - path: apps/04-knowledge/compose.yaml
+    profile: [knowledge]
+  - path: apps/05-simulation/compose.yaml
+    profile: [simulation]

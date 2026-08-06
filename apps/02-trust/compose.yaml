@@ -11,7 +11,7 @@ x-trust-svc: &trust-svc
   env_file: [.env]
 
 services:
-  pg:
+  trust-pg:
     image: postgres:16-alpine
     container_name: trust-pg
     environment:
@@ -55,7 +55,7 @@ services:
       "
     networks: [trust]
 
-  ollama:
+  trust-ollama:
     image: ollama/ollama:latest
     container_name: trust-ollama
     ports: ["11434:11434"]
