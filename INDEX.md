@@ -1,68 +1,69 @@
 # Research Agenda — Caio Theodoro
 
-Ten research and product tracks exploring the current edge of AI engineering. Written as specs so each can be executed independently or as part of the shared substrate defined below.
+Five research units forming a small ecosystem around one conviction:
 
-Guiding conviction: **agents fail in production not because the base model is wrong on average, but because a specific wrong decision ships undetected.** Everything here is a consequence of that conviction.
+> **Agents fail in production not because the base model is wrong on average, but because a specific wrong decision ships undetected.**
 
-- The model is not the differentiator. The gate around it is.
-- Trust must come from outside the model's own weights (tool verification, retrieval support, schema checks, outcome logs) — never from self-report.
-- Cost is a first-class architecture property, not an afterthought of the bill.
-- Determinism, replay, and audit are the price of autonomy.
-- Simulation is the honest tool for behavior; prediction is for what stays static.
-- The wire format and the registry are the product, not the prompt.
+Every unit is framed as a **verifiable research platform**: reference implementation + benchmark harness, so each claim can be measured against other methodologies — not asserted. Not research-for-its-own-sake, not a product plan: something you can run, benchmark, and falsify.
 
----
+## The ecosystem
 
-## The shared substrate
+```
+                     ┌─────────────────────────────┐
+                     │ 01 HARNESS (the center)     │
+                     │ deterministic · gated ·     │
+                     │ replayable agent runtime    │
+                     └───────┬─────────┬───────────┘
+          feeds context      │         │        consumes
+         ┌───────────────────┘         └───────────┐
+         ▼                                       ▼
+  04 KNOWLEDGE                          03 EFFICIENCY
+  retrieval ops plane                    token & performance plane
+         │                                       │
+         │ evidence (support/contradiction)      │ wire/token discipline
+         ▼                                       ▼
+  02 TRUST  ←── outcome log & gated data ──→  feeds gates
+  measurement plane
+         ▲
+         │ scenarios, synthetic worlds, calibration baselines
+         └────────────────────────────────────────┘
+  05 SIMULATION
+```
 
-Most tracks build on the same core pieces. Building these first unblocks everything else:
+## Unit map
 
-1. **Temporal-based orchestration with replay-safe semantics** — the deterministic runtime substrate (used by 01, 06, 07, 08).
-2. **A decision log** — every agent decision recorded with features, confidence, action, and (eventually) outcome. The compounding asset (01, 02, 05, 09).
-3. **An eval harness** — offline evals + online gates, sharing primitives (01, 02, 04, 09).
-4. **The MCP boundary** — the natural instrumentation point where tool calls can be gated, logged, and verified (01, 02, 06, 07).
+| # | Unit | Core question | Verification core | Feeds / consumes |
+|---|------|---------------|-------------------|------------------|
+| 01 | **Harness** | What does a deterministic, gated, replayable agent runtime look like? | Golden-run replay suite; gated-decision benchmark; comparison vs turn-boundary HITL and ungated baselines | the substrate → all units |
+| 02 | **Trust** | What does "confident and right" mean, and how do you gate the data that shapes it? | ConfBench; contamination/diversity gates vs ungated pipelines; recalibration measured on real decision streams | consumes 01's outcome log, 04's evidence, 05's synthetic worlds → feeds 01's gates |
+| 03 | **Efficiency** | Which tokens carry information, and what is the cost of the wire? | Marginal-token-utility measurement; delta vs full-payload token accounting; cache-first vs baseline; latency budgets | consumes 01's ledger, 02's confidence → feeds 01's routing/cache discipline |
+| 04 | **Knowledge** | How do you operate retrieval like a database? | GraphRAG-justification decision rule; extraction-error propagation; freshness economics; grounded-gate vs flat-index baseline | feeds 02's evidence, 01's context |
+| 05 | **Simulation** | Can behavior — social and economic — be calibrated against reality? | SimBench retro-validation (coverage/Brier vs real shocks); believability probes vs turn-based baseline | feeds 02's synthetic worlds, 01's stress scenarios |
 
----
+## Shared substrate
 
-## Track map
+The units plug into each other through four shared artifacts, built once in the Harness:
 
-| # | Track | Type | Core question | Feeds / depends on |
-|---|-------|------|---------------|--------------------|
-| 01 | GateOS | Platform | How do you gate every decision in production? | substrate → everything |
-| 02 | ExEval | Research / Model | What does "confident and right" actually mean? | 01 confidence core |
-| 03 | CostOS | Research / Tooling | Which layer of the serving stack is the pricing decision? | 01, 02, 07 |
-| 04 | GraphOps | Platform | What does it take to operate a GraphRAG? | 02 retrieval evidence, 01 gating |
-| 05 | SimBench | Research / Library | Can behavior be calibrated against history? | 02 calibration, 10 behavior |
-| 06 | TabbyOS | Platform | How do agents get real sessions without stealing credentials? | 01 gating, substrate |
-| 07 | GenUI-Wire | Protocol | What is the wire format of generated UI? | 01 gating, substrate, 03 costs |
-| 08 | Replay | Research / Runtime | What makes an agent run replayable? | substrate → all autonomous tracks |
-| 09 | SynthGate | Research / Data | How do you gate the data that shapes the model? | 02 evals, 02, 01 gates |
-| 10 | Presence | Research | What makes agents feel like people? | 05 simulation, 02 |
+1. **The event log** — every agent decision recorded with features, confidence, verdict, and (eventually) confirmed outcome. The compounding trust ledger (01, 02, 03).
+2. **The eval harness** — offline evals and online gates sharing primitives, so a gate is a deployment of an eval and an eval is a gate in rehearsal (01, 02, 04).
+3. **The wire discipline** — registry-driven, schema-validated, delta-based payloads; the same contract for UI, tool calls, and memory (01, 03).
+4. **The scenario library** — historical shocks and synthetic worlds, reusable by simulation, stress-testing, and data generation (05 → 02, 01).
 
----
+## Build order
 
-## Suggested build order
+**Phase 0 — substrate:** Harness (01) with event log, eval harness, wire discipline, golden-run replay.
+**Phase 1 — measurement:** Trust (02) as the Harness's confidence core; Knowledge (04) as its context/evidence source.
+**Phase 2 — efficiency:** Efficiency (03) riding the ledger and the confidence signal.
+**Phase 3 — halo:** Simulation (05) generating scenarios, synthetic worlds, and calibration baselines that feed back into 01/02.
 
-**Phase 0 — substrate first: 08 Replay + decision log + eval harness + MCP boundary.**
-**Phase 1 — GateOS (01) on the substrate, with ExEval (02) as its confidence core.**
-**Phase 2 — bolt-on modules: CostOS (03), TabbyOS (06), GenUI-Wire (07).**
-**Phase 3 — research halo: GraphOps (04), SimBench (05), SynthGate (09), Presence (10).**
-
-Everything is designed to be built in parallel after Phase 1.
-
----
+Units are designed to be built in parallel after Phase 0.
 
 ## Principles
 
 - **Registry over generation.** When a structure can be enumerated, enumerate it. Generate only what must be novel.
-- **Structured outputs are a trust layer, not a nice-to-have.** The trust boundary moves to inference.
-- **The gate is a P&L line, not a modeling choice.** Thresholds are owned by a product decision, not a hyperparameter.
-- **The log compounds.** Every gated decision produces a labeled outcome record that tightens future gates. This is the durable moat.
-- **Cost is architecture.** Batching, quantization, tiering, caching decide the economics before the bill arrives.
-- **Simulation for behavior; prediction for status quo.** Fit curves only where the system is static.
-
----
-
-## Contributions
-
-This is a personal research agenda. Each SPEC.md captures a self-contained research or product direction with honest accounting of open questions and failure modes — no monetization framing, value and impact only.
+- **Trust from outside the model's own weights.** Tool verification, retrieval support, schema checks, outcome logs — never self-report.
+- **The gate is a P&L line, not a modeling choice.** Thresholds owned deliberately; the escalation band is a designed width.
+- **The log compounds.** Every gated decision tightens future gates. This is the durable moat.
+- **Token efficiency is an engineering property.** Cache hits, delta protocols, and token budgets are architecture, not afterthoughts.
+- **Simulation for behavior; prediction for status quo.** And both must be calibrated against what actually happened.
+- **Verifiable or nothing.** Every unit ships its benchmark harness; every claim is measured against a baseline.
