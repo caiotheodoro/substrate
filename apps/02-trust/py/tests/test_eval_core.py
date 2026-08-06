@@ -87,3 +87,50 @@ class TestReport:
         r = bigrametric([0.5, 0.5, 0.9], [1, 0, 1])
         assert r.brier >= 0 and r.ece >= 0
         assert len(r.bins) == 10
+
+
+class TestJudgeAgreement:
+    def test_cohens_kappa_perfect(self):
+        from trust.eval_core import cohens_kappa
+
+        assert cohens_kappa(["a", "a", "b", "b"], ["a", "a", "b", "b"]) == 1.0
+
+    def test_cohens_kappa_below_chance(self):
+        from trust.eval_core import cohens_kappa
+
+        assert cohens_kappa(["a", "b"], ["b", "a"]) == pytest.approx(-1.0)
+
+    def test_cohens_kappa_validation(self):
+        from trust.eval_core import cohens_kappa
+
+        with pytest.raises(ValueError):
+            cohens_kappa([], [])
+        with pytest.raises(ValueError):
+            cohens_kappa(["a"], ["a", "b"])
+
+    def test_krippendorff_alpha_reference_example(self):
+        from trust.eval_core import krippendorff_alpha
+
+        rater_rows = [
+            [None, None, None, None, None, 3, 4, 1, 2, 1, 1, 3, 3, None, 3],
+            [1, None, 2, 1, 3, 3, 4, 3, None, None, None, None, None, None, None],
+            [None, None, 2, 1, 3, 4, 4, None, 2, 1, 1, 3, 3, None, 4],
+        ]
+        units = [[r[u] for r in rater_rows] for u in range(15)]
+        assert krippendorff_alpha(units) == pytest.approx(0.691358, abs=1e-5)
+
+    def test_krippendorff_alpha_perfect_and_validation(self):
+        from trust.eval_core import krippendorff_alpha
+
+        assert krippendorff_alpha([["a", "a"], ["b", "b"]]) == 1.0
+        with pytest.raises(ValueError):
+            krippendorff_alpha([])
+        with pytest.raises(ValueError):
+            krippendorff_alpha([["a"], ["a"]])
+        with pytest.raises(ValueError):
+            krippendorff_alpha([["a", "a"], ["a", "a"]])
+
+    def test_krippendorff_alpha_missing_values(self):
+        from trust.eval_core import krippendorff_alpha
+
+        assert krippendorff_alpha([[None, "x", "x"], ["x", None, "x"], ["y", "y", None]]) == 1.0

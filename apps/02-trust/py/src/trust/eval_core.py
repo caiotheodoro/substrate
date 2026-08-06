@@ -143,3 +143,76 @@ def shift_delta(
         "ece_shifted": shifted.ece,
         "ece_delta": shifted.ece - base.ece,
     }
+
+def cohens_kappa(rater_a: list[object], rater_b: list[object]) -> float:
+    """Cohen's kappa: inter-rater agreement over chance (2 raters).
+
+    Mirrors ``packages/substrate/src/eval.ts`` — the calibration gate for
+    virtual judges (Airbnb target: high-80s-90s agreement). 1 = perfect,
+    0 = chance-level, negative = below chance.
+    """
+    if len(rater_a) == 0:
+        raise ValueError("empty")
+    if len(rater_a) != len(rater_b):
+        raise ValueError("length mismatch")
+    n = len(rater_a)
+    labels = set(rater_a) | set(rater_b)
+    if not labels:
+        raise ValueError("empty labels")
+
+    observed = sum(1 for a, b in zip(rater_a, rater_b) if a == b) / n
+
+    a_counts = {v: rater_a.count(v) for v in labels}
+    b_counts = {v: rater_b.count(v) for v in labels}
+    expected = sum((a_counts[v] / n) * (b_counts[v] / n) for v in labels)
+
+    if expected == 1:
+        return 1.0 if observed == 1 else 0.0
+    return (observed - expected) / (1 - expected)
+
+
+def krippendorff_alpha(ratings: list[list[object | None]]) -> float:
+    """Krippendorff's alpha (nominal): N units x R rater slots, None = missing.
+
+    Ported exactly from the canonical ``krippendorff`` 0.8.1 reference
+    implementation (coincidence matrix / random coincidence matrix /
+    nominal distance, alpha = 1 - sum(o*d)/sum(e*d)). Verified against the
+    package's documented example (nominal -> 0.691358).
+    """
+    import numpy as np
+
+    if len(ratings) == 0:
+        raise ValueError("empty")
+    if any(len(unit) < 2 for unit in ratings):
+        raise ValueError("need at least 2 raters")
+
+    labels = {v for unit in ratings for v in unit if v is not None}
+    if len(labels) <= 1:
+        raise ValueError("need more than one value in the domain")
+    domain = sorted(labels, key=str)
+    idx = {v: i for i, v in enumerate(domain)}
+    V = len(domain)
+
+    value_counts = np.zeros((len(ratings), V), dtype=float)
+    for u, unit in enumerate(ratings):
+        for v in unit:
+            if v is not None:
+                value_counts[u, idx[v]] += 1
+
+    if (value_counts.sum(axis=1) <= 1).all():
+        raise ValueError("need at least one unit with values from at least two raters")
+
+    o = np.zeros((V, V), dtype=float)
+    for unit in value_counts:
+        pairable = max(unit.sum(), 2)
+        o += (np.outer(unit, unit) - np.diag(unit)) / (pairable - 1)
+
+    n_v = o.sum(axis=0)
+    e = (np.outer(n_v, n_v) - np.diag(n_v)) / (n_v.sum() - 1)
+
+    d = np.ones((V, V)) - np.eye(V)
+    obs = (o * d).sum()
+    exp = (e * d).sum()
+    if exp == 0:
+        return 0.0
+    return 1.0 - obs / exp

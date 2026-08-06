@@ -17,13 +17,14 @@ from substrate_knowledge.core.text import tokenize
 
 _STANCE_POS = frozenset(
     """launch acquire acquired growth grew profit profitable approved win beat exceeded record
-    strong adopt adopted invest partnership partner expand expanded rise rising rose surge surplus
-    innovative leader award gained increase doubled tripled""".split()
+    strong adopt adopted invest partnership partner expand expanded expanding rise rising rose surge
+    surplus innovative leader award gained increase doubled tripled""".split()
 )
 _STANCE_NEG = frozenset(
     """fail failed loss decline declined declining layoff layoffs recall recalled violate violated
     ban banned defect lawsuit litigation shrink dropped controversy denies deny loss loses
-    shortage warning fine fined penalty censure investigated investigation""".split()
+    shortage warning fine fined penalty censure investigated investigation halted halt suspends
+    suspended suspend ceased ceases cease halted""".split()
 )
 _AGG_PATTERN = re.compile(r"\b(total|all|every|count|sum|how many|aggregate|combined|per)\b", re.I)
 

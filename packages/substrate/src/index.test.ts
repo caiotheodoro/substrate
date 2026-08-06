@@ -11,10 +11,12 @@ import {
   StoredEventSchema,
   brierScore,
   canonicalJson,
+  cohensKappa,
   coverage,
   expectedCalibrationError,
   gate,
   idempotencyKey,
+  krippendorffAlpha,
   ndcgAtK,
 } from './index';
 
@@ -148,5 +150,53 @@ describe('eval core', () => {
     const good = ndcgAtK([1, 0, 0], 3);
     const bad = ndcgAtK([0, 0, 1], 3);
     expect(good).toBeGreaterThan(bad);
+  });
+
+  it("cohen's kappa: perfect, chance, and below-chance agreement", () => {
+    expect(cohensKappa(['a', 'a', 'a'], ['a', 'a', 'a'])).toBe(1);
+    expect(cohensKappa(['a', 'a', 'b', 'b'], ['a', 'a', 'b', 'b'])).toBe(1);
+    expect(cohensKappa(['a', 'b'], ['b', 'a'])).toBeCloseTo(-1, 5);
+    const chance = cohensKappa(['a', 'a', 'a', 'b', 'b', 'b'], ['a', 'a', 'b', 'a', 'b', 'b']);
+    expect(Math.abs(chance)).toBeLessThan(0.5);
+  });
+
+  it("cohen's kappa: known value on a 2x2 table", () => {
+    const a = ['yes', 'yes', 'no', 'no', 'yes', 'no'];
+    const b = ['yes', 'no', 'no', 'no', 'yes', 'yes'];
+    const kappa = cohensKappa(a, b);
+    expect(kappa).toBeGreaterThan(0);
+    expect(kappa).toBeLessThan(1);
+  });
+
+  it("cohen's kappa validates inputs", () => {
+    expect(() => cohensKappa([], [])).toThrow();
+    expect(() => cohensKappa(['a'], ['a', 'b'])).toThrow();
+  });
+
+  it('krippendorff alpha matches the reference implementation example (nominal, 0.691358)', () => {
+    // Reference data is raters × units; we represent units × raters.
+    const raterRows = [
+      [null, null, null, null, null, 3, 4, 1, 2, 1, 1, 3, 3, null, 3],
+      [1, null, 2, 1, 3, 3, 4, 3, null, null, null, null, null, null, null],
+      [null, null, 2, 1, 3, 4, 4, null, 2, 1, 1, 3, 3, null, 4],
+    ];
+    const units = raterRows[0]!.map((_, u) => raterRows.map((r) => r[u] ?? null));
+    expect(krippendorffAlpha(units)).toBeCloseTo(0.691358, 6);
+  });
+
+  it('krippendorff alpha: perfect agreement → 1, chance → ~0, empty → error', () => {
+    expect(krippendorffAlpha([['a', 'a'], ['b', 'b']])).toBe(1);
+    expect(() => krippendorffAlpha([])).toThrow();
+    expect(() => krippendorffAlpha([['a'], ['a']])).toThrow('2 raters');
+    expect(() => krippendorffAlpha([['a', 'a'], ['a', 'a']])).toThrow('more than one value');
+  });
+
+  it('krippendorff alpha tolerates missing values', () => {
+    const withMissing = krippendorffAlpha([
+      [null, 'x', 'x'],
+      ['x', null, 'x'],
+      ['y', 'y', null],
+    ]);
+    expect(withMissing).toBe(1);
   });
 });
