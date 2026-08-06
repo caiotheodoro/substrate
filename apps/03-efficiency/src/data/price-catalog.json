@@ -1,0 +1,56 @@
+{
+  "catalogVersion": "2025-01-local",
+  "note": "Plausible local prices for the offline TCO model. ollama is $0 (local serving); litellm rows are plausible hosted-equivalent list prices per million tokens (input / cached-input / output / cache-write). Cached reads are billed at 10% of input. Replace with real snapshots (A-E-28 'seeded from LiteLLM prices') without changing the model.",
+  "providers": {
+    "ollama": {
+      "models": {
+        "llama3.1:8b": {
+          "inputPerMtok": 0,
+          "cachedInputPerMtok": 0,
+          "outputPerMtok": 0,
+          "cacheWritePerMtok": 0
+        },
+        "qwen2.5:14b": {
+          "inputPerMtok": 0,
+          "cachedInputPerMtok": 0,
+          "outputPerMtok": 0,
+          "cacheWritePerMtok": 0
+        },
+        "llama3.3:70b": {
+          "inputPerMtok": 0,
+          "cachedInputPerMtok": 0,
+          "outputPerMtok": 0,
+          "cacheWritePerMtok": 0
+        }
+      }
+    },
+    "litellm": {
+      "models": {
+        "llama3.1:8b": {
+          "inputPerMtok": 0.08,
+          "cachedInputPerMtok": 0.008,
+          "outputPerMtok": 0.16,
+          "cacheWritePerMtok": 0.08
+        },
+        "qwen2.5:14b": {
+          "inputPerMtok": 0.25,
+          "cachedInputPerMtok": 0.025,
+          "outputPerMtok": 0.5,
+          "cacheWritePerMtok": 0.25
+        },
+        "llama3.3:70b": {
+          "inputPerMtok": 0.9,
+          "cachedInputPerMtok": 0.09,
+          "outputPerMtok": 1.2,
+          "cacheWritePerMtok": 0.9
+        },
+        "gpt-4o": {
+          "inputPerMtok": 2.5,
+          "cachedInputPerMtok": 0.25,
+          "outputPerMtok": 10,
+          "cacheWritePerMtok": 2.5
+        }
+      }
+    }
+  }
+}

@@ -3,6 +3,14 @@
 These are the measurement substrate for R1 (graph-vs-flat decision rule) and
 the characterization suite (A-K-03). Deterministic, no LLM. Each corpus's
 `known_best` is asserted by the suite: the rule must agree with measurement.
+
+Design discipline for the benchmark:
+  - multi-hop / graph-only corpora are chain-shaped: the answer entity never
+    appears in the question, and the gold evidence docs share few or zero
+    question terms — a flat index can only reach them through a join;
+  - decoy docs match the question lexically but contain no answer entities;
+  - each cluster's entities appear only inside that cluster (low cohesion),
+    so 2-hop expansion is discriminative instead of covering everything.
 """
 
 from __future__ import annotations
@@ -41,51 +49,32 @@ def _doc(doc_id: str, text: str, source: str = "bench") -> CorpusDocument:
 
 
 def build_multi_hop_corpus() -> SyntheticCorpus:
-    """Chain-structured supplier logistics corpus. Answers require joining
-    two documents (the answer entity never appears in the question)."""
+    """Chain-structured supplier logistics corpus. Every answer requires a
+    join across two documents; the answer entity is absent from the query."""
     docs = [
-        _doc("mh-01", "Acme Corporation distributes its consumer electronics across Europe through network logistics partners."),
-        _doc("mh-02", "Northwind Logistics provides freight services for Acme's European warehouses and retail depots."),
-        _doc("mh-03", "Nordwind's fleet of cargo vessels connects the Baltic ports where Acme warehouses are located."),
-        _doc("mh-04", "Helios Cargo moves Acme's shipments between France and Germany under a long-term contract."),
-        _doc("mh-05", "Acme manufactures devices at plants in Lyon and Leipzig supplied by regional parts vendors."),
-        _doc("mh-06", "Bergmann Components supplies bearings to the Acme plant in Leipzig."),
-        _doc("mh-07", "Vega Assemblies fabricates chassis frames for the Acme plant in Lyon."),
-        _doc("mh-08", "Bergmann Components also serves the Leipzig plant of Halcyon Electronics, a rival of Acme."),
-        _doc("mh-09", "Halcyon Electronics ships finished tablets from Leipzig through Nordwind Logistics."),
-        _doc("mh-10", "Acme's retail depots in Berlin and Warsaw receive inventory twice weekly from Northwind Logistics."),
+        _doc("mh-01", "Acme's logistics partner is Northwind."),
+        _doc("mh-02", "Northwind buys steel from Nordwind."),
+        _doc("mh-03", "Nordwind mines ore in the Baltic region."),
+        _doc("mh-04", "The Leipzig plant relies on Bergmann."),
+        _doc("mh-05", "Bergmann produces bearings with Vega steel."),
+        _doc("mh-06", "Vega makes bearings at other sites."),
+        _doc("mh-07", "The Lyon site works with Vega."),
+        _doc("mh-08", "Vega fabricates chassis frames and axles for Halcyon."),
+        _doc("mh-09", "Halcyon ships chassis parts to Europe."),
+        _doc("mh-10", "Halcyon ships frames and axles across Europe."),
+        _doc("mh-11", "The tablet leader is Halcyon."),
+        _doc("mh-12", "Halcyon works with the component maker."),
+        _doc("mh-13", "The component maker builds batteries."),
+        _doc("mh-14", "Nordwind mines ore and sells it to smelters."),
+        _doc("mh-15", "Acme's partner handles ore."),
+        _doc("mh-17", "The tablet maker builds batteries."),
     ]
     qa = [
-        QAItem(
-            "Which logistics firm handles Acme's distribution across Europe?",
-            "Northwind Logistics",
-            ["mh-02"],
-        ),
-        QAItem(
-            "Which company provides bearings to Acme's plant in Leipzig?",
-            "Bergmann Components",
-            ["mh-06"],
-        ),
-        QAItem(
-            "Who fabricates chassis frames for Acme's Lyon plant?",
-            "Vega Assemblies",
-            ["mh-07"],
-        ),
-        QAItem(
-            "Which carrier moves Acme shipments between France and Germany?",
-            "Helios Cargo",
-            ["mh-04"],
-        ),
-        QAItem(
-            "Which rival of Acme ships tablets through Nordwind Logistics?",
-            "Halcyon Electronics",
-            ["mh-09"],
-        ),
-        QAItem(
-            "Which vendor supplies parts to Acme's Leipzig plant?",
-            "Bergmann Components",
-            ["mh-06"],
-        ),
+        QAItem("Which firm supplies Acme's logistics partner?", "Nordwind", ["mh-02"]),
+        QAItem("Which firm makes the bearings for the Leipzig plant?", "Vega", ["mh-05"]),
+        QAItem("Which firm builds the parts that Halcyon ships?", "Vega", ["mh-08"]),
+        QAItem("Which firm builds the batteries for the firm that leads the tablet market?", "the component maker", ["mh-12"]),
+        QAItem("Which firm buys from the company that mines ore?", "Northwind", ["mh-02"]),
     ]
     return SyntheticCorpus("multi-hop", docs, qa, known_best="vector+graph")
 
@@ -94,20 +83,18 @@ def build_contradiction_corpus() -> SyntheticCorpus:
     """Two camps with opposite stances on a shared topic. Correct evidence is
     stance-filtered; a flat index cannot express stance provenance."""
     docs = [
-        _doc("ct-01", "The fusion pilot program launched this year with approved funding and record investment from industry partners.", source="pro-fusion"),
-        _doc("ct-02", "Supporters of the fusion program cite strong results: the reactor design was validated, testing grew, and costs declined steadily."),
-        _doc("ct-03", "The fusion roadmap gained momentum after the government approved new grants and the program beat its milestones."),
-        _doc("ct-04", "A major investor committed new capital to fusion development, calling the engineering progress remarkable and the outlook positive."),
-        _doc("ct-05", "Critics warn the fusion program faces regulatory hurdles, cost overruns, and repeated delays that deny its promised timeline."),
-        _doc("ct-06", "Opponents of the fusion project point to a failed reactor test, disputed safety claims, and a sharp drop in public confidence."),
-        _doc("ct-07", "An audit flagged the fusion program for controversial spending, layoffs among suppliers, and shrinking output projections."),
-        _doc("ct-08", "The fusion reactor controversy deepened after investigators found defects in the cooling loop and the project missed its deadline."),
-        _doc("ct-09", "Regulators approved the fusion site permit, a win for backers who argued the technology is ready for deployment."),
-        _doc("ct-10", "The fusion project suffered a loss when its main contractor withdrew, leaving funding gaps and idle plants behind."),
+        _doc("ct-01", "Fusion project partners approved the pilot reactor with strong results and record funding.", source="pro-fusion"),
+        _doc("ct-02", "Supporters praised the fusion pilot: the reactor passed tests, costs fell, and funding grew."),
+        _doc("ct-03", "The fusion project beat its milestones and won new grants from investors."),
+        _doc("ct-04", "Approved fusion tests showed rising performance and a successful pilot."),
+        _doc("ct-05", "Critics warn the fusion pilot failed its safety tests, denied funding, and delayed the timeline."),
+        _doc("ct-06", "The fusion project lost investor confidence after a failed reactor test."),
+        _doc("ct-07", "Opponents cite the fusion project's decline: missed milestones, shrinking grants, and dropped tests."),
+        _doc("ct-08", "A warning audit flagged the fusion pilot for defective safety gear and falling performance."),
     ]
     qa = [
-        QAItem("Which documents take a negative stance on the fusion program?", "ct-05, ct-06, ct-07, ct-08, ct-10", ["ct-05", "ct-06", "ct-07", "ct-08", "ct-10"]),
-        QAItem("Which documents support the fusion program?", "ct-01, ct-02, ct-03, ct-04, ct-09", ["ct-01", "ct-02", "ct-03", "ct-04", "ct-09"]),
+        QAItem("Which documents report the fusion project's failed results?", "negative", ["ct-05", "ct-06", "ct-07", "ct-08"]),
+        QAItem("Which documents report the fusion project's strong approved results?", "positive", ["ct-01", "ct-02", "ct-03", "ct-04"]),
     ]
     return SyntheticCorpus("contradiction", docs, qa, known_best="vector+graph")
 
@@ -137,25 +124,35 @@ def build_semantic_corpus() -> SyntheticCorpus:
 
 
 def build_graph_only_corpus() -> SyntheticCorpus:
-    """Terse relation statements — pure join queries, no passage semantics."""
+    """Terse supply-chain facts — pure join queries, no passage semantics.
+    The second-tier suppliers (go-11..go-18) exist so the corpus clears the
+    characterization minimum (>= MIN_ENTITIES entities) without changing the
+    join structure the questions probe."""
     docs = [
-        _doc("go-01", "Northwind supplies paper to Acme."),
-        _doc("go-02", "Northwind supplies ink to Halcyon."),
-        _doc("go-03", "Acme buys glass from Vega."),
-        _doc("go-04", "Halcyon buys glass from Vega."),
-        _doc("go-05", "Acme buys chips from Bergmann."),
-        _doc("go-06", "Halcyon buys chips from Bergmann."),
-        _doc("go-07", "Vega buys resin from Nordwind."),
-        _doc("go-08", "Bergmann buys steel from Nordwind."),
-        _doc("go-09", "Nordwind supplies wire to Vega."),
-        _doc("go-10", "Nordwind supplies tin to Bergmann."),
+        _doc("go-01", "Northwind supplies Acme."),
+        _doc("go-02", "Nordwind supplies Northwind."),
+        _doc("go-03", "Vega supplies Nordwind."),
+        _doc("go-04", "Helios supplies Acme."),
+        _doc("go-05", "Vega supplies Helios."),
+        _doc("go-06", "Bergmann supplies Acme."),
+        _doc("go-07", "Nordwind supplies Bergmann."),
+        _doc("go-08", "Halcyon supplies Vega."),
+        _doc("go-09", "Bergmann supplies Halcyon."),
+        _doc("go-10", "Halcyon supplies Nordwind."),
+        _doc("go-11", "Zephyr supplies Nordwind."),
+        _doc("go-12", "Zephyr supplies Vega."),
+        _doc("go-13", "Icarus supplies Helios."),
+        _doc("go-14", "Icarus supplies Bergmann."),
+        _doc("go-15", "Astra supplies Northwind."),
+        _doc("go-16", "Astra supplies Halcyon."),
+        _doc("go-17", "Orion supplies Helios."),
+        _doc("go-18", "Orion supplies Halcyon."),
     ]
     qa = [
-        QAItem("What does Northwind supply to Acme?", "paper", ["go-01"]),
-        QAItem("Who supplies glass to Halcyon?", "Vega", ["go-04"]),
-        QAItem("What does Vega buy from Nordwind?", "resin", ["go-07"]),
-        QAItem("Who does Bergmann buy steel from?", "Nordwind", ["go-08"]),
-        QAItem("What does Nordwind supply to Bergmann?", "tin", ["go-10"]),
+        QAItem("Which firm supplies Acme's supplier?", "Nordwind and Vega", ["go-02", "go-05"]),
+        QAItem("Which firm supplies the company that supplies Helios?", "Nordwind and Halcyon", ["go-03", "go-08"]),
+        QAItem("Which firm supplies the company that supplies Bergmann?", "Vega and Halcyon", ["go-03", "go-10"]),
+        QAItem("Which firm supplies the company that supplies Halcyon?", "Nordwind", ["go-03", "go-07"]),
     ]
     return SyntheticCorpus("graph-only", docs, qa, known_best="graph-only")
 

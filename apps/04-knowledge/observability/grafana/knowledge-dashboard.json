@@ -1,0 +1,52 @@
+{
+  "uid": "knowledge-observability",
+  "title": "Knowledge — graph ops",
+  "tags": ["knowledge", "graph"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "30s",
+  "panels": [
+    {
+      "id": 1,
+      "type": "stat",
+      "title": "Retrieval support rate (gate verdicts)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "knowledge_gate_support_rate", "refId": "A" }]
+    },
+    {
+      "id": 2,
+      "type": "graph",
+      "title": "Extraction trend (entity precision/recall)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "knowledge_extraction_entity_precision", "refId": "A", "legendFormat": "precision" },
+        { "expr": "knowledge_extraction_entity_recall", "refId": "B", "legendFormat": "recall" }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "stat",
+      "title": "Max staleness age (s)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "max(knowledge_source_staleness_age_seconds)", "refId": "A" }]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Human-confirmation queue depth",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [{ "expr": "knowledge_human_queue_depth", "refId": "A" }]
+    },
+    {
+      "id": 5,
+      "type": "graph",
+      "title": "Graph health (density / connectivity)",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        { "expr": "knowledge_graph_relation_density", "refId": "A", "legendFormat": "density" },
+        { "expr": "knowledge_graph_connectivity", "refId": "B", "legendFormat": "connectivity" }
+      ]
+    }
+  ]
+}

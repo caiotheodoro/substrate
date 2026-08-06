@@ -63,12 +63,17 @@ def _measured_to_winner(runner_result: GraphVsFlatResult) -> str:
     if winner == "flat":
         return "vector"
     if winner == "tie":
-        # hybrid == graph is still a graph carry: prefer the graph decision.
+        # All-equal ties (or flat == hybrid > graph): no mode adds value
+        # beyond the flat index -> vector is the honest choice.
+        if runner_result.graph.evidence_recall == runner_result.flat.evidence_recall:
+            return "vector"
+        if runner_result.hybrid.evidence_recall == runner_result.flat.evidence_recall:
+            return "vector"
+        # Hybrid == graph > flat: the graph carries the retrieval; the flat
+        # half of the hybrid budget contributed nothing -> graph-only.
         if runner_result.hybrid.evidence_recall == runner_result.graph.evidence_recall:
-            return "vector+graph"
-        if runner_result.hybrid.evidence_recall > runner_result.flat.evidence_recall:
-            return "vector+graph"
-        return "vector"
+            return "graph-only"
+        return "vector+graph"
     return "tie"
 
 

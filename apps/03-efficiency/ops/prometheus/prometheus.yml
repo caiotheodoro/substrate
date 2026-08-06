@@ -1,0 +1,13 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: efficiency
+    metrics_path: /metrics
+    static_configs:
+      - targets:
+          - ledger-api:8100
+          - cache-analytics:8101
+          - routing:8102
+          - budget-gate:8103
+          - escalation-monitor:8104

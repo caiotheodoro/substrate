@@ -1,0 +1,14 @@
+{
+  "n": 280,
+  "n_unverifiable": 80,
+  "fraction_unverifiable": 0.2857,
+  "default_escalate_fraction": 0.2857,
+  "signal_kind_mix": {
+    "outcome": 130,
+    "tool": 50,
+    "retrieval": 50,
+    "schema": 50
+  },
+  "mean_signals_per_verified_sample": 11.429,
+  "recommendation": "unverifiable workload must default-escalate; if the fraction is material, the binding constraint is outcome collection, not calibration"
+}

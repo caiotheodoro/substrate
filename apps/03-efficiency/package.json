@@ -10,10 +10,14 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@substrate/scenarios": "workspace:*",
     "@substrate/substrate": "workspace:*",
-    "@substrate/scenarios": "workspace:*"
+    "pg": "^8.22.0",
+    "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@types/node": "^26.1.2",
+    "@types/pg": "^8.20.4",
     "typescript": "^5.6.0",
     "vitest": "^2.1.0"
   }

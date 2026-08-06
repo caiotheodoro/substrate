@@ -1,0 +1,47 @@
+{
+  "question": "At equal base calibration, does evidence-based confidence retain calibration and escalation utility under shift while self-report collapses?",
+  "brier_base": {
+    "evidence": 0.1842070850180875,
+    "logprob_norm": 0.21030625064172448,
+    "self_consistency": 0.2102842557409698,
+    "verbalized": 0.20756796987324336
+  },
+  "brier_shifted": {
+    "evidence": 0.1985741361993759,
+    "logprob_norm": 0.29952380901878006,
+    "self_consistency": 0.3268119757584437,
+    "verbalized": 0.31158953092897496
+  },
+  "ece_base": {
+    "evidence": 0.05168469492125221,
+    "logprob_norm": 0.0385185883821768,
+    "self_consistency": 0.05001359073679618,
+    "verbalized": 0.052179443322389385
+  },
+  "ece_shifted": {
+    "evidence": 0.13603505707546135,
+    "logprob_norm": 0.24100804516906404,
+    "self_consistency": 0.2761522715952895,
+    "verbalized": 0.25707788192643144
+  },
+  "ndcg_escalation_shifted": {
+    "evidence": 0.8908638971476377,
+    "logprob_norm": 0.8827751747314799,
+    "self_consistency": 0.6501290628760299,
+    "verbalized": 0.7213891460031232
+  },
+  "shift_delta": {
+    "brier_delta": 0.014367,
+    "ece_delta": 0.08435,
+    "ndcg_delta": 0.054295,
+    "brier_base": 0.184207,
+    "brier_shifted": 0.198574,
+    "ece_base": 0.051685,
+    "ece_shifted": 0.136035
+  },
+  "dominance": {
+    "evidence_beats_best_baseline_brier_shifted": true,
+    "evidence_beats_best_baseline_ece_shifted": true,
+    "evidence_beats_best_baseline_ndcg_shifted": true
+  }
+}

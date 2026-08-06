@@ -1,0 +1,22 @@
+# LiteLLM proxy config: Ollama models behind an OpenAI-compatible gateway
+# at :4000. The routing service (:8102) picks the provider per policy tier.
+model_list:
+  - model_name: llama3.1:8b
+    litellm_params:
+      model: ollama/llama3.1:8b
+      api_base: http://ollama:11434
+  - model_name: qwen2.5:14b
+    litellm_params:
+      model: ollama/qwen2.5:14b
+      api_base: http://ollama:11434
+  - model_name: llama3.3:70b
+    litellm_params:
+      model: ollama/llama3.3:70b
+      api_base: http://ollama:11434
+
+litellm_settings:
+  drop_params: true
+  num_retries: 1
+
+general_settings:
+  master_key: sk-local-substrate
