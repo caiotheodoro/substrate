@@ -340,28 +340,36 @@ a reasonable choice and heavy tuning buys little, just not literally zero.
 Extends Airbnb's judge-calibration loop into a budget question: does a
 calibrated LLM judge pre-screening task difficulty let you cut the 10-attempt
 human-calibration budget without the difficulty model lying? 60 tasks, one
-real judge call per task (reused across the threshold sweep), rerun clean
-(0 network failures; a first pass hit 6/60 timeouts, caught by this same
-audit's failure-tracking fix, not silently absorbed into a misleadingly flat
-result):
+real judge call per task (reused across the threshold sweep). An earlier pass
+hit 6/60 timeouts, caught by this same audit's failure-tracking fix rather
+than silently absorbed into a misleadingly flat result; the numbers below are
+from the clean rerun that's actually committed (`n_judge_failures: 0`):
 
 | threshold | auto-resolved | budget used | calibration monotonicity |
 |---|---|---|---|
 | 0.0 (none) | 0/60 | 100% | -0.789 |
-| 0.1 | 8/60 | 86.7% | -0.789 |
-| 0.2 | 12/60 | 80.0% | -0.789 |
+| 0.1 | 9/60 | 85.0% | -0.789 |
+| 0.2 | 14/60 | 76.7% | -0.789 |
 | 0.3-0.4 | 46/60 | 23.3% | -0.634 |
-| 0.5 (max) | 60/60 | 0% | -0.555 |
+| 0.5 (max) | 60/60 | 0% | -0.522 |
 
-13-20% of budget is free at thresholds 0.1-0.2, with **zero** monotonicity
+15-23% of budget is free at thresholds 0.1-0.2, with **zero** monotonicity
 loss (identical to the unscreened baseline, not just close) — cleaner than
 originally reported, since the correlation estimator feeding this table is no
 longer tie-biased. Past that, the real judge's own score distribution is
 still compressed (never rates anything above 0.6 on a 0-1 scale across all 60
 tasks), a pattern similar in shape to what S1 originally (mis)measured in the
 synthetic generator — worth naming honestly given S1's own version of that
-pattern didn't survive the audit. Artifact:
-`docs/validation/studies/s6-judge-ladder.json`.
+pattern didn't survive the audit.
+
+**This table is not byte-reproducible, unlike the rest of this document.**
+Two live runs against the DeepSeek API at temperature 0 gave slightly
+different auto-resolved counts (9 vs an earlier run's 8, 14 vs 12) and a
+different threshold-0.5 monotonicity (-0.522 vs an earlier -0.555). Every
+other study in this pipeline is deterministic by construction; a real judge
+calling a real API is the one place that guarantee doesn't hold, and the
+table above reflects the run that actually landed in the committed artifact.
+Artifact: `docs/validation/studies/s6-judge-ladder.json`.
 
 ### S4b — real-surrogate contamination probe (real LLM, DeepSeek)
 
@@ -494,12 +502,15 @@ step, not a completed one. Artifact:
    wasn't available in this environment, so the frontier-vs-open-weight
    comparison is still queued.
 3. **S6 — judge-ladder budget study — DONE.** Real DeepSeek judge, 60 tasks;
-   13-20% of human-attempt budget cuttable at *zero* monotonicity cost
+   15-23% of human-attempt budget cuttable at *zero* monotonicity cost
    (post-audit: identical to the unscreened baseline, not just close), and
    the judge's own difficulty ratings turned out compressed (never above
    0.6/1.0) — an empirical instance of Airbnb's calibration-loop warning,
    not an assumed one, and similar in shape to a pattern S1 originally
-   (mis)measured before the audit. See §5.
+   (mis)measured before the audit. Note: this is the one study in the
+   pipeline that isn't byte-reproducible — a rerun against the live API
+   shifted the exact auto-resolved counts and the threshold-0.5 number
+   slightly. See §5.
 4. **Harder task domains — NOT STARTED.** Explicitly scoped out this pass.
    Compositional multi-step tasks, retrieval-grounded claims (via the
    knowledge gate), classification. Generality evidence: does the

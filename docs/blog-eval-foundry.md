@@ -121,13 +121,15 @@ Directly extends Airbnb's judge-calibration loop into a budget question: if a ca
 | screening threshold | tasks auto-resolved | budget used | calibration monotonicity |
 |---|---|---|---|
 | 0.0 (no screening) | 0/60 | 100% | -0.789 |
-| 0.1 | 8/60 | 86.7% | -0.789 |
-| 0.2 | 12/60 | 80.0% | -0.789 |
+| 0.1 | 9/60 | 85.0% | -0.789 |
+| 0.2 | 14/60 | 76.7% | -0.789 |
 | 0.3 | 46/60 | 23.3% | -0.634 |
 | 0.4 | 46/60 | 23.3% | -0.634 |
-| 0.5 (max screening) | 60/60 | 0% | -0.555 |
+| 0.5 (max screening) | 60/60 | 0% | -0.522 |
 
-The expected result: a real judge saves real budget, and cleanly this time. Thresholds 0.1-0.2 cut 13-20% of the human-attempt budget at **zero** monotonicity cost (-0.789, identical to the unscreened baseline, not just "close"). The unexpected one, unchanged by the audit fixes: **the real judge's own score distribution is compressed.** Across all 60 tasks it never rated anything above 0.6 on a 0-1 difficulty scale, so it has no confident "hard" tail, only a "trivial" one and an undifferentiated middle. That's why the budget drops so sharply between thresholds 0.2 and 0.3 (12 → 46 auto-resolved), and why monotonicity only degrades moderately even at maximum screening (-0.555, not collapsing to zero): the judge is applying a compression pattern to itself, similar in shape to what S1 originally (mis)measured in the synthetic generator, a coincidence worth naming honestly rather than papering over, given S1's own version of that pattern didn't survive the audit. A judge's difficulty ratings still deserve the same sensitivity check S1 applies to the generator; that discipline is the actual point, independent of whether this particular echo turned out to be as dramatic as first thought. Code: [`s6_judge_ladder.py`](https://github.com/caiotheodoro/substrate/blob/main/apps/trust/py/src/trust/forge/studies/s6_judge_ladder.py).
+The expected result: a real judge saves real budget, and cleanly this time. Thresholds 0.1-0.2 cut 15-23% of the human-attempt budget at **zero** monotonicity cost (-0.789, identical to the unscreened baseline, not just "close"). The unexpected one, unchanged by the audit fixes: **the real judge's own score distribution is compressed.** Across all 60 tasks it never rated anything above 0.6 on a 0-1 difficulty scale, so it has no confident "hard" tail, only a "trivial" one and an undifferentiated middle. That's why the budget drops so sharply between thresholds 0.2 and 0.3 (14 → 46 auto-resolved), and why monotonicity only degrades moderately even at maximum screening (-0.522, not collapsing to zero): the judge is applying a compression pattern to itself, similar in shape to what S1 originally (mis)measured in the synthetic generator, a coincidence worth naming honestly rather than papering over, given S1's own version of that pattern didn't survive the audit. A judge's difficulty ratings still deserve the same sensitivity check S1 applies to the generator; that discipline is the actual point, independent of whether this particular echo turned out to be as dramatic as first thought.
+
+One more honest note this table forced: rerunning this study against the live DeepSeek API twice produced slightly different auto-resolved counts each time (9 vs an earlier run's 8, 14 vs 12) even at temperature 0. The rest of this pipeline is byte-reproducible by construction; a real judge calling a real API is the one place that guarantee doesn't hold, and the numbers above are from the run that actually landed in the committed artifact, not an average or a cherry-pick. Code: [`s6_judge_ladder.py`](https://github.com/caiotheodoro/substrate/blob/main/apps/trust/py/src/trust/forge/studies/s6_judge_ladder.py).
 
 ### The real-LLM run: the first honest human-vs-AI point on this benchmark
 
