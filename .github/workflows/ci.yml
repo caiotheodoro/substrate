@@ -43,9 +43,14 @@ jobs:
         # knowledge is a uv workspace ROOT with member packages, so its
         # pytest lives in a member's dev group: --all-packages is required.
         # trust/simulation are plain packages where --all-groups suffices.
+        # trust's joint2 e2e spawns the knowledge gate, so it provisions
+        # knowledge's venv too.
         run: >
           if [ "${{ matrix.unit }}" = "knowledge" ]; then
             uv sync --all-packages --all-groups
+          elif [ "${{ matrix.unit }}" = "trust" ]; then
+            uv sync --all-groups
+            uv --directory ../knowledge/py sync --all-packages --all-groups
           else
             uv sync --all-groups
           fi

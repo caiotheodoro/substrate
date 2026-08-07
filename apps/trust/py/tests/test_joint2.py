@@ -19,9 +19,13 @@ from trust.extractors.grounded_gate import GroundedGateRung
 from trust.extractors.retrieval_ladder import RetrievalLadder, LadderRung
 
 PORT = 18084
-REPO_ROOT = Path(__file__).resolve()
-while REPO_ROOT.name != "research" and REPO_ROOT != REPO_ROOT.parent:
-    REPO_ROOT = REPO_ROOT.parent
+# Walk up from this file until we find the monorepo root (contains
+# apps/knowledge/py). Works locally (dir "research") and in CI (dir
+# "substrate") without hardcoding the workspace name.
+_REPO = Path(__file__).resolve()
+while not (_REPO / "apps" / "knowledge" / "py").exists() and _REPO != _REPO.parent:
+    _REPO = _REPO.parent
+REPO_ROOT = _REPO
 KNOWLEDGE_PY = REPO_ROOT / "apps/knowledge/py"
 
 GATE_SERVER = f"""
