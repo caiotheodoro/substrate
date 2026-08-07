@@ -1,0 +1,37 @@
+{
+  "30": {
+    "calibration_monotonicity": -0.6111,
+    "split_predictability": 0.9,
+    "difficulty_bandwidth": 0.1428,
+    "oracle_discrimination": 0.2097,
+    "n_tasks": 30
+  },
+  "60": {
+    "calibration_monotonicity": -0.7244,
+    "split_predictability": 0.9,
+    "difficulty_bandwidth": 0.1806,
+    "oracle_discrimination": 0.2373,
+    "n_tasks": 60
+  },
+  "120": {
+    "calibration_monotonicity": -0.5896,
+    "split_predictability": 1.0,
+    "difficulty_bandwidth": 0.149,
+    "oracle_discrimination": 0.2162,
+    "n_tasks": 120
+  },
+  "240": {
+    "calibration_monotonicity": -0.6194,
+    "split_predictability": 1.0,
+    "difficulty_bandwidth": 0.1595,
+    "oracle_discrimination": 0.2228,
+    "n_tasks": 240
+  },
+  "480": {
+    "calibration_monotonicity": -0.649,
+    "split_predictability": 1.0,
+    "difficulty_bandwidth": 0.1691,
+    "oracle_discrimination": 0.228,
+    "n_tasks": 480
+  }
+}

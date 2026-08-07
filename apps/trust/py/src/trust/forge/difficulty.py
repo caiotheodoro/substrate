@@ -39,11 +39,17 @@ class DifficultyModel:
     feature_keys: list[str] = None  # type: ignore[assignment]
     _means: list[float] = field(default_factory=list)
     _stds: list[float] = field(default_factory=list)
+    _feature_cols: list[int] = field(default_factory=lambda: [0, 1, 2])
 
     def fit(self, tasks: list[ForgeTask], outcomes: list[CalibrationOutcome]) -> "DifficultyModel":
         self.feature_keys = ["n_calls", "n_tools", "arg_complexity"]
         X = [task_features(t) for t in tasks]
         y = [o.n_solved / max(o.n_attempts, 1) for o in outcomes]
+        return self._fit_matrix(X, y)
+
+    def _fit_matrix(self, X: list[list[float]], y: list[float]) -> "DifficultyModel":
+        """Fit on an arbitrary feature matrix (feature-selection support)."""
+        self._feature_cols = list(range(len(X[0])))
         # standardize features (z-score) so gradient descent converges on
         # features with very different scales (counts vs arg richness)
         means = [sum(col) / len(col) for col in zip(*X)]
@@ -73,11 +79,15 @@ class DifficultyModel:
         self.outcomes = y
         return self
 
-    def solve_probability(self, task: ForgeTask) -> float:
-        x = task_features(task)
+    def _difficulty_from_features(self, x: list[float]) -> float:
         x = [(v - m) / s for v, m, s in zip(x, self._means, self._stds)]
         z = self.intercept + sum(wi * xj for wi, xj in zip(self.weights or [], x))
-        return 1.0 / (1.0 + math.exp(-max(min(z, 30), -30)))
+        p = 1.0 / (1.0 + math.exp(-max(min(z, 30), -30)))
+        return 1.0 - p
+
+    def solve_probability(self, task: ForgeTask) -> float:
+        x = task_features(task)
+        return 1.0 - self._difficulty_from_features(x)
 
     def difficulty(self, task: ForgeTask) -> float:
         return round(1.0 - self.solve_probability(task), 4)

@@ -1,0 +1,32 @@
+{
+  "0.05": {
+    "leak_probe_fire_rate_on_leaked": 1.0,
+    "leak_probe_false_fire_on_clean": 0.0,
+    "mean_corpus_overlap": 0.0,
+    "structural_ood_overlap": 0.0948
+  },
+  "0.1": {
+    "leak_probe_fire_rate_on_leaked": 1.0,
+    "leak_probe_false_fire_on_clean": 0.0,
+    "mean_corpus_overlap": 0.0,
+    "structural_ood_overlap": 0.0948
+  },
+  "0.2": {
+    "leak_probe_fire_rate_on_leaked": 1.0,
+    "leak_probe_false_fire_on_clean": 0.0054,
+    "mean_corpus_overlap": 0.0,
+    "structural_ood_overlap": 0.0948
+  },
+  "0.3": {
+    "leak_probe_fire_rate_on_leaked": 1.0,
+    "leak_probe_false_fire_on_clean": 0.0062,
+    "mean_corpus_overlap": 0.0,
+    "structural_ood_overlap": 0.0948
+  },
+  "0.5": {
+    "leak_probe_fire_rate_on_leaked": 1.0,
+    "leak_probe_false_fire_on_clean": 0.0087,
+    "mean_corpus_overlap": 0.0,
+    "structural_ood_overlap": 0.0948
+  }
+}
