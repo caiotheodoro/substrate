@@ -29,6 +29,57 @@ features, and the efficiency ledger records harness steps. The seam tests
 (`apps/harness/src/test/seam-e2e.test.ts`) run one decision through all four
 units with real services.
 
+## Research: the Calibrated Evaluation Foundry
+
+Inside `apps/trust/py/src/trust/forge/` sits a second research thread, built
+on top of the trust unit rather than parallel to it: a reproduction of
+ARC-AGI-3's benchmark-construction methodology, then a study harness that
+stress-tests the methodology's own parameters instead of taking them on
+faith.
+
+**The premise.** ARC-AGI-1 survived five years of scaling; ARC-AGI-2 lasted
+months. ARC-AGI-3's technical report names the failure mode: a benchmark
+stops measuring anything once its task space gets absorbed by a
+generate-verify-train loop, not once it's merely solved. Their fix was a
+production methodology, not a harder static test — human-calibrated
+difficulty (every task attempted by 10 humans, solved by ≥2), a
+random-policy floor (1 in 10,000), efficiency scoring against human
+baselines, and private splits structurally out-of-distribution from public
+ones. Every number in that methodology was inherited from somewhere, and
+nobody had published which of them actually matter for the resulting
+benchmark's validity.
+
+**What's built.** The full pipeline — generate → gauntlet → calibrate → fit
+difficulty → stratify splits → score solvers → monitor contamination — plus
+six parameter studies (S1–S6) that vary the pipeline's own knobs and measure
+what breaks. All of it is deterministic, offline, and byte-reproducible by
+construction.
+
+**What it found**, with real numbers, not simulated ones where a real model
+was available:
+
+| Study | Question | Finding |
+|---|---|---|
+| S1 | What happens if the difficulty signal is compressed? | The fitted model doesn't degrade gracefully — it **inverts sign** and reports harder tasks as easier, with high confidence |
+| S2 | How many tasks before a benchmark's score stops being noise? | Variance drops ~6x from 30→480 tasks; below ~100, a benchmark's score is noise with a mean |
+| S3 | Can structural features (call count, arg complexity) predict human solvability? | No — in-sample fit -0.59, out-of-fold -0.15. The difficulty axis needs a real calibration oracle, not a proxy |
+| S4 / S4b | Does the contamination monitor actually detect leaks, real model included? | Perfect detection across synthetic leak rates (S4); 0/20 false-fire against a real, never-leaked DeepSeek run (S4b) |
+| S6 | How much human-calibration budget does a real LLM judge save? | 10–18% of attempt budget, free — and the real judge's own difficulty ratings turned out compressed in the same shape S1 found synthetically |
+| bench | What does a real frontier model score on this benchmark? | DeepSeek: 90.7% solve rate, RHAE 0.907 (vs. greedy 0.24, perfect 1.0) — the first real-model number this pipeline has produced |
+
+Full writeup, the SOTA-evals literature it sits against, and the honest
+limits (simulated human oracle for the main run, no local Ollama comparison
+yet): [`docs/blog-eval-foundry.md`](docs/blog-eval-foundry.md). Build
+history, premises, and the complete results ledger:
+[`docs/HANDOFF.md`](docs/HANDOFF.md). Code:
+[`apps/trust/py/src/trust/forge/`](apps/trust/py/src/trust/forge/).
+
+```sh
+cd apps/trust/py
+uv run python -m trust.forge.cli bench --tasks 300 --seed 7
+uv run python -m trust.forge.studies.s1_sweeps   # and s2/s3/s4/s6
+```
+
 ## Prerequisites
 
 - Node 24, pnpm 10
@@ -77,6 +128,10 @@ The benchmarks write their evidence to `docs/validation/`:
   kappa / Krippendorff's alpha) with a disagreement breakdown
 - `uncertainty-decomposition.json` — epistemic vs aleatoric split across a
   judge ladder
+
+The Foundry writes its own evidence to `docs/validation/studies/`
+(`s1-*.json` through `s6-judge-ladder.json`) and `docs/validation/`
+(`benchmark-*.json`, `s4b-real-surrogate.json`) — see the table above.
 
 ## Conventions
 
