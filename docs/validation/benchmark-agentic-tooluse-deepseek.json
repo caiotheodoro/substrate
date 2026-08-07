@@ -1,0 +1,4731 @@
+{
+  "name": "agentic-tooluse-deepseek",
+  "seed": 7,
+  "metadata": {
+    "n_generated": 75,
+    "gauntlet_pass_rate": 1.0,
+    "n_calibrated": 60,
+    "split_predictability": {
+      "passed": true,
+      "correlations": {
+        "sys-0.3": 1.0,
+        "sys-0.5": 1.0
+      },
+      "min_correlation": 0.8
+    }
+  },
+  "n_tasks": 75,
+  "n_survivors": 75,
+  "calibration": {
+    "ff69a6ed28ad": {
+      "n_solved": 8,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "732d5f2fbd07": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "ed1107e039ce": {
+      "n_solved": 6,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "483453468831": {
+      "n_solved": 1,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "2f219e294df9": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "d97be682c9aa": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "f47bcd459a19": {
+      "n_solved": 0,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "fef0d4c57bce": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "8f350a4be0e3": {
+      "n_solved": 8,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "6ec09f93a602": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "27fcd01554ab": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "c3eaf7e4c71c": {
+      "n_solved": 2,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "d9ca20e94fd1": {
+      "n_solved": 8,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "3ab7f6f52b48": {
+      "n_solved": 7,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "93bd916bbbf0": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "dd81b3360787": {
+      "n_solved": 2,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "74ec9c4cc072": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "512a0b1edcde": {
+      "n_solved": 8,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "6bb736436849": {
+      "n_solved": 2,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "963b290b35ee": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "ff87e5c31d9b": {
+      "n_solved": 6,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "fc75fa6d78f7": {
+      "n_solved": 6,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "8aa12c4728c1": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "8c6bac841f15": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "79b747640a3c": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "25ef628a2d8c": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "ab1682f8798a": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "4c6910caa2b5": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "00b4da3abdcf": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "6c6ea1e97e43": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "bc4805f2bd72": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "2e7e84df04c6": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "58f2c3b88658": {
+      "n_solved": 8,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "b2472c70be9e": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "feffc58bbadd": {
+      "n_solved": 1,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "8dae5ad43a5d": {
+      "n_solved": 1,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "af89d0194484": {
+      "n_solved": 8,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "9bb83e2073e0": {
+      "n_solved": 9,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "f1fbf939b33d": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "eaac95924dab": {
+      "n_solved": 1,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "bf644561b742": {
+      "n_solved": 7,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "bb167f218f85": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "b2b5a4e0179c": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "dba9bd86979a": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "094357bea4bb": {
+      "n_solved": 6,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "6d0fbb2a1501": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "0be00e930c99": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "27d200b24169": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "3f3c70d9cd52": {
+      "n_solved": 6,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "80f72d289d22": {
+      "n_solved": 7,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "1041feb1da60": {
+      "n_solved": 2,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "78b1a3cab4da": {
+      "n_solved": 0,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "31efc80bdb38": {
+      "n_solved": 9,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "1bfb1dd99c60": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "931336e7a2b6": {
+      "n_solved": 2,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "5257c9bc7b2a": {
+      "n_solved": 0,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "e211c7bede65": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "2363d5b3cc6f": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "93856ef4031d": {
+      "n_solved": 6,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "e2df5aa0ee7f": {
+      "n_solved": 0,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "72258d555148": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "2873a39e666c": {
+      "n_solved": 2,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "79fc37777856": {
+      "n_solved": 0,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "c4a6050ae97b": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "6d27a847f78b": {
+      "n_solved": 1,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "e27a1a91f1e9": {
+      "n_solved": 0,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "b4085cbc397a": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "5251c30bd9bd": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "49290f848e96": {
+      "n_solved": 0,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "712b5a571d60": {
+      "n_solved": 5,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "ca69f2bae335": {
+      "n_solved": 3,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "9c58b8c09d81": {
+      "n_solved": 1,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "6d98bf3d1066": {
+      "n_solved": 4,
+      "n_attempts": 10,
+      "solved": true
+    },
+    "ea7bdfa70385": {
+      "n_solved": 1,
+      "n_attempts": 10,
+      "solved": false
+    },
+    "464dc7851159": {
+      "n_solved": 1,
+      "n_attempts": 10,
+      "solved": false
+    }
+  },
+  "difficulty": {
+    "ff69a6ed28ad": 0.5943,
+    "732d5f2fbd07": 0.6063,
+    "ed1107e039ce": 0.6572,
+    "483453468831": 0.6808,
+    "2f219e294df9": 0.5668,
+    "d97be682c9aa": 0.6063,
+    "f47bcd459a19": 0.6313,
+    "fef0d4c57bce": 0.6808,
+    "8f350a4be0e3": 0.5943,
+    "6ec09f93a602": 0.5927,
+    "27fcd01554ab": 0.6444,
+    "c3eaf7e4c71c": 0.6808,
+    "d9ca20e94fd1": 0.5806,
+    "3ab7f6f52b48": 0.6063,
+    "93bd916bbbf0": 0.6444,
+    "dd81b3360787": 0.6808,
+    "74ec9c4cc072": 0.5943,
+    "512a0b1edcde": 0.6063,
+    "6bb736436849": 0.6444,
+    "963b290b35ee": 0.6929,
+    "ff87e5c31d9b": 0.5806,
+    "fc75fa6d78f7": 0.6197,
+    "8aa12c4728c1": 0.6313,
+    "8c6bac841f15": 0.6808,
+    "79b747640a3c": 0.5806,
+    "25ef628a2d8c": 0.6063,
+    "ab1682f8798a": 0.6572,
+    "4c6910caa2b5": 0.6929,
+    "00b4da3abdcf": 0.5668,
+    "6c6ea1e97e43": 0.6063,
+    "bc4805f2bd72": 0.6572,
+    "2e7e84df04c6": 0.6929,
+    "58f2c3b88658": 0.5806,
+    "b2472c70be9e": 0.6197,
+    "feffc58bbadd": 0.6313,
+    "8dae5ad43a5d": 0.6808,
+    "af89d0194484": 0.5668,
+    "9bb83e2073e0": 0.6197,
+    "f1fbf939b33d": 0.6444,
+    "eaac95924dab": 0.6808,
+    "bf644561b742": 0.5943,
+    "bb167f218f85": 0.6197,
+    "b2b5a4e0179c": 0.6572,
+    "dba9bd86979a": 0.6929,
+    "094357bea4bb": 0.5806,
+    "6d0fbb2a1501": 0.5927,
+    "0be00e930c99": 0.6444,
+    "27d200b24169": 0.6929,
+    "3f3c70d9cd52": 0.5943,
+    "80f72d289d22": 0.6063,
+    "1041feb1da60": 0.6444,
+    "78b1a3cab4da": 0.6683,
+    "31efc80bdb38": 0.5806,
+    "1bfb1dd99c60": 0.6063,
+    "931336e7a2b6": 0.6444,
+    "5257c9bc7b2a": 0.6808,
+    "e211c7bede65": 0.5806,
+    "2363d5b3cc6f": 0.6063,
+    "93856ef4031d": 0.6444,
+    "e2df5aa0ee7f": 0.6683,
+    "72258d555148": 0.5545,
+    "2873a39e666c": 0.5545,
+    "79fc37777856": 0.5545,
+    "c4a6050ae97b": 0.5545,
+    "6d27a847f78b": 0.5545,
+    "e27a1a91f1e9": 0.5545,
+    "b4085cbc397a": 0.5545,
+    "5251c30bd9bd": 0.5545,
+    "49290f848e96": 0.5545,
+    "712b5a571d60": 0.5545,
+    "ca69f2bae335": 0.5545,
+    "9c58b8c09d81": 0.5545,
+    "6d98bf3d1066": 0.5545,
+    "ea7bdfa70385": 0.5545,
+    "464dc7851159": 0.5545
+  },
+  "splits": {
+    "public": {
+      "n": 37
+    },
+    "private": {
+      "n": 38
+    }
+  },
+  "solvers": {
+    "random": {
+      "solve_rate": 0.0,
+      "mean_actions": 70.13,
+      "terminated": 75
+    },
+    "greedy": {
+      "solve_rate": 0.24,
+      "mean_actions": 2.8,
+      "terminated": 0
+    },
+    "perfect": {
+      "solve_rate": 1.0,
+      "mean_actions": 3.0,
+      "terminated": 0
+    },
+    "llm-deepseek": {
+      "solve_rate": 0.9067,
+      "mean_actions": 10.24,
+      "terminated": 7
+    }
+  },
+  "scores": {
+    "random": {
+      "total": 0.0,
+      "environments": [
+        {
+          "environment_id": "ff69a6ed28ad",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "732d5f2fbd07",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ed1107e039ce",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "483453468831",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "2f219e294df9",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "d97be682c9aa",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "f47bcd459a19",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "fef0d4c57bce",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "8f350a4be0e3",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6ec09f93a602",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "27fcd01554ab",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "c3eaf7e4c71c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "d9ca20e94fd1",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "3ab7f6f52b48",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "93bd916bbbf0",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "dd81b3360787",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "74ec9c4cc072",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "512a0b1edcde",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6bb736436849",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "963b290b35ee",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ff87e5c31d9b",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "fc75fa6d78f7",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "8aa12c4728c1",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "8c6bac841f15",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "79b747640a3c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "25ef628a2d8c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ab1682f8798a",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "4c6910caa2b5",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "00b4da3abdcf",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6c6ea1e97e43",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "bc4805f2bd72",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "2e7e84df04c6",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "58f2c3b88658",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "b2472c70be9e",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "feffc58bbadd",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 17,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "8dae5ad43a5d",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "af89d0194484",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "9bb83e2073e0",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "f1fbf939b33d",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "eaac95924dab",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "bf644561b742",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "bb167f218f85",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "b2b5a4e0179c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "dba9bd86979a",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "094357bea4bb",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6d0fbb2a1501",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "0be00e930c99",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "27d200b24169",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "3f3c70d9cd52",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "80f72d289d22",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "1041feb1da60",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "78b1a3cab4da",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "31efc80bdb38",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "1bfb1dd99c60",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "931336e7a2b6",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "5257c9bc7b2a",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "e211c7bede65",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "2363d5b3cc6f",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "93856ef4031d",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "e2df5aa0ee7f",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "72258d555148",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "2873a39e666c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "79fc37777856",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "c4a6050ae97b",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6d27a847f78b",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "e27a1a91f1e9",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "b4085cbc397a",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 16,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "5251c30bd9bd",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 17,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "49290f848e96",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "712b5a571d60",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ca69f2bae335",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "9c58b8c09d81",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 22,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6d98bf3d1066",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 16,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ea7bdfa70385",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "464dc7851159",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    "greedy": {
+      "total": 0.24,
+      "environments": [
+        {
+          "environment_id": "ff69a6ed28ad",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "732d5f2fbd07",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ed1107e039ce",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "483453468831",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2f219e294df9",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "d97be682c9aa",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "f47bcd459a19",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "fef0d4c57bce",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "8f350a4be0e3",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6ec09f93a602",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "27fcd01554ab",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "c3eaf7e4c71c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "d9ca20e94fd1",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "3ab7f6f52b48",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "93bd916bbbf0",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "dd81b3360787",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "74ec9c4cc072",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "512a0b1edcde",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6bb736436849",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "963b290b35ee",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ff87e5c31d9b",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "fc75fa6d78f7",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "8aa12c4728c1",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "8c6bac841f15",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "79b747640a3c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "25ef628a2d8c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ab1682f8798a",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "4c6910caa2b5",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "00b4da3abdcf",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6c6ea1e97e43",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "bc4805f2bd72",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "2e7e84df04c6",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "58f2c3b88658",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "b2472c70be9e",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "feffc58bbadd",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 17,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8dae5ad43a5d",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "af89d0194484",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "9bb83e2073e0",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "f1fbf939b33d",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "eaac95924dab",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "bf644561b742",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "bb167f218f85",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "b2b5a4e0179c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "dba9bd86979a",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "094357bea4bb",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6d0fbb2a1501",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "0be00e930c99",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "27d200b24169",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "3f3c70d9cd52",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "80f72d289d22",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "1041feb1da60",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "78b1a3cab4da",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "31efc80bdb38",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "1bfb1dd99c60",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "931336e7a2b6",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "5257c9bc7b2a",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "e211c7bede65",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2363d5b3cc6f",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "93856ef4031d",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "e2df5aa0ee7f",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "72258d555148",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "2873a39e666c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "79fc37777856",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "c4a6050ae97b",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6d27a847f78b",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "e27a1a91f1e9",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "b4085cbc397a",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 16,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "5251c30bd9bd",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 17,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "49290f848e96",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "712b5a571d60",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ca69f2bae335",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "9c58b8c09d81",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 22,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6d98bf3d1066",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 16,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ea7bdfa70385",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "464dc7851159",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        }
+      ]
+    },
+    "perfect": {
+      "total": 1.0,
+      "environments": [
+        {
+          "environment_id": "ff69a6ed28ad",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "732d5f2fbd07",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ed1107e039ce",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "483453468831",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2f219e294df9",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "d97be682c9aa",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "f47bcd459a19",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "fef0d4c57bce",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8f350a4be0e3",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6ec09f93a602",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "27fcd01554ab",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "c3eaf7e4c71c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "d9ca20e94fd1",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "3ab7f6f52b48",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "93bd916bbbf0",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "dd81b3360787",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "74ec9c4cc072",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "512a0b1edcde",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6bb736436849",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "963b290b35ee",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ff87e5c31d9b",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "fc75fa6d78f7",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8aa12c4728c1",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8c6bac841f15",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "79b747640a3c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "25ef628a2d8c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ab1682f8798a",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "4c6910caa2b5",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "00b4da3abdcf",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6c6ea1e97e43",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "bc4805f2bd72",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2e7e84df04c6",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "58f2c3b88658",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "b2472c70be9e",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "feffc58bbadd",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 17,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8dae5ad43a5d",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "af89d0194484",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "9bb83e2073e0",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "f1fbf939b33d",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "eaac95924dab",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "bf644561b742",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "bb167f218f85",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "b2b5a4e0179c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "dba9bd86979a",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "094357bea4bb",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6d0fbb2a1501",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "0be00e930c99",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "27d200b24169",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "3f3c70d9cd52",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "80f72d289d22",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "1041feb1da60",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "78b1a3cab4da",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "31efc80bdb38",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "1bfb1dd99c60",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "931336e7a2b6",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "5257c9bc7b2a",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "e211c7bede65",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2363d5b3cc6f",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "93856ef4031d",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "e2df5aa0ee7f",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "72258d555148",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2873a39e666c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "79fc37777856",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "c4a6050ae97b",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6d27a847f78b",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "e27a1a91f1e9",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "b4085cbc397a",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 16,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "5251c30bd9bd",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 17,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "49290f848e96",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "712b5a571d60",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ca69f2bae335",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "9c58b8c09d81",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 22,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6d98bf3d1066",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 16,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ea7bdfa70385",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "464dc7851159",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        }
+      ]
+    },
+    "llm-deepseek": {
+      "total": 0.9067,
+      "environments": [
+        {
+          "environment_id": "ff69a6ed28ad",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "732d5f2fbd07",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ed1107e039ce",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "483453468831",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2f219e294df9",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "d97be682c9aa",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "f47bcd459a19",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "fef0d4c57bce",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8f350a4be0e3",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6ec09f93a602",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "27fcd01554ab",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "c3eaf7e4c71c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "d9ca20e94fd1",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "3ab7f6f52b48",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "93bd916bbbf0",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "dd81b3360787",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "74ec9c4cc072",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "512a0b1edcde",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6bb736436849",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "963b290b35ee",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ff87e5c31d9b",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "fc75fa6d78f7",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8aa12c4728c1",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8c6bac841f15",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "79b747640a3c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "25ef628a2d8c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ab1682f8798a",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "4c6910caa2b5",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "00b4da3abdcf",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6c6ea1e97e43",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "bc4805f2bd72",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2e7e84df04c6",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "58f2c3b88658",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "b2472c70be9e",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "feffc58bbadd",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 17,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "8dae5ad43a5d",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "af89d0194484",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "9bb83e2073e0",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "f1fbf939b33d",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "eaac95924dab",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "bf644561b742",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "bb167f218f85",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "b2b5a4e0179c",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "dba9bd86979a",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "094357bea4bb",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "6d0fbb2a1501",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "0be00e930c99",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "27d200b24169",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "3f3c70d9cd52",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "80f72d289d22",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "1041feb1da60",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "78b1a3cab4da",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "31efc80bdb38",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "1bfb1dd99c60",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "931336e7a2b6",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "5257c9bc7b2a",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "e211c7bede65",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 10,
+              "agent_actions": 2,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2363d5b3cc6f",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 11,
+              "agent_actions": 3,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "93856ef4031d",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 4,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "e2df5aa0ee7f",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 5,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "72258d555148",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "2873a39e666c",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 12,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "79fc37777856",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "c4a6050ae97b",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6d27a847f78b",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "e27a1a91f1e9",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "b4085cbc397a",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 16,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "5251c30bd9bd",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 17,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "49290f848e96",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 8,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "712b5a571d60",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 13,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "ca69f2bae335",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 15,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "9c58b8c09d81",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 22,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "6d98bf3d1066",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 16,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        },
+        {
+          "environment_id": "ea7bdfa70385",
+          "n_levels": 1,
+          "score": 0.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 18,
+              "agent_actions": 0,
+              "weight": 1.0,
+              "efficiency": 0.0
+            }
+          ]
+        },
+        {
+          "environment_id": "464dc7851159",
+          "n_levels": 1,
+          "score": 1.0,
+          "levels": [
+            {
+              "level": 1,
+              "human_baseline": 14,
+              "agent_actions": 1,
+              "weight": 1.0,
+              "efficiency": 1.3225
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "contamination": {
+    "leak_probe_fire_rate_on_leaked": 1.0,
+    "leak_probe_false_fire_on_clean": 0.0,
+    "mean_corpus_overlap": 0.0,
+    "structural_ood_overlap": 0.1579
+  }
+}

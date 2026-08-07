@@ -129,13 +129,14 @@ def run_benchmark(
     # 2. calibrate (P3: human oracle, ARC 2-of-10 bar)
     log("calibrating")
     oracle = oracle or SimulatedOracle()
-    outcomes = {t.task_id: oracle.calibrate(t).as_dict() for t in tasks}
+    raw_outcomes = {t.task_id: oracle.calibrate(t) for t in tasks}
+    outcomes = {tid: o.as_dict() for tid, o in raw_outcomes.items()}
     calibrated = [o for o in outcomes.values() if o["solved"]]
     log(f"  {len(calibrated)}/{len(tasks)} pass the 2-of-10 bar")
 
     # 3. difficulty model (P3) + splits (P4)
     log("fitting difficulty + stratifying")
-    model = DifficultyModel().fit(tasks, [oracle.calibrate(t) for t in tasks])
+    model = DifficultyModel().fit(tasks, [raw_outcomes[t.task_id] for t in tasks])
     difficulty = {t.task_id: model.difficulty(t) for t in tasks}
     splits = difficulty_match_splits(tasks, model, seed=seed)
     splits_map = {"public": [t.task_id for t in splits.public], "private": [t.task_id for t in splits.private]}

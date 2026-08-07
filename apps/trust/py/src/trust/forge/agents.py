@@ -178,18 +178,25 @@ class LlmSolver:
     tool call per turn until the task verifies or the budget runs out.
     """
 
-    name = "llm"
-
-    def __init__(self, base_url: str = "http://localhost:11434/v1", model: str = "qwen2.5:3b", api_key: str = "ollama") -> None:
+    def __init__(
+        self,
+        base_url: str = "http://localhost:11434/v1",
+        model: str = "qwen2.5:3b",
+        api_key: str = "ollama",
+        name: str = "llm",
+    ) -> None:
         self.base_url = base_url
         self.model = model
         self.api_key = api_key
+        self.name = name
 
     def solve(self, task: ForgeTask, budget: int) -> AgentRun:
         import json
+        import logging
 
         import httpx
 
+        log = logging.getLogger(__name__)
         trajectory: list[dict[str, Any]] = []
         solved = False
         for step in range(budget):
@@ -208,7 +215,8 @@ class LlmSolver:
                         "messages": [{"role": "user", "content": prompt}],
                         "temperature": 0,
                     },
-                    timeout=30,
+                    headers={"Authorization": f"Bearer {self.api_key}"},
+                    timeout=60,
                 )
                 resp.raise_for_status()
                 content = resp.json()["choices"][0]["message"]["content"]
@@ -222,7 +230,8 @@ class LlmSolver:
                 if task.verify(trajectory):
                     solved = True
                     break
-            except Exception:
+            except Exception as exc:
+                log.warning("LlmSolver step %d failed for task %s (%s): %s", step, task.task_id, self.model, exc)
                 break  # endpoint down / parse error → treat as failure
         return AgentRun(
             solver=self.name,

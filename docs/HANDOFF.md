@@ -203,8 +203,9 @@ LLM-as-judge reliability research:
 | `contamination.py` | Leak probes on value-level signatures, external-corpus n-gram matching, structural OOD between splits | P7 |
 | `benchmark.py` | The orchestrator: generate → gauntlet → calibrate → fit → stratify → solve → score → monitor | the pipeline |
 | `analysis.py` | Per-run analysis artifact (bandwidth, efficiency, calibration deciles, contamination, ARC reference) | the evidence |
-| `cli.py` | `bench` and `matrix` subcommands; artifacts to `docs/validation/` | reproducibility |
-| `studies/` | S1-S5 study harnesses | the measurements |
+| `cli.py` | `bench` and `matrix` subcommands; artifacts to `docs/validation/`; `--llm-api-key`/`--llm-name` for real-model runs against any OpenAI-compatible endpoint | reproducibility |
+| `calibration_queue.py` | `CalibrationQueue` + `RealHumanOracle` — infra-ready, protocol-conformant real-human calibration, no live data yet | P3 real-oracle path |
+| `studies/` | S1-S6 study harnesses (+ S4b real-surrogate probe) | the measurements |
 
 ### 4.2 The study harness (`forge/study.py`)
 
@@ -289,6 +290,38 @@ default (5, 0.5) on held-out folds (predictability 1.0 both, 0/4 folds won).
 Evidence that at this scale, the default is fine and tuning is overfitting the
 construction — itself a publishable null result.
 
+### S6 — judge-ladder budget study (real LLM judge, DeepSeek)
+
+Extends Airbnb's judge-calibration loop into a budget question: does a
+calibrated LLM judge pre-screening task difficulty let you cut the 10-attempt
+human-calibration budget without the difficulty model lying? 60 tasks, one
+real judge call per task (reused across the threshold sweep):
+
+| threshold | auto-resolved | budget used | calibration monotonicity |
+|---|---|---|---|
+| 0.0 (none) | 0/60 | 100% | -0.7244 |
+| 0.1 | 6/60 | 90% | -0.7129 |
+| 0.2 | 11/60 | 81.7% | -0.7244 |
+| 0.3-0.4 | 51/60 | 15% | -0.5538 |
+| 0.5 (max) | 60/60 | 0% | -0.6942 |
+
+10-18% of budget is free (thresholds 0.1-0.2, no monotonicity loss). Past
+that the real judge's own score distribution turns out to be compressed
+(never rates anything above 0.6 on a 0-1 scale across all 60 tasks) —
+applying S1's difficulty-compression failure mode to itself, discovered
+empirically. Artifact: `docs/validation/studies/s6-judge-ladder.json`.
+
+### S4b — real-surrogate contamination probe (real LLM, DeepSeek)
+
+S4 validates the leak-probe mechanism synthetically. S4b sends a real model
+only a task's structural hint (tool names + arg keys, values withheld) and
+checks whether it reproduces the withheld values — the literal Gemini-3
+scenario. 20 never-leaked tasks against DeepSeek: **0/20 fired**, false-fire
+0.0000, matching S4's synthetic clean baseline. This is the calibration
+baseline; it says nothing about detection on a model that has actually
+leaked (untested — no real leak event or fine-tune was available this pass).
+Artifact: `docs/validation/studies/s4b-real-surrogate.json`.
+
 ### The benchmark runs
 
 400-task benchmark, 3 seeds, identical every time: **random 0.0 | greedy
@@ -296,6 +329,26 @@ construction — itself a publishable null result.
 0.72 → 0.27 as difficulty rises); split predictability 1.0; contamination
 fire-on-leaked 1.0. The bandwidth is real: greedy solves 24.6% of tasks at
 full efficiency and fails the rest (stdev 0.57 on per-level efficiency).
+
+### The real-LLM run (real model, DeepSeek) — first honest human-vs-AI point
+
+`LlmSolver` (previously untested against a live endpoint, and previously
+missing bearer-token auth — fixed) run against DeepSeek `deepseek-chat` at
+two scales:
+
+| scale | random | greedy | DeepSeek | perfect |
+|---|---|---|---|---|
+| 23-task pilot | 0.000 | 0.304 | 0.826 (82.6%) | 1.000 |
+| 60-task confirmatory | 0.000 | 0.240 | **0.907 (90.7%)** | 1.000 |
+
+75 tasks generated, 60 survived the gauntlet + 2-of-10 calibration bar at
+the larger scale. Consistent across both runs, and per S2's own
+sample-size-scaling finding the 60-task number is the more trustworthy of
+the two. First real-model data point this pipeline has ever produced. A
+local Ollama comparison endpoint was not available in this environment —
+the open-weight-vs-frontier comparison this would enable remains a queued
+next step, not a completed one. Artifact:
+`docs/validation/benchmark-agentic-tooluse-deepseek.json`.
 
 ---
 
@@ -314,35 +367,59 @@ full efficiency and fails the rest (stdev 0.57 on per-level efficiency).
   to Notion.
 
 ### Honest limits
-- **The human oracle is simulated** (deterministic sigmoid with seeded
-  noise). Real-human calibration via the knowledge :8202 / harness HITL queues
-  is the documented next step. This is the single biggest caveat on any
-  external claim.
+- **The human oracle is still simulated for the main benchmark run**
+  (deterministic sigmoid with seeded noise). `calibration_queue.py` now gives
+  a protocol-conformant, infra-ready `RealHumanOracle` (proven by a
+  mock-backed integration test, and by direct injection into
+  `run_benchmark(oracle=...)` with zero other code changes) — but it holds
+  zero live human data, and `calibrate()` raises rather than fabricating an
+  outcome for an under-quota task. Wiring it to an actual human-review
+  surface (dock-style UI, real reviewers) is still the single biggest
+  caveat on any external claim.
 - **The task domain is narrow**: tool-use over a mock registry. The
   methodology is the subject; the tasks are deliberately simple.
 - **The benchmark is not yet competitive with ARC-AGI-3** in difficulty. It
   is a proof that the methodology runs end-to-end with every property measured.
-- **No real LLM run yet**: the LlmSolver bridge is tested against a mock
-  OpenAI-compatible endpoint; no Ollama runtime was available. A frontier-model
-  run is the natural next benchmark data point.
+- **Real-LLM run: DeepSeek only.** `LlmSolver` now has bearer-token auth
+  (previously missing — it silently sent no `Authorization` header) and was
+  run for real against DeepSeek (23-task pilot, RHAE 0.826). No local Ollama
+  runtime was available in this environment, so the open-weight-vs-frontier
+  comparison remains queued.
+- **S4b's real-surrogate probe only has a clean-baseline reading** (0/20
+  fire, real DeepSeek, never-leaked tasks). No genuinely leaked real model
+  was available to test positive detection.
+- **Harder task domains were explicitly scoped out this pass** — the
+  generality question (does the methodology transfer beyond tool-use)
+  remains open.
 
 ---
 
 ## 7. Open paths (in priority order)
 
-1. **Real-human calibration.** Wire the calibration queue (knowledge :8202 /
-   harness HITL) to replace the simulated oracle. The whole thesis strengthens
-   or falls on this.
-2. **Real-LLM runs.** Provision Ollama, run LlmSolver against the benchmark,
-   publish the first honest human-vs-AI RHAE curve on Foundry tasks.
-3. **S6 — judge-ladder budget study.** How much human annotation do you need
-   if a calibrated judge ladder pre-screens difficulty? Directly extends
-   Airbnb's calibration loop + METR's sample-efficiency framing.
-4. **Harder task domains.** Compositional multi-step tasks, retrieval-grounded
-   claims (via the knowledge gate), classification. Generality evidence: does
-   the methodology transfer, or is it tool-use-specific?
-5. **Contamination leak probes with a real surrogate model** (the Gemini-3
-   scenario): can an LLM complete task formats from hints alone?
+1. **Real-human calibration — PARTIAL.** `calibration_queue.py`
+   (`CalibrationQueue` + `RealHumanOracle`) is built, protocol-conformant,
+   and integration-tested against `run_benchmark`. What's still missing: an
+   actual human-review surface feeding it (dock UI, real reviewers) and any
+   live human data. Still the item the whole thesis strengthens or falls on.
+2. **Real-LLM runs — PARTIAL.** Done against DeepSeek at two scales (23-task
+   pilot RHAE 0.826; 60-task confirmatory RHAE 0.907, 90.7% solve rate — the
+   first honest human-vs-AI-adjacent RHAE points on this pipeline). Not
+   done: a local Ollama endpoint wasn't available in this environment, so
+   the frontier-vs-open-weight comparison is still queued.
+3. **S6 — judge-ladder budget study — DONE.** Real DeepSeek judge, 60 tasks;
+   10-18% of human-attempt budget cuttable at no monotonicity cost, and the
+   judge's own difficulty ratings turned out compressed (never above 0.6/1.0)
+   — an empirical instance of Airbnb's calibration-loop warning, not an
+   assumed one. See §5.
+4. **Harder task domains — NOT STARTED.** Explicitly scoped out this pass.
+   Compositional multi-step tasks, retrieval-grounded claims (via the
+   knowledge gate), classification. Generality evidence: does the
+   methodology transfer, or is it tool-use-specific?
+5. **Contamination leak probes with a real surrogate model — PARTIAL.**
+   `run_llm_leak_probes` built and run against DeepSeek: 0/20 false-fire on
+   never-leaked tasks (S4b). What's missing: a genuinely leaked real model to
+   test positive detection — the actual Gemini-3 scenario needs a model that
+   *has* seen the benchmark, which this pass couldn't produce.
 
 ---
 
@@ -360,6 +437,13 @@ uv run python -m trust.forge.studies.s2_scaling
 uv run python -m trust.forge.studies.s3_difficulty_cv
 uv run python -m trust.forge.studies.s4_contamination_roc
 uv run python -m trust.forge.studies.s5_stratification_cv
+uv run python -m trust.forge.studies.s6_judge_ladder --tasks 60
+
+# real-model runs (need MODEL_PROVIDER_BASE_URL / MODEL_PROVIDER_MODEL_ID /
+# MODEL_PROVIDER_API_KEY, or point --llm-base at a local Ollama :11434/v1)
+uv run python -m trust.forge.cli bench --tasks 60 --seed 7 \
+  --llm --llm-base https://api.deepseek.com/v1 --llm-model deepseek-chat --llm-name llm-deepseek
+uv run python -m trust.forge.studies.s4b_real_surrogate --tasks 20
 
 # the whole monorepo
 make validate
