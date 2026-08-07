@@ -24,7 +24,13 @@ async function spawnTrustScorer(): Promise<{ proc: ReturnType<typeof spawn>; rea
     ['-c', `
 import threading, time, uvicorn
 from trust.scorer.serve import create_app, _uniform_fallback
-uvicorn.run(create_app(lambda: _uniform_fallback()), host='127.0.0.1', port=${PORT}, log_level='warning')
+# Build the fallback scorer ONCE at boot, not per-request: _uniform_fallback()
+# does a real sklearn isotonic .fit() every call, and re-fitting cold on the
+# first /confidence request can exceed the TS client's 2s request timeout
+# under CI load. The provider callable exists for hot-reload semantics in
+# production; this fallback is a constant, so caching it is exactly correct.
+_scorer = _uniform_fallback()
+uvicorn.run(create_app(lambda: _scorer), host='127.0.0.1', port=${PORT}, log_level='warning')
 `],
   );
   let bootLog = '';
