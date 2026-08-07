@@ -17,8 +17,11 @@ from trust.forge.benchmark import run_benchmark
 from trust.forge.contamination import (
     ContaminationReport,
     corpus_overlap,
+    format_hint,
+    format_signature,
     monitor_contamination,
     run_leak_probes,
+    run_llm_leak_probes,
     structural_ood_score,
 )
 from trust.forge.generators import ToolUseTaskGenerator
@@ -146,6 +149,31 @@ class TestContamination:
         public, private = tasks[:15], tasks[15:]
         overlap = structural_ood_score(public, private)
         assert overlap < 0.5
+
+    def test_llm_leak_probe_fires_when_surrogate_reproduces_signature(self, tasks):
+        # surrogate that "already knows" the withheld values, despite the
+        # hint containing only tool names + arg keys — the Gemini-3
+        # scenario: contamination, not inference from the hint.
+        def cheating_surrogate(task, hint: str) -> str:
+            sig = format_signature(task)[0]
+            return " ".join(str(v) for _tool, _key, v in sig)
+
+        probes = run_llm_leak_probes(tasks[:5], complete_fn=cheating_surrogate)
+        assert all(p.fired for p in probes)
+        assert len(probes) == 5
+
+    def test_llm_leak_probe_silent_when_surrogate_cannot_reproduce(self, tasks):
+        def honest_surrogate(task, hint: str) -> str:
+            return "I don't know the exact values."
+
+        probes = run_llm_leak_probes(tasks[:5], complete_fn=honest_surrogate)
+        assert not any(p.fired for p in probes)
+
+    def test_format_hint_withholds_no_values_only_keys(self, tasks):
+        hint = format_hint(tasks[0])
+        sig = format_signature(tasks[0])[0]
+        for _tool, _key, value in sig:
+            assert str(value) not in hint  # values must not leak into the hint itself
 
 
 class TestBenchmarkRun:

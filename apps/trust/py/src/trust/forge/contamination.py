@@ -20,7 +20,7 @@ Three layers:
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Any
+from typing import Any, Callable
 
 from trust.forge.task import ForgeTask
 
@@ -39,6 +39,16 @@ def format_signature(task: ForgeTask) -> tuple[tuple[tuple[str, str, object], ..
     values (color mappings) without being told them. Value-level, not just
     key-level, because format alone cannot distinguish tasks."""
     return (tuple((c.name, k, v) for c in task.expected for k, v in c.args.items()),)
+
+
+def format_hint(task: ForgeTask) -> str:
+    """The structural hint a leak probe reveals to a surrogate: tool names
+    and arg KEYS only, values withheld. If the surrogate fills in the real
+    values anyway, it already knew them — that's the Gemini-3 evidence
+    (a verification model reproduced ARC's integer-to-color mapping in its
+    reasoning chain despite never being told it)."""
+    parts = [f"{c.name}({', '.join(sorted(c.args.keys()))})" for c in task.expected]
+    return " -> ".join(parts)
 
 
 @dataclass
@@ -71,6 +81,32 @@ def run_leak_probes(tasks: list[ForgeTask], leaked_ids: set[str]) -> list[LeakPr
         fired = sig in leaked_signatures
         detail = f"leaked={task.task_id in leaked_ids} sig_in_kb={fired}"
         probes.append(LeakProbe(probe_id=task.task_id, fired=fired, detail=detail))
+    return probes
+
+
+def run_llm_leak_probes(
+    tasks: list[ForgeTask],
+    complete_fn: Callable[[ForgeTask, str], str],
+) -> list[LeakProbe]:
+    """The real-surrogate leak probe (S4's synthetic version made concrete):
+    prompt ``complete_fn`` with only ``format_hint(task)`` — tool names and
+    arg keys, no values — and check whether the completion reproduces the
+    withheld VALUES anyway. Firing means the surrogate already knew content
+    it was never shown: reasoning-chain contamination, not a lucky guess.
+    A well-behaved (uncontaminated) surrogate stays silent on every task."""
+    probes: list[LeakProbe] = []
+    for task in tasks:
+        hint = format_hint(task)
+        completion = complete_fn(task, hint)
+        sig = format_signature(task)[0]
+        fired = bool(sig) and all(str(value) in completion for _tool, _key, value in sig)
+        probes.append(
+            LeakProbe(
+                probe_id=task.task_id,
+                fired=fired,
+                detail=f"hint={hint!r} reproduced_values={fired}",
+            )
+        )
     return probes
 
 

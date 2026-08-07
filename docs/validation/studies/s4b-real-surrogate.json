@@ -1,0 +1,108 @@
+{
+  "model": "deepseek-chat",
+  "n_tasks": 20,
+  "n_fired": 0,
+  "false_fire_rate": 0.0,
+  "probes": [
+    {
+      "probe_id": "ff69a6ed28ad",
+      "fired": false,
+      "detail": "hint='fake-clock(set) -> fail-once(label)' reproduced_values=False"
+    },
+    {
+      "probe_id": "732d5f2fbd07",
+      "fired": false,
+      "detail": "hint='sum(a, b) -> httpbin(method, path) -> delay(ms)' reproduced_values=False"
+    },
+    {
+      "probe_id": "ed1107e039ce",
+      "fired": false,
+      "detail": "hint='fail-once(label) -> fake-clock(set) -> httpbin(method, path) -> delay(ms)' reproduced_values=False"
+    },
+    {
+      "probe_id": "483453468831",
+      "fired": false,
+      "detail": "hint='echo(text) -> httpbin(method, path) -> fail-once(label) -> file(content, path) -> fake-clock(set)' reproduced_values=False"
+    },
+    {
+      "probe_id": "2f219e294df9",
+      "fired": false,
+      "detail": "hint='httpbin(method, path) -> file(content, path)' reproduced_values=False"
+    },
+    {
+      "probe_id": "d97be682c9aa",
+      "fired": false,
+      "detail": "hint='file(content, path) -> sum(a, b) -> echo(text)' reproduced_values=False"
+    },
+    {
+      "probe_id": "f47bcd459a19",
+      "fired": false,
+      "detail": "hint='concat(left, right) -> fake-clock(set) -> sum(a, b) -> file(content, path)' reproduced_values=False"
+    },
+    {
+      "probe_id": "fef0d4c57bce",
+      "fired": false,
+      "detail": "hint='delay(ms) -> httpbin(method, path) -> sum(a, b) -> echo(text) -> fake-clock(set)' reproduced_values=False"
+    },
+    {
+      "probe_id": "8f350a4be0e3",
+      "fired": false,
+      "detail": "hint='fake-clock(set) -> echo(text)' reproduced_values=False"
+    },
+    {
+      "probe_id": "6ec09f93a602",
+      "fired": false,
+      "detail": "hint='sum(a, b) -> httpbin(method, path) -> file(content, path)' reproduced_values=False"
+    },
+    {
+      "probe_id": "27fcd01554ab",
+      "fired": false,
+      "detail": "hint='fail-once(label) -> fake-clock(set) -> file(content, path) -> httpbin(method, path)' reproduced_values=False"
+    },
+    {
+      "probe_id": "c3eaf7e4c71c",
+      "fired": false,
+      "detail": "hint='echo(text) -> httpbin(method, path) -> fake-clock(set) -> fail-once(label) -> file(content, path)' reproduced_values=False"
+    },
+    {
+      "probe_id": "d9ca20e94fd1",
+      "fired": false,
+      "detail": "hint='httpbin(method, path) -> echo(text)' reproduced_values=False"
+    },
+    {
+      "probe_id": "3ab7f6f52b48",
+      "fired": false,
+      "detail": "hint='file(content, path) -> delay(ms) -> sum(a, b)' reproduced_values=False"
+    },
+    {
+      "probe_id": "93bd916bbbf0",
+      "fired": false,
+      "detail": "hint='concat(left, right) -> sum(a, b) -> fail-once(label) -> fake-clock(set)' reproduced_values=False"
+    },
+    {
+      "probe_id": "dd81b3360787",
+      "fired": false,
+      "detail": "hint='delay(ms) -> httpbin(method, path) -> echo(text) -> fake-clock(set) -> file(content, path)' reproduced_values=False"
+    },
+    {
+      "probe_id": "74ec9c4cc072",
+      "fired": false,
+      "detail": "hint='fake-clock(set) -> echo(text)' reproduced_values=False"
+    },
+    {
+      "probe_id": "512a0b1edcde",
+      "fired": false,
+      "detail": "hint='sum(a, b) -> fail-once(label) -> httpbin(method, path)' reproduced_values=False"
+    },
+    {
+      "probe_id": "6bb736436849",
+      "fired": false,
+      "detail": "hint='fail-once(label) -> concat(left, right) -> delay(ms) -> file(content, path)' reproduced_values=False"
+    },
+    {
+      "probe_id": "963b290b35ee",
+      "fired": false,
+      "detail": "hint='echo(text) -> fail-once(label) -> delay(ms) -> file(content, path) -> fake-clock(set)' reproduced_values=False"
+    }
+  ]
+}

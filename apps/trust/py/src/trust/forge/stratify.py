@@ -9,6 +9,9 @@ difficulty histograms match across splits.
 ``split_predictability`` is the acceptance test: fit per-split solve rates
 and require a minimum rank correlation between splits on a synthetic
 population of systems — a deliberately mis-stratified split must fail it.
+``split_distribution_kl`` is a separate, uncombined diagnostic (not part of
+the accept/reject decision) for eyeballing how well-matched the two
+difficulty histograms are.
 """
 from __future__ import annotations
 

@@ -20,6 +20,7 @@ Studies:
 """
 from __future__ import annotations
 
+import dataclasses
 import json
 import math
 from pathlib import Path
@@ -112,14 +113,13 @@ def make_population(n_tasks: int, difficulty_scale: float = 1.0) -> list[Any]:
     S1 uses this to vary how much difficulty signal the generator emits."""
     tasks = ToolUseTaskGenerator().generate(n=n_tasks)
     if difficulty_scale != 1.0:
-        for t in tasks:
-            t = t  # immutable; rebuilt below
-        scaled = []
-        for t in tasks:
-            import dataclasses
-
-            scaled.append(dataclasses.replace(t, difficulty_seed=max(0.05, min(0.98, t.difficulty_seed * difficulty_scale))))
-        tasks = scaled
+        tasks = [
+            dataclasses.replace(
+                t,
+                difficulty_seed=max(0.05, min(0.98, t.difficulty_seed * difficulty_scale)),
+            )
+            for t in tasks
+        ]
     return tasks
 
 

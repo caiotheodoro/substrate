@@ -14,7 +14,7 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Protocol
+from typing import Protocol, runtime_checkable
 
 from trust.forge.task import ForgeTask
 
@@ -43,6 +43,7 @@ class CalibrationOutcome:
         }
 
 
+@runtime_checkable
 class HumanOracle(Protocol):
     def calibrate(self, task: ForgeTask, n_attempts: int = 10) -> CalibrationOutcome: ...
 

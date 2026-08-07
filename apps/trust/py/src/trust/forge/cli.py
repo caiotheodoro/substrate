@@ -24,7 +24,10 @@ DEFAULT_OUT = Path("docs/validation")
 def _solvers(seed: int, args: argparse.Namespace) -> list:
     solvers = [RandomSolver(seed=seed), GreedySolver(), PerfectSolver()]
     if args.llm:
-        solvers.append(LlmSolver(base_url=args.llm_base, model=args.llm_model))
+        import os
+
+        api_key = args.llm_api_key or os.environ.get("MODEL_PROVIDER_API_KEY", "ollama")
+        solvers.append(LlmSolver(base_url=args.llm_base, model=args.llm_model, api_key=api_key, name=args.llm_name))
     return solvers
 
 
@@ -67,9 +70,11 @@ def build_parser() -> argparse.ArgumentParser:
     b.add_argument("--tasks", type=int, default=120)
     b.add_argument("--seed", type=int, default=7)
     b.add_argument("--out", default=str(DEFAULT_OUT))
-    b.add_argument("--llm", action="store_true", help="add the LLM solver (Ollama endpoint required)")
+    b.add_argument("--llm", action="store_true", help="add the LLM solver (OpenAI-compatible endpoint required)")
     b.add_argument("--llm-base", default="http://localhost:11434/v1")
     b.add_argument("--llm-model", default="qwen2.5:3b")
+    b.add_argument("--llm-api-key", default=None, help="falls back to $MODEL_PROVIDER_API_KEY, then 'ollama'")
+    b.add_argument("--llm-name", default="llm", help="solver label in the artifact (e.g. 'llm-ollama', 'llm-deepseek')")
     b.set_defaults(fn=cmd_bench)
 
     m = sub.add_parser("matrix", help="run across seeds (reproducibility)")
@@ -80,6 +85,8 @@ def build_parser() -> argparse.ArgumentParser:
     m.add_argument("--llm", action="store_true")
     m.add_argument("--llm-base", default="http://localhost:11434/v1")
     m.add_argument("--llm-model", default="qwen2.5:3b")
+    m.add_argument("--llm-api-key", default=None)
+    m.add_argument("--llm-name", default="llm")
     m.set_defaults(fn=cmd_matrix)
     return p
 
