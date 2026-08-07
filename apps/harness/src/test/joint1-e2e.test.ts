@@ -24,14 +24,29 @@ async function spawnTrustScorer(): Promise<{ proc: ReturnType<typeof spawn>; rea
     ['-c', `
 import threading, time, uvicorn
 from trust.scorer.serve import create_app, _uniform_fallback
-uvicorn.run(create_app(lambda: _uniform_fallback()), host='127.0.0.1', port=${PORT}, log_level='warning')
+# Build the fallback scorer ONCE at boot, not per-request: _uniform_fallback()
+# does a real sklearn isotonic .fit() every call, and re-fitting cold on the
+# first /confidence request can exceed the TS client's 2s request timeout
+# under CI load. The provider callable exists for hot-reload semantics in
+# production; this fallback is a constant, so caching it is exactly correct.
+_scorer = _uniform_fallback()
+uvicorn.run(create_app(lambda: _scorer), host='127.0.0.1', port=${PORT}, log_level='warning')
 `],
   );
+  let bootLog = '';
+  python.stderr?.on('data', (d) => {
+    if (bootLog.length < 2000) bootLog += String(d);
+  });
+  python.stdout?.on('data', (d) => {
+    if (bootLog.length < 2000) bootLog += String(d);
+  });
   const ready = () =>
     new Promise<void>((resolve, reject) => {
-      const deadline = Date.now() + 20000;
+      const deadline = Date.now() + 45000; // generous under full-suite parallel load (see 07cdba8)
       const probe = () => {
-        if (Date.now() > deadline) return reject(new Error('scorer did not come up'));
+        if (Date.now() > deadline) {
+          return reject(new Error(`scorer did not come up — boot log:\n${bootLog.slice(-1200)}`));
+        }
         const req = createServer.length; // noop to keep import
         void req;
         fetch(`http://127.0.0.1:${PORT}/health`)
@@ -48,8 +63,8 @@ describe.skipIf(!PYTHON_AVAILABLE)('joint1 C5 cross-language — TS gate ← Pyt
     const { proc, ready } = await spawnTrustScorer();
     try {
       await ready();
-    } catch {
-      console.warn('python trust scorer unavailable; skipping cross-language e2e');
+    } catch (err) {
+      console.warn('python trust scorer unavailable; skipping cross-language e2e:', err);
       proc.kill();
       return;
     }
@@ -64,5 +79,5 @@ describe.skipIf(!PYTHON_AVAILABLE)('joint1 C5 cross-language — TS gate ← Pyt
     } finally {
       proc.kill();
     }
-  }, 30000);
+  }, 50000);
 });
