@@ -44,6 +44,41 @@ class TestGenerators:
             reversed_traj = [{"name": c.name, "args": c.args} for c in reversed(t.expected)]
             assert t.verify(reversed_traj)
 
+    def test_tool_use_generator_tolerates_leading_waste(self):
+        """RHAE needs agents that recover from a wrong early call to still
+        solve (with more actions than the minimal path) rather than being
+        permanently disqualified by exact-length matching — otherwise every
+        solved task has agent_actions == len(expected) always, and the
+        efficiency ratio can never vary. A trajectory that pads a wasted,
+        wrong call in front of the exact expected tail must still verify,
+        and n_actions (== trajectory length) must reflect the waste."""
+        tasks = ToolUseTaskGenerator().generate(n=10)
+        for t in tasks:
+            by_name = {tool.name: tool for tool in t.tools}
+            wasted = {"name": "echo", "args": {"text": "wrong-first-guess"}}
+            correct_tail = [{"name": c.name, "args": c.args, "result": by_name[c.name](c.args)} for c in t.expected]
+            trajectory = [wasted, *correct_tail]
+            assert t.verify(trajectory), t.task_id
+            assert len(trajectory) == len(t.expected) + 1
+
+    def test_tool_use_generator_rejects_wrong_tail_even_with_extra_length(self):
+        tasks = ToolUseTaskGenerator().generate(n=5)
+        for t in tasks:
+            by_name = {tool.name: tool for tool in t.tools}
+            correct_tail = [{"name": c.name, "args": c.args, "result": by_name[c.name](c.args)} for c in t.expected]
+            wrong_last = dict(correct_tail[-1])
+            wrong_last["args"] = {**wrong_last["args"], "text": "definitely-not-it"} if "text" in wrong_last["args"] else {"corrupted": True}
+            trajectory = [{"name": "echo", "args": {"text": "waste"}}, *correct_tail[:-1], wrong_last]
+            assert not t.verify(trajectory), t.task_id
+
+    def test_ambiguous_generator_tolerates_leading_waste(self):
+        tasks = AmbiguousTaskGenerator().generate(n=5)
+        for t in tasks:
+            wasted = {"name": "echo", "args": {"text": "scratch"}}
+            correct_tail_any_order = [{"name": c.name, "args": c.args} for c in reversed(t.expected)]
+            trajectory = [wasted, *correct_tail_any_order]
+            assert t.verify(trajectory), t.task_id
+
 
 class TestVerifiers:
     def test_exact_verifier_rejects_wrong_order(self):
@@ -162,6 +197,41 @@ class TestForgeOrchestrator:
     def test_forge_ambiguous_generator(self):
         output = forge_tasks(AmbiguousTaskGenerator().generate, min_pass_rate=0.95)
         assert output.pass_rate >= 0.95
+
+    def test_forge_rejects_in_batch_duplicate_signature(self):
+        """The module docstring claims a 'duplicate task' gate. It never
+        had a test: `forge_tasks` used to check every task's novelty
+        against a corpus fixed at whatever the caller passed in (nothing,
+        by default) for the WHOLE batch, so two identical tasks generated
+        in the same call never saw each other and both passed. A generator
+        that emits the same expected trajectory twice must fail novelty on
+        the second occurrence (the first is legitimately novel — nothing
+        preceded it)."""
+        from trust.forge.generators import mirror_mock_tools
+
+        tools = {t.name: t for t in mirror_mock_tools()}
+        echo = tools["echo"]
+        calls = (ToolCall(name="echo", args={"text": "same-every-time"}),)
+
+        def gen():
+            return [
+                ForgeTask(
+                    task_id=f"dup-{i}",
+                    prompt="say the same marker",
+                    tools=(echo,),
+                    expected=calls,
+                    verifier=lambda trajectory: trajectory == [{"name": "echo", "args": {"text": "same-every-time"}}],
+                    difficulty_seed=0.3,
+                )
+                for i in range(3)
+            ]
+
+        output = forge_tasks(gen, min_pass_rate=0.0)
+        # first occurrence is novel (nothing preceded it); the other two
+        # are exact duplicates of it and must be flagged
+        assert output.gauntlet["dup-0"].checks["novel"]
+        assert not output.gauntlet["dup-1"].checks["novel"]
+        assert not output.gauntlet["dup-2"].checks["novel"]
 
     # -- helpers for the bad-task generator above --
     @staticmethod

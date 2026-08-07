@@ -1,37 +1,37 @@
 {
   "0.0": {
-    "calibration_monotonicity": -0.5896,
+    "calibration_monotonicity": -0.7059,
     "split_predictability": 1.0,
-    "difficulty_bandwidth": 0.149,
-    "oracle_discrimination": 0.2162,
+    "difficulty_bandwidth": 0.15,
+    "oracle_discrimination": 0.2137,
     "noise": 0.0
   },
   "0.02": {
-    "calibration_monotonicity": -0.5896,
+    "calibration_monotonicity": -0.6987,
     "split_predictability": 1.0,
-    "difficulty_bandwidth": 0.149,
-    "oracle_discrimination": 0.2162,
+    "difficulty_bandwidth": 0.1487,
+    "oracle_discrimination": 0.2141,
     "noise": 0.02
   },
   "0.05": {
-    "calibration_monotonicity": -0.5896,
+    "calibration_monotonicity": -0.6875,
     "split_predictability": 1.0,
     "difficulty_bandwidth": 0.149,
     "oracle_discrimination": 0.2162,
     "noise": 0.05
   },
   "0.1": {
-    "calibration_monotonicity": -0.5896,
+    "calibration_monotonicity": -0.6655,
     "split_predictability": 1.0,
-    "difficulty_bandwidth": 0.149,
-    "oracle_discrimination": 0.2162,
+    "difficulty_bandwidth": 0.1452,
+    "oracle_discrimination": 0.2171,
     "noise": 0.1
   },
   "0.2": {
-    "calibration_monotonicity": -0.5896,
+    "calibration_monotonicity": -0.6593,
     "split_predictability": 1.0,
-    "difficulty_bandwidth": 0.149,
-    "oracle_discrimination": 0.2162,
+    "difficulty_bandwidth": 0.1517,
+    "oracle_discrimination": 0.2278,
     "noise": 0.2
   }
 }

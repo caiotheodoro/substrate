@@ -3,7 +3,7 @@
     "seed": 7,
     "scores": {
       "random": 0.0,
-      "greedy": 0.246,
+      "greedy": 0.282,
       "perfect": 1.0
     }
   },
@@ -11,7 +11,7 @@
     "seed": 11,
     "scores": {
       "random": 0.0,
-      "greedy": 0.246,
+      "greedy": 0.282,
       "perfect": 1.0
     }
   },
@@ -19,7 +19,7 @@
     "seed": 42,
     "scores": {
       "random": 0.0,
-      "greedy": 0.246,
+      "greedy": 0.282,
       "perfect": 1.0
     }
   }

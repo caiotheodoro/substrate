@@ -207,6 +207,16 @@ class LlmSolver:
                 f"Previous calls:\n{history or '(none)'}\n\n"
                 'Emit ONLY a JSON object like {"name": "<tool>", "args": {...}} for the next tool call.'
             )
+            # Network/HTTP failures are unrecoverable -- the endpoint
+            # itself is the problem, so the episode ends. A hallucinated
+            # tool name or malformed JSON response is NOT the same class
+            # of failure: a real model can second-guess itself and still
+            # land on the right answer next turn. Treating both the same
+            # (break immediately) used to mean one bad tool name killed the
+            # whole episode instead of costing a single wasted action --
+            # the suffix-tolerant verifier (generators._exact_verifier)
+            # exists specifically so a trajectory like that can still
+            # verify once the agent recovers.
             try:
                 resp = httpx.post(
                     f"{self.base_url}/chat/completions",
@@ -219,20 +229,32 @@ class LlmSolver:
                     timeout=60,
                 )
                 resp.raise_for_status()
+            except httpx.HTTPError as exc:
+                log.warning("LlmSolver step %d: endpoint failure for task %s (%s): %s", step, task.task_id, self.model, exc)
+                break
+
+            try:
                 content = resp.json()["choices"][0]["message"]["content"]
                 content = content.strip().strip("`")
                 if content.startswith("json"):
                     content = content[4:].strip()
                 call = json.loads(content)
                 name, args = call["name"], call.get("args", {})
-                result = next(t for t in task.tools if t.name == name)(args)
-                trajectory.append({"name": name, "args": args, "result": result})
-                if task.verify(trajectory):
-                    solved = True
-                    break
+                tool = next((t for t in task.tools if t.name == name), None)
+                if tool is None:
+                    log.warning("LlmSolver step %d: hallucinated tool %r for task %s", step, name, task.task_id)
+                    trajectory.append({"name": name, "args": args, "result": {"ok": False, "error": "unknown tool"}})
+                    continue
+                result = tool(args)
             except Exception as exc:
-                log.warning("LlmSolver step %d failed for task %s (%s): %s", step, task.task_id, self.model, exc)
-                break  # endpoint down / parse error → treat as failure
+                log.warning("LlmSolver step %d: malformed response for task %s (%s): %s", step, task.task_id, self.model, exc)
+                trajectory.append({"name": "(parse-error)", "args": {}, "result": {"ok": False, "error": str(exc)}})
+                continue
+
+            trajectory.append({"name": name, "args": args, "result": result})
+            if task.verify(trajectory):
+                solved = True
+                break
         return AgentRun(
             solver=self.name,
             task_id=task.task_id,

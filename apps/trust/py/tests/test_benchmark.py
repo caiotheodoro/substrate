@@ -16,9 +16,12 @@ from trust.forge.agents import GreedySolver, PerfectSolver, RandomSolver
 from trust.forge.benchmark import run_benchmark
 from trust.forge.contamination import (
     ContaminationReport,
+    build_reference_corpus,
     corpus_overlap,
     format_hint,
     format_signature,
+    inject_leaks,
+    leaked_knowledge_base,
     monitor_contamination,
     run_leak_probes,
     run_llm_leak_probes,
@@ -125,15 +128,39 @@ class TestContamination:
         return ToolUseTaskGenerator().generate(n=30)
 
     def test_leak_probes_fire_on_leaked_not_clean(self, tasks):
-        leaked = {t.task_id for t in tasks[:5]}
-        probes = run_leak_probes(tasks, leaked)
+        """The knowledge base must be built from a source INDEPENDENT of
+        `tasks` (a prior version built it from the same population being
+        tested, so 'fire on leaked' was a tautological self-lookup — any
+        leaked task trivially matched a KB built from itself). Here the KB
+        comes from `build_reference_corpus` (a disjoint-index-range pool),
+        and `inject_leaks` is what actually makes a task's signature equal
+        to something in that external KB."""
+        reference = build_reference_corpus(10)
+        mutated, leaked_ids = inject_leaks(tasks, reference, fraction=5 / len(tasks), seed=1)
+        assert len(leaked_ids) == 5
+        kb = leaked_knowledge_base(reference)
+        probes = run_leak_probes(mutated, kb)
         fired = [p for p in probes if p.fired]
         assert len(fired) == 5  # exactly the leaked, by unique signature
-        assert all(p.probe_id in leaked for p in fired)
+        assert {p.probe_id for p in fired} == leaked_ids
+
+    def test_leak_probes_do_not_fire_when_kb_is_unrelated(self, tasks):
+        """The other half of the tautology check: a KB that has NOTHING to
+        do with this task population (no injection happened) must not
+        fire on anything, by real signature mismatch — not by construction."""
+        reference = build_reference_corpus(10)
+        kb = leaked_knowledge_base(reference)
+        probes = run_leak_probes(tasks, kb)  # tasks never mutated to match
+        assert not any(p.fired for p in probes)
 
     def test_monitor_reports_rates(self, tasks):
-        public, private = tasks[:15], tasks[15:]
-        report = monitor_contamination(tasks, public=public, private=private, leaked_ids={tasks[0].task_id})
+        reference = build_reference_corpus(10)
+        mutated, leaked_ids = inject_leaks(tasks, reference, fraction=1 / len(tasks), seed=1)
+        kb = leaked_knowledge_base(reference)
+        public, private = mutated[:15], mutated[15:]
+        report = monitor_contamination(
+            mutated, public=public, private=private, knowledge_base=kb, leaked_ids=leaked_ids
+        )
         assert isinstance(report, ContaminationReport)
         d = report.as_dict()
         assert "leak_probe_fire_rate_on_leaked" in d
@@ -169,6 +196,53 @@ class TestContamination:
         probes = run_llm_leak_probes(tasks[:5], complete_fn=honest_surrogate)
         assert not any(p.fired for p in probes)
 
+    def test_llm_leak_probe_does_not_fire_on_substring_coincidence(self):
+        """`str(value) in completion` fires on ANY substring match — a
+        completion containing "13" would trivially "reproduce" a value of
+        3 (str(3) == "3", and "3" is a substring of "13"). Small int-typed
+        args make this a real false-positive risk: several mock tools
+        (sum, delay) use plain integers. A single-call, single-int-arg
+        task isolates the bug precisely — a surrogate that only mentions
+        the value embedded inside a larger, unrelated number must not be
+        flagged as having reproduced it."""
+        from trust.forge.generators import mirror_mock_tools
+        from trust.forge.task import ForgeTask, ToolCall
+
+        by_name = {t.name: t for t in mirror_mock_tools()}
+        task = ForgeTask(
+            task_id="int-arg-1",
+            prompt="delay 3ms",
+            tools=(by_name["delay"],),
+            expected=(ToolCall(name="delay", args={"ms": 3}),),
+            verifier=lambda trajectory: True,
+            difficulty_seed=0.3,
+        )
+
+        def near_miss_surrogate(task, hint: str) -> str:
+            return "somewhere around 13 or 39, hard to say exactly"
+
+        probes = run_llm_leak_probes([task], complete_fn=near_miss_surrogate)
+        assert not probes[0].fired, probes[0].detail
+
+        def exact_surrogate(task, hint: str) -> str:
+            return "it's 3 milliseconds"
+
+        probes2 = run_llm_leak_probes([task], complete_fn=exact_surrogate)
+        assert probes2[0].fired, probes2[0].detail
+
+    def test_llm_leak_probe_logs_the_completion_not_just_fired(self, tasks):
+        """A total network outage and a genuinely honest 'I don't know'
+        both produce fired=False — previously indistinguishable in the
+        artifact (only hint + fired/not were recorded). The completion
+        itself must be visible so a real result can be told apart from a
+        masked failure on inspection."""
+
+        def surrogate(task, hint: str) -> str:
+            return "the model actually said this exact sentence"
+
+        probes = run_llm_leak_probes(tasks[:1], complete_fn=surrogate)
+        assert "the model actually said this exact sentence" in probes[0].detail
+
     def test_format_hint_withholds_no_values_only_keys(self, tasks):
         hint = format_hint(tasks[0])
         sig = format_signature(tasks[0])[0]
@@ -178,7 +252,12 @@ class TestContamination:
 
 class TestBenchmarkRun:
     def test_end_to_end_benchmark_produces_artifacts(self, tmp_path):
-        run = run_benchmark(n_tasks=30, seed=3, verbose=False)
+        # n_tasks=120: split predictability needs enough post-calibration
+        # tasks per difficulty bin for a stable correlation (S2's own
+        # sample-size lesson) — 30 tasks shrinks to ~33 calibrated survivors
+        # after the 2-of-10 bar is actually enforced, too few for a
+        # reliable >=0.8 correlation on the synthetic-system check below.
+        run = run_benchmark(n_tasks=120, seed=3, verbose=False)
         assert run.metadata["gauntlet_pass_rate"] >= 0.95
         assert run.scores["perfect"]["total"] > 0.9
         assert run.scores["random"]["total"] < 0.1
@@ -189,6 +268,54 @@ class TestBenchmarkRun:
         assert "leak_probe_fire_rate_on_leaked" in run.contamination
         path = run.write(tmp_path)
         assert path.exists()
+
+    def test_only_calibrated_tasks_are_scored(self, tmp_path):
+        """The 2-of-10 bar is a rejection gate, not a diagnostic: a task
+        nobody reliably solves twice must not reach difficulty fitting,
+        stratification, or scoring. `calibration` in the artifact still
+        reports every gauntlet survivor (rejects included, for
+        transparency); `tasks`/`difficulty`/`scores` must not."""
+        run = run_benchmark(n_tasks=40, seed=5, verbose=False)
+        n_gauntlet = run.metadata["n_gauntlet_survivors"]
+        n_calibrated = run.metadata["n_calibrated"]
+        assert n_calibrated <= n_gauntlet
+        # every task actually carried through to scoring passed calibration
+        assert len(run.tasks) == n_calibrated
+        assert len(run.difficulty) == n_calibrated
+        assert set(run.difficulty) == {t.task_id for t in run.tasks}
+        for solver_runs in run.solver_runs.values():
+            assert len(solver_runs) == n_calibrated
+        # every scored task's own calibration record says solved
+        for t in run.tasks:
+            assert run.calibration[t.task_id]["solved"]
+        # but rejected gauntlet survivors (if any) still have a visible
+        # calibration record — rejection isn't silent
+        assert len(run.calibration) == n_gauntlet
+
+    def test_rhae_efficiency_varies_across_solved_tasks(self):
+        """The whole point of RHAE is a per-task efficiency SIGNAL, not a
+        relabeled solve rate. Before the fix, every solved task scored
+        exactly the same (agent_actions always == len(expected), human
+        baseline unrelated to task length, ratio always saturating the 1.15
+        cap) — RHAE total was arithmetically identical to solve rate for
+        every solver. After grounding the human baseline in task length and
+        making the verifier suffix-tolerant (so a struggling-but-eventually-
+        correct agent's action count can exceed len(expected)), per-level
+        efficiency must show real spread, not a single repeated value."""
+        run = run_benchmark(n_tasks=60, seed=9, verbose=False)
+        perfect_scores = run.scores["perfect"]["environments"]
+        efficiencies = [
+            lvl["efficiency"]
+            for env in perfect_scores
+            for lvl in env["levels"]
+            if lvl["agent_actions"] > 0  # solved levels only
+        ]
+        assert len(efficiencies) > 10, "need enough solved levels to see spread"
+        distinct = {round(e, 3) for e in efficiencies}
+        assert len(distinct) > 1, (
+            f"every solved level scored the exact same efficiency ({distinct}) — "
+            "RHAE is still measuring nothing but solve rate"
+        )
 
 
 class TestLlmSolverBridge:
@@ -248,3 +375,58 @@ class TestLlmSolverBridge:
         run = solver.solve(tasks[0], budget=3)
         assert not run.solved
         assert run.n_actions == 0  # clean failure, no crash
+
+    def test_llm_solver_recovers_from_a_hallucinated_tool_call(self):
+        """A single wrong/hallucinated tool call must cost one wasted
+        action, not end the whole episode — a prior version treated any
+        StopIteration (tool name not found) or JSON parse error the same
+        as a dead endpoint (break immediately), so a real model that
+        second-guesses itself once and then gets it right was scored as a
+        total failure. With the suffix-tolerant verifier (see
+        generators._exact_verifier), a trajectory that pads a wrong call
+        in front of the correct sequence should still verify — this test
+        checks the solver actually KEEPS GOING to give it that chance."""
+        import json
+        import threading
+        from http.server import BaseHTTPRequestHandler, HTTPServer
+
+        from trust.forge.agents import LlmSolver
+        from trust.forge.generators import ToolUseTaskGenerator
+
+        tasks = ToolUseTaskGenerator().generate(n=3)
+        expected = tasks[0].expected
+        expected_payloads = [json.dumps({"name": c.name, "args": c.args}) for c in expected]
+        # first call hallucinates a tool that doesn't exist on this task
+        responses = [json.dumps({"name": "definitely-not-a-real-tool", "args": {}})] + expected_payloads
+        call_count = {"n": 0}
+
+        class Handler(BaseHTTPRequestHandler):
+            def do_POST(self):
+                length = int(self.headers["Content-Length"])
+                json.loads(self.rfile.read(length))
+                idx = min(call_count["n"], len(responses) - 1)
+                call_count["n"] += 1
+                resp = {"choices": [{"message": {"content": responses[idx]}}]}
+                data = json.dumps(resp).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(data)))
+                self.end_headers()
+                self.wfile.write(data)
+
+            def log_message(self, *args):
+                pass
+
+        server = HTTPServer(("127.0.0.1", 0), Handler)
+        port = server.server_address[1]
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        try:
+            solver = LlmSolver(base_url=f"http://127.0.0.1:{port}/v1", model="mock-model")
+            run = solver.solve(tasks[0], budget=len(expected) + 3)
+            assert run.solved, run.trajectory
+            # one wasted action (the hallucinated call) plus the correct
+            # sequence -- strictly more actions than the minimal path
+            assert run.n_actions == len(expected) + 1
+        finally:
+            server.shutdown()

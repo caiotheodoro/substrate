@@ -40,22 +40,27 @@ def difficulty_match_splits(
     *,
     private_fraction: float = 0.5,
     seed: int = 7,
+    n_bins: int = N_BINS,
 ) -> SplitSet:
     """Stratify tasks into public/private splits matched on fitted
     difficulty: bin by difficulty, then allocate proportionally per bin.
-    Deterministic (seeded RNG)."""
+    Deterministic (seeded RNG). ``n_bins`` defaults to the module's N_BINS
+    but is a real parameter — S5's nested-CV study tunes it, and a prior
+    version had no way to actually pass a swept value in here (it only
+    ever reached `split_predictability`'s own binning, the acceptance
+    TEST's ruler, not the split construction itself)."""
     import random
 
     rng = random.Random(seed)
-    binned: dict[int, list[ForgeTask]] = {i: [] for i in range(N_BINS)}
+    binned: dict[int, list[ForgeTask]] = {i: [] for i in range(n_bins)}
     for t in tasks:
         d = model.difficulty(t)
-        bin_idx = min(N_BINS - 1, int(d * N_BINS))
+        bin_idx = min(n_bins - 1, int(d * n_bins))
         binned[bin_idx].append(t)
 
     public: list[ForgeTask] = []
     private: list[ForgeTask] = []
-    for bin_idx in range(N_BINS):
+    for bin_idx in range(n_bins):
         bucket = list(binned[bin_idx])
         rng.shuffle(bucket)
         n_private = int(round(len(bucket) * private_fraction))
@@ -74,9 +79,21 @@ def difficulty_distribution(tasks: list[ForgeTask], model: DifficultyModel) -> d
     return {i: counts[i] / n for i in range(N_BINS)}
 
 
-def split_distribution_kl(public: list[ForgeTask], private: list[ForgeTask], model: DifficultyModel) -> float:
+def split_distribution_kl(
+    public: list[ForgeTask], private: list[ForgeTask], model: DifficultyModel, *, eps: float = 1e-6
+) -> float:
     """KL divergence between the two difficulty distributions — the
-    matched-stratification quality metric. Near 0 = well matched."""
+    matched-stratification quality metric. Near 0 = well matched.
+
+    Skipping a term when ``pi == 0`` is mathematically correct (the limit
+    of ``p*log(p/q)`` as ``p -> 0`` is 0). Skipping when ``qi == 0`` is
+    NOT: a bin the public split occupies that the private split never
+    touches is exactly the maximally-mismatched case KL is supposed to
+    penalize heavily (the true divergence there is +inf), and a prior
+    version silently dropped that term instead — an empty private split
+    reported KL == 0.0 ("perfectly matched") rather than the highly
+    mismatched result it actually is. ``eps`` floors ``qi`` instead of
+    skipping, so a zero-mass bin contributes a large finite penalty."""
     import math as _math
 
     p = difficulty_distribution(public, model)
@@ -84,9 +101,10 @@ def split_distribution_kl(public: list[ForgeTask], private: list[ForgeTask], mod
     kl = 0.0
     for i in range(N_BINS):
         pi = p[i]
-        qi = q[i]
-        if pi > 0 and qi > 0:
-            kl += pi * _math.log(pi / qi)
+        if pi <= 0:
+            continue
+        qi = max(q[i], eps)
+        kl += pi * _math.log(pi / qi)
     return kl
 
 
@@ -121,25 +139,45 @@ def split_predictability(
 
 
 def _bin_means(values: list[float], n_bins: int) -> list[float]:
-    """Mean of every ceil(n/n_bins) consecutive values (aligned by rank)."""
+    """Split into exactly ``min(n_bins, len(values))`` near-equal-size
+    consecutive chunks (the first ``n % k`` chunks absorb the remainder),
+    and return each chunk's mean.
+
+    Guaranteeing the EXACT chunk count (not "roughly n_bins depending on
+    how a fixed width happens to divide this particular length") is the
+    part that matters: two lists of different length, binned independently
+    with the old width-based approach, could produce a different number of
+    chunks each (e.g. len 10 and len 12 at n_bins=5 produced 5 and 4
+    chunks) — `_spearman` requires equal-length inputs and silently
+    returned 0.0 on any such mismatch, which reads as "public does not
+    predict private" when the real failure was just a binning bug.
+    """
     if not values:
         return []
-    width = max(1, math.ceil(len(values) / n_bins))
+    n = len(values)
+    k = min(n_bins, n)
+    base, extra = divmod(n, k)
     means: list[float] = []
-    for i in range(0, len(values), width):
-        chunk = values[i : i + width]
+    idx = 0
+    for i in range(k):
+        size = base + (1 if i < extra else 0)
+        chunk = values[idx : idx + size]
         means.append(sum(chunk) / len(chunk))
+        idx += size
     return means
 
 
 def _bin_spearman(a: list[float], b: list[float], n_bins: int) -> float:
     """Spearman correlation between the per-bin mean solve rates of two
     aligned (same-difficulty-rank) rate lists. Splits may have different
-    lengths — each is binned independently into the same number of bins."""
+    lengths — both are binned into the SAME chunk count
+    (``min(n_bins, len(a), len(b))``) so `_bin_means`'s output is always
+    comparable, regardless of how unevenly the two lengths divide."""
     if not a or not b:
         return 0.0
-    ba = _bin_means(a, n_bins)
-    bb = _bin_means(b, n_bins)
+    k = min(n_bins, len(a), len(b))
+    ba = _bin_means(a, k)
+    bb = _bin_means(b, k)
     if len(ba) < 2 or len(bb) < 2:
         return 0.0
     return _spearman(ba, bb)
@@ -151,16 +189,36 @@ def _spearman(a: list[float], b: list[float]) -> float:
     ra = _rank(a)
     rb = _rank(b)
     n = len(a)
-    d2 = sum((ra[i] - rb[i]) ** 2 for i in range(n))
-    denom = n * (n * n - 1) / 6.0
-    return 1.0 - (6.0 * d2) / (6.0 * denom) if denom else 0.0
+    # Pearson correlation of the (average) rank vectors — the tie-correct
+    # definition of Spearman's rho. The 1 - 6*sum(d^2)/(n(n^2-1)) shortcut
+    # only equals this when ranks are an untied 1..n permutation; with
+    # averaged ties (see _rank) it diverges from what scipy's
+    # tie-corrected spearmanr reports (see trust.forge.study.spearman,
+    # which has the same fix and a scipy cross-check test).
+    mean_ra = sum(ra) / n
+    mean_rb = sum(rb) / n
+    cov = sum((ra[i] - mean_ra) * (rb[i] - mean_rb) for i in range(n))
+    var_a = sum((x - mean_ra) ** 2 for x in ra)
+    var_b = sum((x - mean_rb) ** 2 for x in rb)
+    denom = (var_a * var_b) ** 0.5
+    return cov / denom if denom else 0.0
 
 
 def _rank(values: list[float]) -> list[float]:
-    indexed = sorted(range(len(values)), key=lambda i: values[i])
-    ranks = [0.0] * len(values)
-    for pos, idx in enumerate(indexed):
-        ranks[idx] = pos + 1
+    """Fractional (average) ranks — see study.spearman's rank() for why
+    this matters (ties are common in this pipeline's actual outputs)."""
+    n = len(values)
+    order = sorted(range(n), key=lambda i: values[i])
+    ranks = [0.0] * n
+    i = 0
+    while i < n:
+        j = i
+        while j + 1 < n and values[order[j + 1]] == values[order[i]]:
+            j += 1
+        avg_rank = (i + j) / 2.0 + 1
+        for k in range(i, j + 1):
+            ranks[order[k]] = avg_rank
+        i = j + 1
     return ranks
 
 

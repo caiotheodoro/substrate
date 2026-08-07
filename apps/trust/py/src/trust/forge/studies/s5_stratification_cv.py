@@ -30,8 +30,12 @@ from trust.forge.study import write_json
 
 
 def _predictability_for(tasks, model, n_bins: int, private_fraction: float, seed: int) -> float:
-    """Split predictability for a given stratification config."""
-    splits = difficulty_match_splits(tasks, model, private_fraction=private_fraction, seed=seed)
+    """Split predictability for a given stratification config. n_bins
+    must reach BOTH the split construction and the acceptance test's own
+    binning — a prior version only passed it to the latter, so tuning
+    n_bins never actually changed how tasks were stratified, only how the
+    (unchanged) split was measured."""
+    splits = difficulty_match_splits(tasks, model, private_fraction=private_fraction, seed=seed, n_bins=n_bins)
     systems = {
         f"sys-{a}": {
             "public": system_solve_rates(splits.public, a, seed, model),

@@ -40,15 +40,15 @@
         "private_fraction": 0.3
       },
       "train_predictability": 1.0,
-      "default_test_predictability": 1.0,
+      "default_test_predictability": 0.9,
       "tuned_test_predictability": 1.0,
-      "tuned_wins": false
+      "tuned_wins": true
     }
   ],
   "summary": {
-    "mean_default": 1.0,
+    "mean_default": 0.975,
     "mean_tuned": 1.0,
-    "tuned_wins_folds": 0,
+    "tuned_wins_folds": 1,
     "n_folds": 4
   }
 }

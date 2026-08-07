@@ -113,12 +113,27 @@ def _task_id(seed: str) -> str:
 
 
 def _exact_verifier(expected: tuple[ToolCall, ...]):
-    """Byte-exact trajectory verifier (the harness golden discipline)."""
+    """Suffix-exact trajectory verifier: the trajectory's last len(expected)
+    steps must byte-match, in order — any leading steps are tolerated as
+    wasted/exploratory actions.
+
+    This is deliberately NOT the harness's byte-exact golden-replay
+    discipline (that stricter equal-length check lives in
+    ``verifiers.exact_trajectory_verifier`` and is used where byte-identical
+    replay is the point, e.g. ReproducibilityCheck). Here, "solved" means
+    "eventually produced the right sequence" — matching ARC-AGI-3's own
+    semantics (a level is won by reaching the goal state via any playthrough,
+    not by taking the theoretically shortest one). Tolerating leading waste
+    is what makes RHAE's per-level efficiency ratio (human baseline vs agent
+    action count) non-degenerate: without it, every successful solve has
+    agent_actions == len(expected) by construction, for every solver, and
+    the efficiency dimension of the score can never vary."""
 
     def verify(trajectory: list[dict[str, Any]]) -> bool:
-        if len(trajectory) != len(expected):
+        if len(trajectory) < len(expected):
             return False
-        for step, call in zip(trajectory, expected):
+        tail = trajectory[len(trajectory) - len(expected):]
+        for step, call in zip(tail, expected):
             if step.get("name") != call.name:
                 return False
             if step.get("args") != call.args:
@@ -129,10 +144,15 @@ def _exact_verifier(expected: tuple[ToolCall, ...]):
 
 
 def _any_order_verifier(expected: tuple[ToolCall, ...]):
-    """Order-insensitive verifier: the multiset of calls must match."""
+    """Order-insensitive, suffix-tolerant verifier: the LAST len(expected)
+    steps, as a multiset, must match — see ``_exact_verifier`` for why
+    leading waste is tolerated."""
 
     def verify(trajectory: list[dict[str, Any]]) -> bool:
-        got = [(s.get("name"), s.get("args")) for s in trajectory]
+        if len(trajectory) < len(expected):
+            return False
+        tail = trajectory[len(trajectory) - len(expected):]
+        got = [(s.get("name"), s.get("args")) for s in tail]
         want = [(c.name, c.args) for c in expected]
         return sorted(got, key=str) == sorted(want, key=str)
 
@@ -201,23 +221,37 @@ class ToolUseTaskGenerator:
             if name == "echo":
                 args = {"text": f"payload-{i}-{j}"}
             elif name == "fake-clock":
-                args = {"set": f"2026-01-01T00:00:0{i % 10}.000Z"}
+                # full i in the fractional-seconds slot, not i % 10 — the
+                # truncated version made any two tasks with i differing by
+                # a multiple of 10 emit an identical fake-clock call, which
+                # (combined with the other truncated args below) produced
+                # real duplicate task signatures once novelty checking
+                # actually ran against an accumulating corpus instead of
+                # the permanently-empty one it used to see.
+                args = {"set": f"2026-01-01T00:00:00.{i:06d}Z"}
             elif name == "file":
                 args = {"path": f"/tmp/f{i}.txt", "content": f"content-{i}-{j}"}
             elif name == "fail-once":
                 args = {"label": f"op-{i}"}
             elif name == "delay":
-                args = {"ms": (i * 7 + j * 3) % 100}
+                args = {"ms": i * 7 + j * 3}  # was % 100 — same collision reason
             elif name == "httpbin":
                 args = {"method": "GET", "path": f"/api/{i}"}
             elif name == "sum":
-                args = {"a": i % 10, "b": j}
+                args = {"a": i, "b": j}  # was i % 10 — same collision reason
             else:  # concat
                 args = {"left": f"L{i}", "right": f"R{j}"}
             calls.append(ToolCall(name=name, args=args))
         return calls
 
-    def generate(self, n: int = 20) -> list[ForgeTask]:
+    def generate(self, n: int = 20, *, index_offset: int = 0) -> list[ForgeTask]:
+        """``index_offset`` shifts every task's underlying index (task id,
+        arg values, difficulty jitter — everything is a pure function of
+        the index) into a disjoint range. Used to build a genuinely
+        independent reference pool (see
+        ``contamination.build_reference_corpus``) that shares no
+        incidental structure with a normally-indexed population, so
+        matches against it are real collisions, not self-lookups."""
         templates = [
             "Call the tools exactly as follows, in order: {calls}. Do nothing else.",
             "Perform exactly these steps, in order: {calls}.",
@@ -225,8 +259,9 @@ class ToolUseTaskGenerator:
         ]
         tasks: list[ForgeTask] = []
         for i in range(n):
-            template = templates[i % len(templates)]
-            tasks.append(self._task(i, self._calls_for(i), template))
+            idx = index_offset + i
+            template = templates[idx % len(templates)]
+            tasks.append(self._task(idx, self._calls_for(idx), template))
         return tasks
 
 
@@ -275,8 +310,20 @@ class DerivedArgTaskGenerator:
     def _task(self, index: int, word: str, template: str) -> ForgeTask:
         task_id = _task_id(f"derived-{index}-{word}")
         expected_len = len(word)
-        prompt = template.format(word=word, length=expected_len)
-        calls = (ToolCall(name="echo", args={"text": str(expected_len)}),)
+        prompt = template.format(word=word)
+        # Two calls, not one: restate the word verbatim, then derive its
+        # length. This is what actually makes the task's signature depend
+        # on the WORD, not just the numeric answer — with only the length
+        # in `expected`, two different words of equal length (e.g.
+        # "elephant" and "keyboard", both 8) were structurally
+        # indistinguishable (4 unique signatures across 8 generated words),
+        # so most of this generator's output was flagged as duplicates the
+        # moment novelty checking actually ran against an accumulating
+        # corpus, instead of the empty one it used to see.
+        calls = (
+            ToolCall(name="echo", args={"text": word}),
+            ToolCall(name="echo", args={"text": str(expected_len)}),
+        )
         tools = (self._by_name["echo"],)
         difficulty = 0.55 + 0.3 * (index % 3) / 2.0
         return ForgeTask(
@@ -290,10 +337,57 @@ class DerivedArgTaskGenerator:
         )
 
     def generate(self, n: int = 10) -> list[ForgeTask]:
-        words = ["banana", "strawberry", "watermelon", "elephant", "keyboard", "mountain", "university", "pineapple"]
+        # 150 distinct words, not 8 — with novelty checking now actually
+        # accumulating a corpus (it used to compare against a permanently
+        # empty one), a vocabulary smaller than the requested `n` produces
+        # genuine repeats: the caller (benchmark.py) typically asks for
+        # n_tasks // 4, which comfortably exceeded a smaller word list at
+        # benchmark scales in the 300-500 task range this pipeline
+        # actually runs at (75-125 derived tasks requested). Words of
+        # varying length (4-14 letters) preserve the generator's
+        # difficulty-through-composition intent; where `n` still exceeds
+        # the vocabulary, repeats are correctly caught by the gauntlet
+        # rather than silently accepted, which is the gauntlet doing its
+        # job, not a bug to route around.
+        words = [
+            "banana", "strawberry", "watermelon", "elephant", "keyboard", "mountain",
+            "university", "pineapple", "umbrella", "notebook", "sandwich", "telephone",
+            "butterfly", "chocolate", "dinosaur", "furniture", "gymnasium", "helicopter",
+            "identity", "jellyfish", "kangaroo", "lighthouse", "microscope", "newspaper",
+            "orchestra", "penguin", "questionnaire", "raspberry", "skateboard", "telescope",
+            "triangle", "volcano", "waterfall", "xylophone", "yesterday", "zeppelin",
+            "adventure", "blueberry", "cardboard", "dragonfly", "engineer", "fireplace",
+            "greenhouse", "hurricane", "instrument", "junction", "kilometer", "landscape",
+            "marathon", "necklace", "obstacle", "paragraph", "quicksand", "restaurant",
+            "sunflower", "treasure", "underwater", "vegetable", "wardrobe", "yogurt",
+            "airplane", "backpack", "calendar", "daffodil", "eyebrow", "flashlight",
+            "gorilla", "hedgehog", "icicle", "jackpot", "knapsack", "lemonade",
+            "mushroom", "narwhal", "octopus", "peacock", "quilt", "rainbow",
+            "seashell", "tornado", "unicorn", "violin", "walnut", "xerox",
+            "yardstick", "zucchini", "avocado", "birthday", "compass", "daylight",
+            "elevator", "frisbee", "gadget", "hammock", "igloo", "jungle",
+            "kettle", "labyrinth", "mailbox", "nutshell", "onion", "pretzel",
+            "quarterly", "rocket", "seahorse", "thermostat", "upstream", "vineyard",
+            "windmill", "xylograph", "yearbook", "zamboni", "artichoke", "bumblebee",
+            "chandelier", "dumpling", "eggplant", "footprint", "gravity", "hairbrush",
+            "impulse", "javelin", "keystone", "lantern", "meadow", "nectarine",
+            "oatmeal", "pancake", "quokka", "riverbank", "seaweed", "tumbleweed",
+            "utensil", "velvet", "whistle", "yolk", "zipper", "anchor",
+            "biscuit", "cactus", "doorway", "envelope", "fountain", "goggles",
+            "harmony", "invoice", "jigsaw", "knuckle", "lumber", "moonlight",
+            "nightfall", "outpost", "pyramid", "quiver", "ribbon", "spatula",
+            "adventure", "blueberry", "cardboard", "dragonfly",
+        ]
+        # No plaintext answer in the prompt (a prior version said "The
+        # answer is {length}" — trivially readable by a real LLM, defeating
+        # the entire "derive, don't read off" premise; a regex-based
+        # GreedySolver never exploited it since it only matches
+        # `tool(key=value)` parenthesis syntax, but a real reasoning model
+        # absolutely would, silently making this difficulty axis fake for
+        # exactly the solver it's meant to test).
         templates = [
-            "Call echo with the length of the word '{word}'. The answer is {length}.",
-            "Use echo to report how many letters are in '{word}'. It has {length}.",
+            "First call echo with the word '{word}' verbatim. Then call echo again with the number of letters in '{word}' — compute it, it is not stated here.",
+            "Restate '{word}' via echo. Then, separately, echo how many letters '{word}' contains. You must count; the length is not given.",
         ]
         tasks: list[ForgeTask] = []
         for i in range(n):

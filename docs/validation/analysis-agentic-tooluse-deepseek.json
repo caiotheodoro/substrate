@@ -1,0 +1,135 @@
+{
+  "name": "agentic-tooluse-deepseek",
+  "seed": 7,
+  "n_tasks": 62,
+  "metadata": {
+    "n_generated": 75,
+    "gauntlet_pass_rate": 1.0,
+    "n_gauntlet_survivors": 75,
+    "n_calibrated": 62,
+    "split_predictability": {
+      "passed": false,
+      "correlations": {
+        "sys-0.3": 0.7,
+        "sys-0.5": 0.7
+      },
+      "min_correlation": 0.8
+    }
+  },
+  "aggregate_scores": {
+    "random": 0.0,
+    "greedy": 0.2581,
+    "perfect": 1.0,
+    "llm-deepseek": 0.9516
+  },
+  "unsaturation_bandwidth": {
+    "random": {
+      "mean": 0.0,
+      "stdev": 0.0,
+      "pct_zero": 1.0,
+      "pct_capped": 0.0
+    },
+    "greedy": {
+      "mean": 0.3361,
+      "stdev": 0.5759,
+      "pct_zero": 0.7419,
+      "pct_capped": 0.2419
+    },
+    "perfect": {
+      "mean": 1.3173,
+      "stdev": 0.041,
+      "pct_zero": 0.0,
+      "pct_capped": 0.9839
+    },
+    "llm-deepseek": {
+      "mean": 1.2533,
+      "stdev": 0.2878,
+      "pct_zero": 0.0484,
+      "pct_capped": 0.9355
+    }
+  },
+  "efficiency_vs_human": {
+    "random": {
+      "mean_actions_solved": 0.0,
+      "median_actions_solved": 0.0,
+      "n_solved_levels": 0
+    },
+    "greedy": {
+      "mean_actions_solved": 2.75,
+      "median_actions_solved": 2.0,
+      "n_solved_levels": 16
+    },
+    "perfect": {
+      "mean_actions_solved": 3.1,
+      "median_actions_solved": 3.0,
+      "n_solved_levels": 62
+    },
+    "llm-deepseek": {
+      "mean_actions_solved": 3.15,
+      "median_actions_solved": 3,
+      "n_solved_levels": 59
+    }
+  },
+  "difficulty_calibration_deciles": [
+    {
+      "difficulty_mid": 0.0,
+      "mean_solve_rate": 0.057
+    },
+    {
+      "difficulty_mid": 0.043,
+      "mean_solve_rate": 0.143
+    },
+    {
+      "difficulty_mid": 0.322,
+      "mean_solve_rate": 0.614
+    },
+    {
+      "difficulty_mid": 0.37,
+      "mean_solve_rate": 0.614
+    },
+    {
+      "difficulty_mid": 0.477,
+      "mean_solve_rate": 0.586
+    },
+    {
+      "difficulty_mid": 0.515,
+      "mean_solve_rate": 0.529
+    },
+    {
+      "difficulty_mid": 0.579,
+      "mean_solve_rate": 0.471
+    },
+    {
+      "difficulty_mid": 0.623,
+      "mean_solve_rate": 0.314
+    },
+    {
+      "difficulty_mid": 0.675,
+      "mean_solve_rate": 0.314
+    },
+    {
+      "difficulty_mid": 0.69,
+      "mean_solve_rate": 0.286
+    },
+    {
+      "difficulty_mid": 0.709,
+      "mean_solve_rate": 0.3
+    }
+  ],
+  "contamination": {
+    "leak_probe_fire_rate_on_leaked": 1.0,
+    "leak_probe_false_fire_on_clean": 0.0,
+    "mean_corpus_overlap": 0.0,
+    "structural_ood_overlap": 0.0
+  },
+  "arc_reference": {
+    "note": "ARC-AGI-3 semi-private launch scores for reference",
+    "opus_4_6": 0.005,
+    "gemini_3_1": 0.004,
+    "gpt_5_4": 0.002,
+    "human": 1.0,
+    "random_policy_floor": "1 in 10,000"
+  }
+}
+
+wrote /Users/caiotheodoro/Documents/personal/research/docs/validation/analysis-agentic-tooluse-deepseek.json

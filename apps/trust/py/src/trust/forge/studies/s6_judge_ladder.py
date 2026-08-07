@@ -33,11 +33,18 @@ N_ATTEMPTS = 10  # ARC's 2-of-10 bar — full human calibration cost per task
 THRESHOLDS = [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]  # 0.0 = judge screens nothing
 
 
-def judge_difficulty_estimate_llm(base_url: str, model: str, api_key: str) -> Callable[[ForgeTask], float]:
+def judge_difficulty_estimate_llm(
+    base_url: str, model: str, api_key: str, *, failures: list[str] | None = None
+) -> Callable[[ForgeTask], float]:
     """Returns a judge_fn that asks a real LLM to rate a task's apparent
     difficulty from its prompt + tool list alone (no trajectory, no
     oracle). 0.5 (maximally uncertain) on any network/parse failure, so a
-    broken judge can never silently inflate the reported budget savings."""
+    broken judge can never silently inflate the reported budget savings —
+    but a 0.5 fallback and a real "maximally uncertain" judge answer look
+    identical unless failures are tracked separately (``failures``, if
+    given, gets one entry per failed call so a total outage is visible in
+    the artifact instead of just producing a flat, plausible-looking
+    all-0.5 score distribution)."""
 
     def judge_fn(task: ForgeTask) -> float:
         tool_desc = "\n".join(f"- {t.name}: {t.description}" for t in task.tools)
@@ -57,13 +64,15 @@ def judge_difficulty_estimate_llm(base_url: str, model: str, api_key: str) -> Ca
                     "max_tokens": 8,
                 },
                 headers={"Authorization": f"Bearer {api_key}"},
-                timeout=30,
+                timeout=60,
             )
             resp.raise_for_status()
             text = resp.json()["choices"][0]["message"]["content"]
             m = re.search(r"(\d*\.?\d+)", text)
             return max(0.0, min(1.0, float(m.group(1)))) if m else 0.5
-        except Exception:
+        except Exception as exc:
+            if failures is not None:
+                failures.append(f"{task.task_id}: {exc}")
             return 0.5
 
     return judge_fn
@@ -149,11 +158,27 @@ def run_all(out_dir: Path, *, n_tasks: int = 60) -> dict[str, Any]:
     base_url = os.environ.get("MODEL_PROVIDER_BASE_URL", "http://localhost:11434") + "/v1"
     model = os.environ.get("MODEL_PROVIDER_MODEL_ID", "qwen2.5:3b")
     api_key = os.environ.get("MODEL_PROVIDER_API_KEY", "ollama")
-    judge_fn = judge_difficulty_estimate_llm(base_url, model, api_key)
+    failures: list[str] = []
+    judge_fn = judge_difficulty_estimate_llm(base_url, model, api_key, failures=failures)
 
     results = run_sweep(tasks, oracle, judge_fn)
+    results["n_judge_failures"] = len(failures)
+    results["judge_failures"] = failures[:10]  # bounded sample
     write_json(out_dir / "s6-judge-ladder.json", results)
     print(json.dumps(results["thresholds"], indent=2))
+    if len(failures) == len(tasks):
+        raise RuntimeError(
+            f"all {len(tasks)} judge calls failed to reach {base_url} — every "
+            "threshold row in this artifact was computed from the 0.5 "
+            "network-failure fallback, not a real judge; the reported "
+            "budget savings are not a real measurement. Artifact still "
+            "written for inspection."
+        )
+    elif failures:
+        print(f"WARNING: {len(failures)}/{len(tasks)} judge calls failed — see judge_failures "
+              "in the artifact. Failed calls fall back to a 0.5 score, which is "
+              "indistinguishable from a real 'maximally uncertain' judge answer "
+              "except via this failure count.")
     return results
 
 

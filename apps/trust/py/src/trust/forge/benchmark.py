@@ -43,8 +43,13 @@ class BenchmarkRun:
             "name": self.name,
             "seed": self.seed,
             "metadata": self.metadata,
+            # n_tasks / n_scored: tasks that passed BOTH the gauntlet and the
+            # 2-of-10 calibration bar — the only ones that get a difficulty
+            # fit, a split assignment, and a score. n_gauntlet_survivors (in
+            # metadata) is the pre-calibration count, kept distinct so
+            # neither number is silently overloaded with the other's meaning.
             "n_tasks": len(self.tasks),
-            "n_survivors": len(self.difficulty),
+            "n_scored": len(self.difficulty),
             "calibration": {
                 tid: {"n_solved": c["n_solved"], "n_attempts": c["n_attempts"], "solved": c["solved"]}
                 for tid, c in self.calibration.items()
@@ -123,16 +128,26 @@ def run_benchmark(
         forged = forge_tasks(lambda: base + derived, min_pass_rate=min_pass_rate)
     else:
         forged = forge_tasks(gen, min_pass_rate=min_pass_rate)
-    tasks = [t for t in forged.tasks if forged.gauntlet[t.task_id].passed]
-    log(f"  survivors {len(tasks)}/{len(forged.tasks)} (gate {forged.pass_rate:.0%})")
+    gauntlet_survivors = [t for t in forged.tasks if forged.gauntlet[t.task_id].passed]
+    log(f"  survivors {len(gauntlet_survivors)}/{len(forged.tasks)} (gate {forged.pass_rate:.0%})")
 
     # 2. calibrate (P3: human oracle, ARC 2-of-10 bar)
     log("calibrating")
     oracle = oracle or SimulatedOracle()
-    raw_outcomes = {t.task_id: oracle.calibrate(t) for t in tasks}
+    raw_outcomes = {t.task_id: oracle.calibrate(t) for t in gauntlet_survivors}
     outcomes = {tid: o.as_dict() for tid, o in raw_outcomes.items()}
     calibrated = [o for o in outcomes.values() if o["solved"]]
-    log(f"  {len(calibrated)}/{len(tasks)} pass the 2-of-10 bar")
+    log(f"  {len(calibrated)}/{len(gauntlet_survivors)} pass the 2-of-10 bar")
+
+    # The 2-of-10 bar is not a diagnostic — tasks that fail it are rejected
+    # from the benchmark entirely (ARC-AGI-3 §3: "difficulty is MEASURED,
+    # never estimated"; a task nobody reliably solves twice isn't a
+    # calibrated task, it's noise). Everything downstream — the difficulty
+    # fit, the splits, the solver scoring — operates only on tasks that
+    # passed. `calibration` in the artifact still reports every gauntlet
+    # survivor's outcome (including rejects), so the rejection is visible;
+    # `tasks`/`difficulty`/`scores` reflect only what actually got scored.
+    tasks = [t for t in gauntlet_survivors if outcomes[t.task_id]["solved"]]
 
     # 3. difficulty model (P3) + splits (P4)
     log("fitting difficulty + stratifying")
@@ -148,8 +163,13 @@ def run_benchmark(
     for solver in solvers or [RandomSolver(seed=seed), GreedySolver(), PerfectSolver()]:
         runs: list[AgentRun] = []
         for task in tasks:
-            outcome = next(o for o in outcomes.values() if o["task_id"] == task.task_id)
-            baseline = int(outcome["action_counts"][0]) if outcome["action_counts"] else 8
+            outcome = outcomes[task.task_id]
+            # best (min) recorded human attempt, not an arbitrary first
+            # attempt — matches rhae.py's own human_baseline_from_counts,
+            # and falls back to the task's own minimal path length (not a
+            # flat constant) since every task passed calibration here and
+            # so always has at least 2 recorded solved attempts.
+            baseline = min(outcome["action_counts"]) if outcome["action_counts"] else len(task.expected)
             budget = max(10, int(baseline * 5))
             runs.append(solver.solve(task, budget))
         solver_runs[solver.name] = runs
@@ -163,9 +183,9 @@ def run_benchmark(
     for solver_name, runs in solver_runs.items():
         env_scores: list[EnvironmentScore] = []
         for task, run in zip(tasks, runs):
-            outcome = next(o for o in outcomes.values() if o["task_id"] == task.task_id)
+            outcome = outcomes[task.task_id]
             # one level per task: all humans' action counts on that task
-            human_counts = [outcome["action_counts"]] if outcome["action_counts"] else [[8]]
+            human_counts = [outcome["action_counts"]] if outcome["action_counts"] else [[len(task.expected)]]
             agent = [run.n_actions] if run.solved else [0]
             env = score_environment(task.task_id, human_counts, agent)
             env_scores.append(env)
@@ -187,19 +207,24 @@ def run_benchmark(
         }
     )
 
-    # 7. contamination monitor (P7): leak probes on a simulated leak channel
-    # + corpus matching against an EXTERNAL corpus (web-like text, not the
-    # task set itself — measuring self-overlap would be circular) +
-    # structural OOD between splits.
+    # 7. contamination monitor (P7): leak probes against a knowledge base
+    # built from a genuinely INDEPENDENT reference corpus (not the task
+    # set's own signatures — that would make "fire on leaked" a tautology,
+    # since a task's signature always matches a KB built from itself) +
+    # corpus matching against an EXTERNAL text corpus (web-like text, not
+    # the task set itself) + structural OOD between splits.
     log("contamination monitor")
-    from trust.forge.contamination import monitor_contamination
+    from trust.forge.contamination import build_reference_corpus, inject_leaks, leaked_knowledge_base, monitor_contamination
 
-    leaked_ids = {t.task_id for t in tasks[: max(1, len(tasks) // 10)]}
+    reference_corpus = build_reference_corpus(max(20, len(tasks) // 5))
+    contam_tasks, leaked_ids = inject_leaks(tasks, reference_corpus, fraction=0.1, seed=seed)
+    kb = leaked_knowledge_base(reference_corpus)
     external_corpus = _external_corpus()
     contam = monitor_contamination(
-        tasks,
+        contam_tasks,
         public=splits.public,
         private=splits.private,
+        knowledge_base=kb,
         leaked_ids=leaked_ids,
         corpus_texts=external_corpus,
     )
@@ -221,6 +246,7 @@ def run_benchmark(
         metadata={
             "n_generated": len(forged.tasks),
             "gauntlet_pass_rate": forged.pass_rate,
+            "n_gauntlet_survivors": len(gauntlet_survivors),
             "n_calibrated": len(calibrated),
             "split_predictability": predictability,
         },

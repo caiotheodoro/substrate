@@ -22,7 +22,14 @@ from trust.forge.benchmark import BenchmarkRun
 
 def analyze(run: BenchmarkRun) -> dict[str, Any]:
     scores = run.scores
-    n = len(run.tasks)
+    # len(run.difficulty), not len(run.tasks): the CLI path (main(), below)
+    # reconstructs a BenchmarkRun from a saved artifact where the actual
+    # ForgeTask objects aren't available, and deliberately passes
+    # tasks=[] — len(run.tasks) silently reported 0 there. difficulty is
+    # populated identically in both the live (run_benchmark) and
+    # artifact-reconstructed paths, since it's keyed by task_id from JSON
+    # either way.
+    n = len(run.difficulty)
 
     # per-solver level-efficiency distributions (all environments)
     per_solver_eff: dict[str, list[float]] = {}

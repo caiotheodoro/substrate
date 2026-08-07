@@ -1,34 +1,34 @@
 {
   "30": {
-    "calibration_monotonicity": -0.6111,
+    "calibration_monotonicity": -0.694,
     "split_predictability": 0.9,
     "difficulty_bandwidth": 0.1428,
     "oracle_discrimination": 0.2097,
     "n_tasks": 30
   },
   "60": {
-    "calibration_monotonicity": -0.7244,
+    "calibration_monotonicity": -0.789,
     "split_predictability": 0.9,
     "difficulty_bandwidth": 0.1806,
     "oracle_discrimination": 0.2373,
     "n_tasks": 60
   },
   "120": {
-    "calibration_monotonicity": -0.5896,
+    "calibration_monotonicity": -0.6875,
     "split_predictability": 1.0,
     "difficulty_bandwidth": 0.149,
     "oracle_discrimination": 0.2162,
     "n_tasks": 120
   },
   "240": {
-    "calibration_monotonicity": -0.6194,
+    "calibration_monotonicity": -0.7126,
     "split_predictability": 1.0,
     "difficulty_bandwidth": 0.1595,
     "oracle_discrimination": 0.2228,
     "n_tasks": 240
   },
   "480": {
-    "calibration_monotonicity": -0.649,
+    "calibration_monotonicity": -0.7405,
     "split_predictability": 1.0,
     "difficulty_bandwidth": 0.1691,
     "oracle_discrimination": 0.228,
