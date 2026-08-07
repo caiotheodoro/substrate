@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: substrate-sim-engine
-Version: 0.0.0
-Summary: Simulation engine: async swarm-core, sim-world, agent-proto, ensemble-store (seeded+RNG registry), simulator-adapter-sdk.
-Requires-Python: >=3.11
-Requires-Dist: numpy>=1.26
-Requires-Dist: pandas>=2
-Requires-Dist: duckdb>=1.0
-Requires-Dist: pyarrow>=15

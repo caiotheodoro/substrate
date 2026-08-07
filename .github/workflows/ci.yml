@@ -17,6 +17,11 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+      - uses: astral-sh/setup-uv@v6
+      - name: Provision Python venvs (for cross-language e2e)
+        run: |
+          cd apps/trust/py && uv venv --clear && uv sync --all-groups
+          cd ../knowledge/py && uv venv --clear && uv sync --all-packages --all-groups
       - run: pnpm install --frozen-lockfile
       - name: Typecheck
         run: pnpm -r typecheck
@@ -35,7 +40,15 @@ jobs:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - name: Install
-        run: uv sync --all-groups
+        # knowledge is a uv workspace ROOT with member packages, so its
+        # pytest lives in a member's dev group: --all-packages is required.
+        # trust/simulation are plain packages where --all-groups suffices.
+        run: >
+          if [ "${{ matrix.unit }}" = "knowledge" ]; then
+            uv sync --all-packages --all-groups
+          else
+            uv sync --all-groups
+          fi
       - name: Test
         run: uv run pytest
 
@@ -61,6 +74,11 @@ jobs:
         with:
           node-version: 24
           cache: pnpm
+      - uses: astral-sh/setup-uv@v6
+      - name: Provision Python venvs (for cross-language e2e)
+        run: |
+          cd apps/trust/py && uv venv --clear && uv sync --all-groups
+          cd ../knowledge/py && uv venv --clear && uv sync --all-packages --all-groups
       - run: pnpm install --frozen-lockfile
       - name: Golden-run replay (byte-identical, mutation breaks CI)
         run: pnpm --filter @substrate/harness test

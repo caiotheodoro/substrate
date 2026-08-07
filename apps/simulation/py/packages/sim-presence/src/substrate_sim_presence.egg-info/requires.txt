@@ -1,4 +1,0 @@
-numpy>=1.26
-pandas>=2
-duckdb>=1.0
-substrate-sim-shared

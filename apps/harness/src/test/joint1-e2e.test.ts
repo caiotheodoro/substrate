@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import { remoteConfidenceProvider } from '../gate/remote-confidence';
 import { GateCore } from '../gate/gate-core';
 import type { Server } from 'node:http';
@@ -7,14 +9,18 @@ import type { Server } from 'node:http';
 /**
  * Joint 1 cross-language e2e: the REAL Trust scorer (FastAPI, apps/trust/py)
  * serves C5 on :8020; 01's remoteConfidenceProvider consumes it and the gate
- * verdicts follow. Skips when the Python env is not present (CI ts job).
+ * verdicts follow. Skips when the Python env is not provisioned (uv sync).
  */
 const PORT = 18025;
+
+const REPO = resolve(process.cwd(), '..', '..');
+const TRUST_PYTHON = `${REPO}/apps/trust/py/.venv/bin/python`;
+const PYTHON_AVAILABLE = existsSync(TRUST_PYTHON);
 
 async function spawnTrustScorer(): Promise<{ proc: ReturnType<typeof spawn>; ready: () => Promise<void> }> {
   const { createServer } = await import('node:http');
   const python = spawn(
-    '/Users/caiotheodoro/Documents/personal/research/apps/trust/py/.venv/bin/python',
+    TRUST_PYTHON,
     ['-c', `
 import threading, time, uvicorn
 from trust.scorer.serve import create_app, _uniform_fallback
@@ -37,7 +43,7 @@ uvicorn.run(create_app(lambda: _uniform_fallback()), host='127.0.0.1', port=${PO
   return { proc: python, ready };
 }
 
-describe('joint1 C5 cross-language — TS gate ← Python trust scorer', () => {
+describe.skipIf(!PYTHON_AVAILABLE)('joint1 C5 cross-language — TS gate ← Python trust scorer', () => {
   it('drives verdicts from the real :8020 service end-to-end', async () => {
     const { proc, ready } = await spawnTrustScorer();
     try {

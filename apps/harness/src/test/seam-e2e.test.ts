@@ -1,5 +1,7 @@
 import { describe, expect, it, beforeAll, afterAll } from 'vitest';
 import { spawn } from 'node:child_process';
+import { existsSync } from 'node:fs';
+import { resolve } from 'node:path';
 import type { Server } from 'node:http';
 import { RunEngine, EngineClock, scriptedClock } from '../engine/engine';
 import { GateCore } from '../gate/gate-core';
@@ -40,12 +42,18 @@ const KNOWLEDGE_PORT = 18034;
 const BUDGET_PORT = 18130;
 const LEDGER_PORT = 18120;
 
-const REPO = '/Users/caiotheodoro/Documents/personal/research';
+// Repo root derived from the working directory (vitest runs with cwd =
+// apps/harness), so the e2e is machine/CI independent.
+const REPO = resolve(process.cwd(), '..', '..');
 
 const PYTHON_BINS: Record<string, string> = {
   'trust': `${REPO}/apps/trust/py/.venv/bin/python`,
   'knowledge': `${REPO}/apps/knowledge/py/.venv/bin/python`,
 };
+
+// The cross-language seam needs the Python venvs provisioned (uv sync in
+// each unit). CI provisions them; if absent, skip with a clear warning.
+const PYTHON_AVAILABLE = existsSync(PYTHON_BINS['trust']!) && existsSync(PYTHON_BINS['knowledge']!);
 
 function spawnService(unit: string, code: string, port: number) {
   // Use the unit's venv python directly — `uv run` from a vitest worker can
@@ -224,7 +232,7 @@ async function runSeam(opts: {
   }
 }
 
-describe('A4 seam e2e — one run through 01→02→04→03', () => {
+describe.skipIf(!PYTHON_AVAILABLE)('A4 seam e2e — one run through 01→02→04→03', () => {
   let trustProc: ReturnType<typeof spawn>;
   let knowledgeProc: ReturnType<typeof spawn>;
   let budgetServer: Server;

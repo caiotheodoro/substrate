@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: substrate-sim-presence
-Version: 0.0.0
-Summary: Presence engine: urgency-driven (no round-robin) social agents with affect models, memory store, tiny+frontier LLM policy, C1 social log.
-Requires-Python: >=3.11
-Requires-Dist: numpy>=1.26
-Requires-Dist: pandas>=2
-Requires-Dist: duckdb>=1.0
-Requires-Dist: substrate-sim-shared
