@@ -20,8 +20,10 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - name: Provision Python venvs (for cross-language e2e)
         run: |
-          cd apps/trust/py && uv venv --clear && uv sync --all-groups
-          cd ../knowledge/py && uv venv --clear && uv sync --all-packages --all-groups
+          uv --directory apps/trust/py venv --clear
+          uv --directory apps/trust/py sync --all-groups
+          uv --directory apps/knowledge/py venv --clear
+          uv --directory apps/knowledge/py sync --all-packages --all-groups
       - run: pnpm install --frozen-lockfile
       - name: Typecheck
         run: pnpm -r typecheck
@@ -82,8 +84,10 @@ jobs:
       - uses: astral-sh/setup-uv@v6
       - name: Provision Python venvs (for cross-language e2e)
         run: |
-          cd apps/trust/py && uv venv --clear && uv sync --all-groups
-          cd ../knowledge/py && uv venv --clear && uv sync --all-packages --all-groups
+          uv --directory apps/trust/py venv --clear
+          uv --directory apps/trust/py sync --all-groups
+          uv --directory apps/knowledge/py venv --clear
+          uv --directory apps/knowledge/py sync --all-packages --all-groups
       - run: pnpm install --frozen-lockfile
       - name: Golden-run replay (byte-identical, mutation breaks CI)
         run: pnpm --filter @substrate/harness test
