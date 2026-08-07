@@ -42,8 +42,19 @@ def forge_tasks(
     ``min_pass_rate`` of generated tasks survive the gauntlet (the phase-1
     validation gate)."""
     tasks = generator()
-    corpus = corpus or []
-    gauntlet = {t.task_id: run_gauntlet(t, corpus) for t in tasks}
+    # Accumulate the corpus as tasks are gauntleted, in order: each task's
+    # NoveltyCheck runs against everything processed so far (the caller's
+    # prior corpus plus this batch's own earlier tasks), then the task
+    # itself joins the corpus for whatever comes after it. Previously
+    # `corpus` was fixed at whatever the caller passed in (empty by
+    # default) for every task in the batch, so a generator that produces
+    # duplicate signatures WITHIN one call was never caught — novelty was
+    # checked against an empty list every time.
+    running_corpus: list[ForgeTask] = list(corpus) if corpus else []
+    gauntlet: dict[str, GauntletResult] = {}
+    for t in tasks:
+        gauntlet[t.task_id] = run_gauntlet(t, running_corpus)
+        running_corpus.append(t)
     survivors = [t for t in tasks if gauntlet[t.task_id].passed]
     output = ForgeOutput(tasks=tasks, gauntlet=gauntlet)
     if output.pass_rate < min_pass_rate:

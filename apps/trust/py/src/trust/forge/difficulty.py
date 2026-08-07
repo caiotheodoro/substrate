@@ -94,10 +94,15 @@ class DifficultyModel:
 
 
 def human_action_baseline(outcomes: list[CalibrationOutcome], task_id: str) -> int:
-    """Upper-median best first-run action count (ARC-AGI-3 §4.1). For each
-    task, take the best (minimum) action count; the baseline is the median
-    of those minima across the calibration population."""
+    """Best (minimum) recorded human action count for one task — the
+    "upper-median best first-run" concept from ARC-AGI-3 §4.1 applied at
+    the single-task level: this task's own best human attempt. (The
+    population-level median-of-minima described in rhae.py's
+    ``human_baseline_from_counts`` is the one the real benchmark pipeline
+    actually uses; this function mirrors its per-task logic for
+    consistency, not the median-across-attempts that was here before,
+    which quietly returned a *worse-than-best* number.)"""
     for o in outcomes:
         if o.task_id == task_id and o.action_counts:
-            return int(median(o.action_counts))
+            return min(o.action_counts)
     return 0

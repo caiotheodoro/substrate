@@ -8,9 +8,11 @@ study exists to measure.
 """
 from __future__ import annotations
 
+import pytest
+
 from trust.forge.calibration import SimulatedOracle
 from trust.forge.generators import ToolUseTaskGenerator
-from trust.forge.studies.s6_judge_ladder import N_ATTEMPTS, run_sweep
+from trust.forge.studies.s6_judge_ladder import N_ATTEMPTS, judge_difficulty_estimate_llm, run_all, run_sweep
 
 
 class TestJudgeLadder:
@@ -49,3 +51,32 @@ class TestJudgeLadder:
         r = results["thresholds"]["0.5"]
         assert r["n_auto_resolved"] == len(tasks)
         assert r["attempt_budget_used"] == 0
+
+
+class TestJudgeFailureIsLoud:
+    """A total network outage makes every judge call fall back to 0.5 —
+    the SAME score a genuinely 'maximally uncertain' real judge would
+    produce. Without explicit failure tracking, an all-0.5 table (every
+    threshold reporting the same monotonicity, nothing auto-resolved past
+    what a flat score allows) is indistinguishable from a real result."""
+
+    def test_unreachable_endpoint_records_a_failure_per_call(self):
+        from trust.forge.generators import ToolUseTaskGenerator as TUG
+
+        task = TUG().generate(n=1)[0]
+        failures: list[str] = []
+        judge_fn = judge_difficulty_estimate_llm("http://127.0.0.1:1", "any-model", "any-key", failures=failures)
+        score = judge_fn(task)
+        assert score == 0.5
+        assert len(failures) == 1
+        assert task.task_id in failures[0]
+
+    def test_run_all_raises_when_every_judge_call_fails(self, tmp_path):
+        with pytest.raises(RuntimeError, match="not a real judge"):
+            run_all(tmp_path, n_tasks=3)
+        written = tmp_path / "s6-judge-ladder.json"
+        assert written.exists()  # still written for inspection
+        import json
+
+        data = json.loads(written.read_text())
+        assert data["n_judge_failures"] == 3

@@ -1,43 +1,44 @@
 {
   "name": "agentic-tooluse",
   "seed": 7,
-  "n_tasks": 0,
+  "n_tasks": 320,
   "metadata": {
     "n_generated": 375,
     "gauntlet_pass_rate": 1.0,
-    "n_calibrated": 152,
+    "n_gauntlet_survivors": 375,
+    "n_calibrated": 320,
     "split_predictability": {
       "passed": true,
       "correlations": {
-        "sys-0.3": 0.9,
-        "sys-0.5": 0.9
+        "sys-0.3": 1.0,
+        "sys-0.5": 1.0
       },
       "min_correlation": 0.8
     }
   },
   "aggregate_scores": {
     "random": 0.0,
-    "greedy": 0.8,
+    "greedy": 0.2938,
     "perfect": 1.0
   },
   "unsaturation_bandwidth": {
     "random": {
-      "mean": 1.3225,
+      "mean": 0.0,
       "stdev": 0.0,
-      "pct_zero": 0.0,
-      "pct_capped": 1.0
+      "pct_zero": 1.0,
+      "pct_capped": 0.0
     },
     "greedy": {
-      "mean": 1.3225,
-      "stdev": 0.0,
-      "pct_zero": 0.0,
-      "pct_capped": 1.0
+      "mean": 0.3865,
+      "stdev": 0.6007,
+      "pct_zero": 0.7063,
+      "pct_capped": 0.2875
     },
     "perfect": {
-      "mean": 1.3225,
-      "stdev": 0.0,
+      "mean": 1.3185,
+      "stdev": 0.0359,
       "pct_zero": 0.0,
-      "pct_capped": 1.0
+      "pct_capped": 0.9875
     }
   },
   "efficiency_vs_human": {
@@ -47,67 +48,67 @@
       "n_solved_levels": 0
     },
     "greedy": {
-      "mean_actions_solved": 2.4,
+      "mean_actions_solved": 2.78,
       "median_actions_solved": 2.0,
-      "n_solved_levels": 300
+      "n_solved_levels": 94
     },
     "perfect": {
-      "mean_actions_solved": 2.12,
-      "median_actions_solved": 2,
-      "n_solved_levels": 375
+      "mean_actions_solved": 3.17,
+      "median_actions_solved": 3.0,
+      "n_solved_levels": 320
     }
   },
   "difficulty_calibration_deciles": [
     {
-      "difficulty_mid": 0.728,
-      "mean_solve_rate": 0.208
-    },
-    {
-      "difficulty_mid": 0.728,
-      "mean_solve_rate": 0.284
-    },
-    {
-      "difficulty_mid": 0.824,
-      "mean_solve_rate": 0.197
-    },
-    {
-      "difficulty_mid": 0.841,
-      "mean_solve_rate": 0.184
-    },
-    {
-      "difficulty_mid": 0.869,
-      "mean_solve_rate": 0.135
-    },
-    {
-      "difficulty_mid": 0.869,
-      "mean_solve_rate": 0.141
-    },
-    {
-      "difficulty_mid": 0.875,
-      "mean_solve_rate": 0.122
-    },
-    {
-      "difficulty_mid": 0.922,
-      "mean_solve_rate": 0.065
-    },
-    {
-      "difficulty_mid": 0.922,
-      "mean_solve_rate": 0.086
-    },
-    {
-      "difficulty_mid": 0.922,
+      "difficulty_mid": 0.0,
       "mean_solve_rate": 0.07
     },
     {
-      "difficulty_mid": 0.922,
-      "mean_solve_rate": 0.04
+      "difficulty_mid": 0.159,
+      "mean_solve_rate": 0.373
+    },
+    {
+      "difficulty_mid": 0.349,
+      "mean_solve_rate": 0.678
+    },
+    {
+      "difficulty_mid": 0.418,
+      "mean_solve_rate": 0.619
+    },
+    {
+      "difficulty_mid": 0.495,
+      "mean_solve_rate": 0.489
+    },
+    {
+      "difficulty_mid": 0.54,
+      "mean_solve_rate": 0.424
+    },
+    {
+      "difficulty_mid": 0.61,
+      "mean_solve_rate": 0.341
+    },
+    {
+      "difficulty_mid": 0.641,
+      "mean_solve_rate": 0.365
+    },
+    {
+      "difficulty_mid": 0.655,
+      "mean_solve_rate": 0.343
+    },
+    {
+      "difficulty_mid": 0.701,
+      "mean_solve_rate": 0.343
+    },
+    {
+      "difficulty_mid": 0.744,
+      "mean_solve_rate": 0.3
     }
   ],
   "contamination": {
     "leak_probe_fire_rate_on_leaked": 1.0,
     "leak_probe_false_fire_on_clean": 0.0,
-    "mean_corpus_overlap": 0.6397,
-    "structural_ood_overlap": 0.2021
+    "mean_corpus_overlap": 0.0,
+    "structural_ood_overlap": 0.0
   },
   "arc_reference": {
     "note": "ARC-AGI-3 semi-private launch scores for reference",

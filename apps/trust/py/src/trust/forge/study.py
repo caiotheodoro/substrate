@@ -39,19 +39,45 @@ from trust.forge.stratify import (
 
 def spearman(a: list[float], b: list[float]) -> float:
     def rank(values: list[float]) -> list[float]:
-        indexed = sorted(range(len(values)), key=lambda i: values[i])
-        ranks = [0.0] * len(values)
-        for pos, idx in enumerate(indexed):
-            ranks[idx] = pos + 1
+        """Fractional (average) ranks: values tied for positions i..j all
+        get the mean of those positions' ranks, not a sort-stable
+        tiebreak by original index. Every headline correlation in this
+        study harness (S1/S3/S6) runs on fitted difficulty values that are
+        heavily tied in practice (13 distinct values across 120 tasks is
+        typical) — an index-order tiebreak on that data is directional
+        noise baked into the number, not a neutral simplification."""
+        n = len(values)
+        order = sorted(range(n), key=lambda i: values[i])
+        ranks = [0.0] * n
+        i = 0
+        while i < n:
+            j = i
+            while j + 1 < n and values[order[j + 1]] == values[order[i]]:
+                j += 1
+            avg_rank = (i + j) / 2.0 + 1  # 1-indexed mean of the tied block
+            for k in range(i, j + 1):
+                ranks[order[k]] = avg_rank
+            i = j + 1
         return ranks
 
     ra, rb = rank(a), rank(b)
     n = len(a)
     if n < 2:
         return 0.0
-    d2 = sum((ra[i] - rb[i]) ** 2 for i in range(n))
-    denom = n * (n * n - 1) / 6.0
-    return 1.0 - (6.0 * d2) / (6.0 * denom) if denom else 0.0
+    # The classic 1 - 6*sum(d^2)/(n(n^2-1)) shortcut is only algebraically
+    # equivalent to "Pearson correlation of the ranks" when there are NO
+    # ties (it's a simplification that relies on ranks being a permutation
+    # of 1..n). With average-ranked ties that equivalence breaks — the
+    # general, tie-correct definition of Spearman's rho is the direct
+    # Pearson correlation of the (average) rank vectors, which is what
+    # this computes and is what scipy's tie-corrected spearmanr matches.
+    mean_ra = sum(ra) / n
+    mean_rb = sum(rb) / n
+    cov = sum((ra[i] - mean_ra) * (rb[i] - mean_rb) for i in range(n))
+    var_a = sum((x - mean_ra) ** 2 for x in ra)
+    var_b = sum((x - mean_rb) ** 2 for x in rb)
+    denom = (var_a * var_b) ** 0.5
+    return cov / denom if denom else 0.0
 
 
 def eval_quality_metrics(

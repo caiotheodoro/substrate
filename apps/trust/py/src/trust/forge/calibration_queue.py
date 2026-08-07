@@ -60,13 +60,27 @@ class CalibrationQueue:
         }
 
     def is_ready(self, task_id: str) -> bool:
-        return len(self._attempts.get(task_id, [])) >= self.n_attempts_required
+        return self.is_ready_for(task_id, self.n_attempts_required)
 
     def outcome(self, task_id: str) -> CalibrationOutcome:
-        atts = self._attempts.get(task_id, [])
-        if len(atts) < self.n_attempts_required:
+        return self.outcome_for(task_id, self.n_attempts_required)
+
+    def collected_count(self, task_id: str) -> int:
+        return len(self._attempts.get(task_id, []))
+
+    def is_ready_for(self, task_id: str, n_attempts: int) -> bool:
+        """Like ``is_ready``, but against an explicit count rather than
+        this queue's own configured default — what ``RealHumanOracle``
+        uses to actually honor the ``n_attempts`` argument its ``calibrate``
+        is called with, instead of only ever checking against whatever
+        this particular queue instance happened to be constructed with."""
+        return len(self._attempts.get(task_id, [])) >= n_attempts
+
+    def outcome_for(self, task_id: str, n_attempts: int) -> CalibrationOutcome:
+        atts = self._attempts.get(task_id, [])[:n_attempts]
+        if len(atts) < n_attempts:
             raise ValueError(
-                f"task {task_id} has only {len(atts)}/{self.n_attempts_required} attempts — "
+                f"task {task_id} has only {len(atts)}/{n_attempts} attempts — "
                 "cannot materialize an outcome yet"
             )
         solved = [a for a in atts if a.solved]
@@ -90,11 +104,18 @@ class RealHumanOracle:
     queue: CalibrationQueue
 
     def calibrate(self, task: ForgeTask, n_attempts: int = 10) -> CalibrationOutcome:
-        if not self.queue.is_ready(task.task_id):
-            pending = self.queue.pending().get(task.task_id, n_attempts)
+        # Honor the CALLER's n_attempts, not just this queue's own
+        # configured default — SimulatedOracle runs exactly the requested
+        # count, so RealHumanOracle must check readiness against it too,
+        # or it satisfies HumanOracle's signature without satisfying its
+        # contract (not really substitutable under a non-default quota).
+        if not self.queue.is_ready_for(task.task_id, n_attempts):
+            collected = self.queue.collected_count(task.task_id)
+            pending = max(0, n_attempts - collected)
             raise RuntimeError(
                 f"task {task.task_id} not yet calibrated: {pending} human attempt(s) still "
-                "needed. RealHumanOracle does not fabricate outcomes — submit_attempt() for "
-                "every required attempt before calling calibrate()."
+                f"needed ({collected}/{n_attempts} collected). RealHumanOracle does not "
+                "fabricate outcomes — submit_attempt() for every required attempt before "
+                "calling calibrate()."
             )
-        return self.queue.outcome(task.task_id)
+        return self.queue.outcome_for(task.task_id, n_attempts)

@@ -33,14 +33,16 @@ def sweep_difficulty_scale(out_dir: Path) -> dict[str, Any]:
 
 
 def sweep_oracle_noise(out_dir: Path) -> dict[str, Any]:
-    """Human calibration noise (aleatoric): the oracle's per-task noise.
-    Too noisy → calibration meaningless; too clean → unrealistic."""
+    """Human calibration noise (aleatoric): the oracle's per-task noise
+    magnitude, actually varied via SimulatedOracle's noise_scale (a prior
+    version constructed an identical oracle at every swept value here,
+    since SimulatedOracle had no noise parameter to vary at all — this
+    sweep measured nothing). Too noisy → calibration meaningless; too
+    clean → unrealistic."""
     results = {}
     for noise in (0.0, 0.02, 0.05, 0.1, 0.2):
         tasks = make_population(120)
-        oracle = SimulatedOracle(k=6.0, d0=0.5, action_base=8)
-        # noise is baked into the oracle's solve probability; emulate by
-        # fitting the model on more/less reliable outcomes
+        oracle = SimulatedOracle(k=6.0, d0=0.5, noise_scale=noise)
         outcomes = [oracle.calibrate(t) for t in tasks]
         model = DifficultyModel().fit(tasks, outcomes)
         metrics = eval_quality_metrics(tasks, oracle, model)

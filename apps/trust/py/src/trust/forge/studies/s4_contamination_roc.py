@@ -1,9 +1,12 @@
 """S4 — contamination monitor ROC: detection as a function of leak rate.
 
-The leak probe fires when a task's value-level signature is in the leaked
-knowledge base. As the leaked fraction grows, detection should rise; the
-ROC-style curve (fire rate on leaked vs false-fire on clean) shows the
-monitor's operating point. Blog angle: a contamination monitor you can
+The leak probe fires when a task's value-level signature is in an
+INDEPENDENTLY-BUILT knowledge base (see contamination.build_reference_corpus)
+— not one derived from the same task population being tested, which would
+make "fire on leaked" trivially guaranteed by construction rather than a
+measured detection event. As the leaked fraction grows, detection should
+rise; the ROC-style curve (fire rate on leaked vs false-fire on clean) shows
+the monitor's operating point. Blog angle: a contamination monitor you can
 actually validate, not a dashboard.
 """
 from __future__ import annotations
@@ -12,7 +15,13 @@ import json
 from pathlib import Path
 from typing import Any
 
-from trust.forge.contamination import ContaminationReport, monitor_contamination
+from trust.forge.contamination import (
+    ContaminationReport,
+    build_reference_corpus,
+    inject_leaks,
+    leaked_knowledge_base,
+    monitor_contamination,
+)
 from trust.forge.generators import DerivedArgTaskGenerator, ToolUseTaskGenerator
 from trust.forge.study import write_json
 from trust.forge.stratify import difficulty_match_splits
@@ -28,15 +37,18 @@ def run_all(out_dir: Path) -> dict[str, Any]:
     model = DifficultyModel().fit(tasks, outcomes)
     splits = difficulty_match_splits(tasks, model)
 
+    reference_corpus = build_reference_corpus(len(tasks))
+    kb = leaked_knowledge_base(reference_corpus)
+
     results: dict[str, Any] = {}
     for leak_frac in (0.05, 0.1, 0.2, 0.3, 0.5):
-        n_leaked = max(1, int(len(tasks) * leak_frac))
-        leaked = {t.task_id for t in tasks[:n_leaked]}
+        contam_tasks, leaked_ids = inject_leaks(tasks, reference_corpus, fraction=leak_frac, seed=7)
         report = monitor_contamination(
-            tasks,
+            contam_tasks,
             public=splits.public,
             private=splits.private,
-            leaked_ids=leaked,
+            knowledge_base=kb,
+            leaked_ids=leaked_ids,
             corpus_texts=[],  # external corpus not relevant to the ROC
         )
         results[str(leak_frac)] = report.as_dict()

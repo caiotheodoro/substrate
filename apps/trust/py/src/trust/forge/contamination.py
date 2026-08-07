@@ -67,21 +67,104 @@ class LeakProbe:
         return {"probe_id": self.probe_id, "fired": self.fired, "detail": self.detail}
 
 
-def run_leak_probes(tasks: list[ForgeTask], leaked_ids: set[str]) -> list[LeakProbe]:
-    """For every task, the probe checks whether its FORMAT SIGNATURE is in
-    the leaked knowledge base (the set of signatures of ``leaked_ids``).
-    If the signature leaks, a surrogate could reproduce the task from the
-    hint alone — the probe fires. A well-behaved monitor fires exactly on
-    the leaked tasks and stays silent on clean ones."""
+def build_reference_corpus(n: int, *, index_offset: int = 10_000_000) -> list[ForgeTask]:
+    """An independently-generated task pool simulating "content already
+    circulating publicly / present in training data" — built from a
+    disjoint index range (see ``ToolUseTaskGenerator.generate``'s
+    ``index_offset``) so it shares no incidental structure with a normal
+    benchmark population. This is what makes ``run_leak_probes`` a real
+    detector rather than a tautology: the knowledge base it checks against
+    is built from a genuinely separate source, not derived from the same
+    task list being tested."""
+    from trust.forge.generators import ToolUseTaskGenerator
+
+    return ToolUseTaskGenerator().generate(n=n, index_offset=index_offset)
+
+
+def inject_leaks(
+    tasks: list[ForgeTask],
+    reference_corpus: list[ForgeTask],
+    *,
+    fraction: float,
+    seed: int = 0,
+) -> tuple[list[ForgeTask], set[str]]:
+    """Deliberately make ``fraction`` of ``tasks`` byte-identical (expected
+    trajectory + tools) to a task drawn from ``reference_corpus`` —
+    simulating benchmark tasks whose exact content has genuinely leaked
+    into that external material. Returns the mutated population and the
+    set of task_ids that were actually leaked (for ROC bookkeeping); tasks
+    not selected are returned unchanged."""
+    import dataclasses
+    import random
+
+    rng = random.Random(seed)
+    n_leak = min(len(tasks), len(reference_corpus), max(0, round(len(tasks) * fraction)))
+    leak_positions = set(rng.sample(range(len(tasks)), n_leak)) if n_leak else set()
+    ref_pool = list(reference_corpus)
+    rng.shuffle(ref_pool)
+
+    mutated: list[ForgeTask] = []
+    leaked_ids: set[str] = set()
+    for i, t in enumerate(tasks):
+        if i in leak_positions and ref_pool:
+            src = ref_pool.pop()
+            leaked_task = dataclasses.replace(t, expected=src.expected, tools=src.tools)
+            mutated.append(leaked_task)
+            leaked_ids.add(leaked_task.task_id)
+        else:
+            mutated.append(t)
+    return mutated, leaked_ids
+
+
+def leaked_knowledge_base(reference_corpus: list[ForgeTask]) -> set[tuple[tuple[tuple[str, str, object], ...]]]:
+    """The set of signatures a leak probe checks against — built once from
+    an external reference corpus (see ``build_reference_corpus``)."""
+    return {format_signature(t) for t in reference_corpus}
+
+
+def run_leak_probes(
+    tasks: list[ForgeTask],
+    knowledge_base: set[tuple[tuple[tuple[str, str, object], ...]]],
+) -> list[LeakProbe]:
+    """For every task, the probe checks whether its FORMAT SIGNATURE
+    appears in an INDEPENDENTLY-BUILT knowledge base (``leaked_knowledge_base``
+    over ``build_reference_corpus`` / ``inject_leaks``) — not a lookup table
+    built from the same population being tested, which would make any
+    match on a deliberately-leaked task trivially guaranteed (it would
+    just be finding itself). Firing on a task means its exact structural
+    content is present in material the probe never saw the task's own
+    trajectory come from."""
     probes: list[LeakProbe] = []
-    signatures = {t.task_id: format_signature(t) for t in tasks}
-    leaked_signatures = {signatures[tid] for tid in leaked_ids if tid in signatures}
     for task in tasks:
-        sig = signatures[task.task_id]
-        fired = sig in leaked_signatures
-        detail = f"leaked={task.task_id in leaked_ids} sig_in_kb={fired}"
-        probes.append(LeakProbe(probe_id=task.task_id, fired=fired, detail=detail))
+        sig = format_signature(task)
+        fired = sig in knowledge_base
+        probes.append(LeakProbe(probe_id=task.task_id, fired=fired, detail=f"sig_in_kb={fired}"))
     return probes
+
+
+def _reproduces_value(value: object, completion: str) -> bool:
+    """Boundary-aware match, not a bare substring check. Plain
+    `str(value) in completion` fires on any digit coincidence — a
+    completion mentioning "13" would "reproduce" a value of 3, since "3"
+    is a substring of "13". Several mock tools (sum, delay) use small
+    plain-integer args, so this isn't a hypothetical.
+
+    A plain regex `\\b...\\b` isn't enough either: this pipeline's other
+    common value shape is path-like strings ("/api/1", "/tmp/f3.txt")
+    whose own edges are punctuation, not word characters — `\\b` requires
+    a word-char/non-word-char transition, and a value preceded by a space
+    (non-word) has no such transition on a non-word-starting value, so
+    "/api/1" right after a space never matches its own `\\b`. The
+    boundary is only meaningful (and only enforced) on whichever side of
+    the value is itself alphanumeric; a punctuation-led or -trailed edge
+    is already self-delimiting."""
+    import re
+
+    s = str(value)
+    left = r"(?<![A-Za-z0-9])" if s[:1].isalnum() else ""
+    right = r"(?![A-Za-z0-9])" if s[-1:].isalnum() else ""
+    pattern = left + re.escape(s) + right
+    return re.search(pattern, completion) is not None
 
 
 def run_llm_leak_probes(
@@ -99,12 +182,18 @@ def run_llm_leak_probes(
         hint = format_hint(task)
         completion = complete_fn(task, hint)
         sig = format_signature(task)[0]
-        fired = bool(sig) and all(str(value) in completion for _tool, _key, value in sig)
+        fired = bool(sig) and all(_reproduces_value(value, completion) for _tool, _key, value in sig)
+        # The completion itself (bounded) is logged, not just fired/not —
+        # a total network outage and a genuinely honest "I don't know"
+        # both produce fired=False, and were previously indistinguishable
+        # in the artifact. A bounded prefix here is enough to tell them
+        # apart on inspection without bloating the artifact with full
+        # model output on every task.
         probes.append(
             LeakProbe(
                 probe_id=task.task_id,
                 fired=fired,
-                detail=f"hint={hint!r} reproduced_values={fired}",
+                detail=f"hint={hint!r} reproduced_values={fired} completion={completion[:200]!r}",
             )
         )
     return probes
@@ -141,19 +230,24 @@ def structural_ood_score(public: list[ForgeTask], private: list[ForgeTask]) -> f
 @dataclass
 class ContaminationReport:
     leaks: list[LeakProbe] = field(default_factory=list)
+    # Explicit set, not a substring match on LeakProbe.detail (the prior
+    # version keyed leaked/clean off "leaked=True"/"leaked=False" appearing
+    # in a free-text detail string — any change to that string's format
+    # would have silently zeroed out both rates below).
+    leaked_ids: set[str] = field(default_factory=set)
     corpus_overlap: dict[str, float] = field(default_factory=dict)
     structural_ood: float = 0.0
 
     @property
     def leaked_fire_rate(self) -> float:
-        leaked = [p for p in self.leaks if "leaked=True" in p.detail]
+        leaked = [p for p in self.leaks if p.probe_id in self.leaked_ids]
         if not leaked:
             return 0.0
         return sum(1 for p in leaked if p.fired) / len(leaked)
 
     @property
     def clean_false_fire_rate(self) -> float:
-        clean = [p for p in self.leaks if "leaked=False" in p.detail]
+        clean = [p for p in self.leaks if p.probe_id not in self.leaked_ids]
         if not clean:
             return 0.0
         return sum(1 for p in clean if p.fired) / len(clean)
@@ -172,10 +266,18 @@ def monitor_contamination(
     *,
     public: list[ForgeTask],
     private: list[ForgeTask],
+    knowledge_base: set[tuple[tuple[tuple[str, str, object], ...]]],
     leaked_ids: set[str],
     corpus_texts: list[str] | None = None,
 ) -> ContaminationReport:
-    probes = run_leak_probes(tasks, leaked_ids)
+    """``knowledge_base`` must be built independently of ``tasks`` (see
+    ``build_reference_corpus`` + ``leaked_knowledge_base``) and
+    ``leaked_ids`` must name which of ``tasks`` were actually leaked into
+    it (see ``inject_leaks``) — passing a knowledge base derived from
+    ``tasks`` itself turns "fire on leaked" back into a tautological
+    self-lookup, which is the bug this signature exists to make hard to
+    reintroduce by accident."""
+    probes = run_leak_probes(tasks, knowledge_base)
     overlaps = corpus_overlap(tasks, corpus_texts or [])
     ood = structural_ood_score(public, private)
-    return ContaminationReport(leaks=probes, corpus_overlap=overlaps, structural_ood=ood)
+    return ContaminationReport(leaks=probes, leaked_ids=leaked_ids, corpus_overlap=overlaps, structural_ood=ood)

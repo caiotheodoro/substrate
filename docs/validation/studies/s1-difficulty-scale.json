@@ -1,36 +1,36 @@
 {
   "0.1": {
-    "calibration_monotonicity": 0.2626,
+    "calibration_monotonicity": -0.1279,
     "split_predictability": 0.8,
     "difficulty_bandwidth": 0.0083,
     "oracle_discrimination": 0.078
   },
   "0.3": {
-    "calibration_monotonicity": 0.22,
+    "calibration_monotonicity": -0.0575,
     "split_predictability": 0.9,
     "difficulty_bandwidth": 0.0064,
     "oracle_discrimination": 0.0995
   },
   "0.6": {
-    "calibration_monotonicity": -0.1296,
+    "calibration_monotonicity": -0.2965,
     "split_predictability": 0.95,
     "difficulty_bandwidth": 0.0482,
     "oracle_discrimination": 0.1636
   },
   "1.0": {
-    "calibration_monotonicity": -0.5896,
+    "calibration_monotonicity": -0.6875,
     "split_predictability": 1.0,
     "difficulty_bandwidth": 0.149,
     "oracle_discrimination": 0.2162
   },
   "1.5": {
-    "calibration_monotonicity": -0.5649,
+    "calibration_monotonicity": -0.7264,
     "split_predictability": 1.0,
     "difficulty_bandwidth": 0.1378,
     "oracle_discrimination": 0.1832
   },
   "2.0": {
-    "calibration_monotonicity": -0.1158,
+    "calibration_monotonicity": -0.4304,
     "split_predictability": 1.0,
     "difficulty_bandwidth": 0.0743,
     "oracle_discrimination": 0.1322

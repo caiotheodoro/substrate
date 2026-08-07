@@ -17,12 +17,14 @@ from trust.forge.difficulty import DifficultyModel, human_action_baseline, task_
 from trust.forge.generators import ToolUseTaskGenerator
 from trust.forge.stratify import (
     SplitSet,
+    _bin_spearman,
     difficulty_distribution,
     difficulty_match_splits,
     split_distribution_kl,
     split_predictability,
     system_solve_rates,
 )
+from trust.forge.study import spearman
 
 
 @pytest.fixture(scope="module")
@@ -58,6 +60,22 @@ class TestSimulatedOracle:
         t = task_population[0]
         assert oracle.calibrate(t) == oracle.calibrate(t)
 
+    def test_noise_scale_actually_changes_solve_probability_spread(self, task_population):
+        """S1's sweep_oracle_noise study varies a `noise` parameter across
+        5 values expecting different eval-quality numbers at each — but a
+        prior version of SimulatedOracle had no noise parameter at all (a
+        flat 0.05 was hardcoded), so every value in that sweep constructed
+        an identical oracle and all 5 result rows were byte-identical.
+        noise_scale=0.0 must be deterministic-clean (probability ==
+        sigmoid(k(d0-d)) exactly); a large noise_scale must actually
+        perturb it."""
+        t = task_population[0]
+        clean = SimulatedOracle(k=6.0, d0=0.5, noise_scale=0.0)
+        noisy = SimulatedOracle(k=6.0, d0=0.5, noise_scale=0.4)
+        p_clean = clean._solve_probability(t)
+        p_noisy = noisy._solve_probability(t)
+        assert p_clean != p_noisy
+
     def test_harder_tasks_take_more_actions(self, task_population):
         oracle = SimulatedOracle()
         easy = min(task_population[:10], key=lambda t: t.difficulty_seed)
@@ -66,6 +84,36 @@ class TestSimulatedOracle:
         hard_out = oracle.calibrate(hard)
         if easy_out.action_counts and hard_out.action_counts:
             assert mean(easy_out.action_counts) <= mean(hard_out.action_counts) + 1
+
+    def test_action_baseline_scales_with_task_trajectory_length(self, task_population):
+        """RHAE's efficiency ratio (human baseline / agent actions) is only
+        meaningful if the human baseline is grounded in how many actions the
+        task actually needs. A flat, task-length-independent baseline (the
+        old behavior) makes every task's ratio blow past the 1.15 cap for
+        any solver, since real solvers' agent_actions is always close to
+        len(task.expected) (2-5) while the old baseline was a flat 8-20 —
+        collapsing RHAE to solve rate with zero efficiency signal. Two
+        tasks of very different lengths, solved at similar difficulty,
+        should show human action counts scaling with length, not flat."""
+        oracle = SimulatedOracle()
+        short = min(task_population, key=lambda t: len(t.expected))
+        long = max(task_population, key=lambda t: len(t.expected))
+        assert len(long.expected) > len(short.expected)
+        short_out = oracle.calibrate(short, n_attempts=30)
+        long_out = oracle.calibrate(long, n_attempts=30)
+        assert short_out.action_counts and long_out.action_counts
+        # the human baseline for the longer task must itself be longer —
+        # not just "harder", but proportionally larger to the task's own
+        # minimal path length, so h/a (a == len(expected) for a clean solve)
+        # doesn't saturate the RHAE cap for every task uniformly.
+        assert mean(long_out.action_counts) > mean(short_out.action_counts)
+        # and the ratio to the task's own minimal length should be in a
+        # plausible "some human overhead, not absurd" range, not an
+        # arbitrary flat offset unrelated to the task.
+        short_ratio = mean(short_out.action_counts) / len(short.expected)
+        long_ratio = mean(long_out.action_counts) / len(long.expected)
+        assert 0.9 <= short_ratio <= 2.5, short_ratio
+        assert 0.9 <= long_ratio <= 2.5, long_ratio
 
 
 class TestDifficultyModel:
@@ -89,6 +137,81 @@ class TestDifficultyModel:
         outcomes = [oracle.calibrate(t) for t in task_population[:5]]
         base = human_action_baseline(outcomes, task_population[0].task_id)
         assert base >= 0
+
+
+class TestBinSpearman:
+    def test_mismatched_lengths_still_bin_to_the_same_chunk_count(self):
+        """The exact regression the audit found: two perfectly-correlated
+        (monotone increasing) lists of DIFFERENT length, at n_bins=5,
+        used to produce 5 chunks for one and 4 for the other — a length
+        mismatch that _spearman's equal-length guard silently turned into
+        0.0, reading as "no correlation" for data that's perfectly
+        correlated. len(a)=10, len(b)=12 is the audit's own example."""
+        a = [float(i) for i in range(10)]
+        b = [float(i) for i in range(12)]
+        corr = _bin_spearman(a, b, n_bins=5)
+        assert corr > 0.9, corr
+
+    def test_perfectly_correlated_equal_length_scores_near_one(self):
+        a = [float(i) for i in range(20)]
+        b = [float(i) * 2 for i in range(20)]
+        assert _bin_spearman(a, b, n_bins=5) == pytest.approx(1.0)
+
+    def test_small_populations_below_n_bins_still_compare(self):
+        # fewer values than n_bins used to fall through to 0 chunks or a
+        # length mismatch; both should now bin down to min(len(a), len(b)).
+        a = [1.0, 2.0, 3.0]
+        b = [10.0, 20.0, 30.0, 40.0]
+        corr = _bin_spearman(a, b, n_bins=5)
+        assert corr > 0.9, corr
+
+
+class TestSplitDistributionKL:
+    def test_maximally_mismatched_split_reports_high_kl_not_near_zero(self, task_population):
+        """A prior version skipped any bin where the private fraction was
+        0, even when the public fraction there was substantial — a maximally
+        mismatched split (all public mass in bins private never touches)
+        silently dropped every such term and reported a near-zero,
+        "well matched" KL. An empty private split is the cleanest example:
+        public has real mass in several bins, private has none anywhere,
+        and that must score as strongly mismatched, not ~0."""
+        oracle = SimulatedOracle()
+        outcomes = [oracle.calibrate(t) for t in task_population]
+        model = DifficultyModel().fit(task_population, outcomes)
+        kl = split_distribution_kl(task_population, [], model)
+        assert kl > 1.0, kl
+
+    def test_well_matched_split_still_reports_low_kl(self, task_population):
+        oracle = SimulatedOracle()
+        outcomes = [oracle.calibrate(t) for t in task_population]
+        model = DifficultyModel().fit(task_population, outcomes)
+        splits = difficulty_match_splits(task_population, model)
+        kl = split_distribution_kl(splits.public, splits.private, model)
+        assert kl < 0.1, kl
+
+
+class TestDifficultyMatchSplitsNBins:
+    def test_n_bins_actually_changes_the_split(self, task_population):
+        """S5's nested-CV study sweeps n_bins expecting it to change the
+        actual stratification — but a prior version of
+        difficulty_match_splits had no n_bins parameter at all (always the
+        module's hardcoded N_BINS=5), so S5's grid only ever changed how
+        the ACCEPTANCE TEST measured predictability, never how the split
+        was actually built; half the tuning grid was tuning the ruler, not
+        the thing being measured. n_bins=1 (everything in one bin, pure
+        random split) must allocate differently than n_bins=5
+        (difficulty-stratified) on a population with real difficulty
+        spread."""
+        oracle = SimulatedOracle()
+        outcomes = [oracle.calibrate(t) for t in task_population]
+        model = DifficultyModel().fit(task_population, outcomes)
+
+        one_bin = difficulty_match_splits(task_population, model, n_bins=1, seed=1)
+        five_bins = difficulty_match_splits(task_population, model, n_bins=5, seed=1)
+
+        one_bin_ids = {t.task_id for t in one_bin.public}
+        five_bin_ids = {t.task_id for t in five_bins.public}
+        assert one_bin_ids != five_bin_ids
 
 
 class TestStratification:
@@ -147,16 +270,6 @@ def mean_solve_rate(oracle: SimulatedOracle, tasks) -> float:
     return mean(rates)
 
 
-def spearman(a: list[float], b: list[float]) -> float:
-    def rank(values: list[float]) -> list[float]:
-        indexed = sorted(range(len(values)), key=lambda i: values[i])
-        ranks = [0.0] * len(values)
-        for pos, idx in enumerate(indexed):
-            ranks[idx] = pos + 1
-        return ranks
-
-    ra, rb = rank(a), rank(b)
-    n = len(a)
-    d2 = sum((ra[i] - rb[i]) ** 2 for i in range(n))
-    denom = n * (n * n - 1) / 6.0
-    return 1.0 - (6.0 * d2) / (6.0 * denom) if denom else 0.0
+# spearman() is imported from trust.forge.study (see imports above) rather
+# than kept as a local copy, so this test file can't silently drift from
+# the production tie-averaging fix.

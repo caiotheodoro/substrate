@@ -75,6 +75,36 @@ class TestRealHumanOracle:
         q.submit_attempt(AttemptResult(task.task_id, solved=True, action_count=5, duration_s=9.0, attempted_by="h1"))
         q.submit_attempt(AttemptResult(task.task_id, solved=False, action_count=9, duration_s=20.0, attempted_by="h2"))
         oracle = RealHumanOracle(queue=q)
-        outcome = oracle.calibrate(task)
+        # explicit n_attempts=2, matching what's actually been submitted —
+        # calibrate() honors its own argument now rather than silently
+        # checking against the queue's n_attempts_required regardless of
+        # what was asked for (see test_calibrate_honors_its_own_n_attempts_argument)
+        outcome = oracle.calibrate(task, n_attempts=2)
         assert outcome.task_id == task.task_id
         assert outcome.n_attempts == 2
+
+    def test_calibrate_honors_its_own_n_attempts_argument(self):
+        """HumanOracle.calibrate(task, n_attempts=10) is part of the
+        Protocol's actual signature — SimulatedOracle runs exactly the
+        requested count. A prior version of RealHumanOracle silently
+        ignored the parameter entirely and always checked readiness
+        against the queue's own fixed n_attempts_required, so it satisfied
+        the Protocol's signature but not its contract: it wasn't really
+        substitutable for SimulatedOracle under a non-default quota."""
+        q = CalibrationQueue(n_attempts_required=10)  # queue's own default
+        task = ToolUseTaskGenerator().generate(n=1)[0]
+        q.enqueue(task)
+        for i in range(3):
+            q.submit_attempt(
+                AttemptResult(task.task_id, solved=(i < 2), action_count=4 + i, duration_s=9.0, attempted_by=f"h{i}")
+            )
+        oracle = RealHumanOracle(queue=q)
+        # asking for exactly 3 (what's actually been submitted) must
+        # succeed even though the queue's own quota is 10 and isn't met
+        outcome = oracle.calibrate(task, n_attempts=3)
+        assert outcome.n_attempts == 3
+        assert outcome.n_solved == 2
+        # asking for more than what's been submitted must still raise,
+        # not silently fall back to "whatever the queue's default says"
+        with pytest.raises(RuntimeError):
+            oracle.calibrate(task, n_attempts=5)
